@@ -251,7 +251,8 @@ class Predictor {
                        + (HP_SLOT_O6G ? 1 : 0) + (HP_SLOT_O6H ? 1 : 0)
                        + (HP_SLOT_O6I ? 1 : 0) + (HP_SLOT_O6J ? 1 : 0)), 127),
           word_(slot_bits(cfg.table_bits, 1), 255),
-          col_(slot_bits(cfg.table_bits, HP_SLOT_COL2 ? 2 : 0), 255),
+          col_(add_bits(slot_bits(cfg.table_bits, HP_SLOT_COL2 ? 2 : 0),
+                       HP_SLOT_COL3 ? 1 : 0), 255),
           tag_(slot_bits(cfg.table_bits, 2), 255),
           wbi_(slot_bits(cfg.table_bits, 1), 255),
           sp13_(add_bits(slot_bits(cfg.table_bits, 0), HP_SLOT_SP ? 1 : 0), 255),
@@ -1029,10 +1030,18 @@ class Predictor {
 #else
         word_.set_context(h2(7, word_hash_));
 #endif
-        sp13_.set_context(h2(8, ((hist_ >> 0) & 0xffull) |
-                                   (((hist_ >> 16) & 0xffull) << 8)));
-        sp24_.set_context(h2(9, ((hist_ >> 8) & 0xffull) |
-                                   (((hist_ >> 24) & 0xffull) << 8)));
+        sp13_.set_context(h2(8, (((hist_ >> 0) & 0xffull) |
+                                   (((hist_ >> 16) & 0xffull) << 8))
+#if HP_SP_GRP
+                                   + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+                                   ));
+        sp24_.set_context(h2(9, (((hist_ >> 8) & 0xffull) |
+                                   (((hist_ >> 24) & 0xffull) << 8))
+#if HP_SP_GRP
+                                   + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+                                   ));
 #if HP_WORD_STREAMS
 #if HP_SECTION_MUTE
         if (wiki_.mute_words())
@@ -1181,7 +1190,11 @@ class Predictor {
 #endif
 #endif
 #if HP_NUMERIC
-        num_.set_context(h2(30, numbers_.context_key()));
+        num_.set_context(h2(30, numbers_.context_key()
+#if HP_NUM_GRP
+            + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+        ));
 #endif
 #if HP_PAT_MODEL
         pat_.set_context(h2(27, (static_cast<std::uint64_t>(cache_.cls()) << 16) |
@@ -1198,6 +1211,10 @@ class Predictor {
         sengrp_.set_context(h2(36, static_cast<std::uint64_t>(wiki_.sen_group()) +
                                    ((hist_ & 0xffffffull) << 8) +
                                    static_cast<std::uint64_t>(streams_.sent_pos()) * 17ull));
+#elif HP_SENGRP_C0
+        sengrp_.set_context(h2(36, static_cast<std::uint64_t>(wiki_.sen_group()) +
+                                   ((hist_ & 0xffffffull) << 8) +
+                                   static_cast<std::uint64_t>(c0_) * 17ull));
 #else
         sengrp_.set_context(h2(36, static_cast<std::uint64_t>(wiki_.sen_group()) +
                                    ((hist_ & 0xffffffull) << 8)));

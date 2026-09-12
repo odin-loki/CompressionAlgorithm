@@ -226,6 +226,9 @@
 #ifndef HP_SLOT_COL2
 #define HP_SLOT_COL2 0             // grow col_ +2
 #endif
+#ifndef HP_SLOT_COL3
+#define HP_SLOT_COL3 0             // grow col_ +1 extra bit via add_bits
+#endif
 #ifndef HP_MATCH_13
 #define HP_MATCH_13 0              // extra byte-match order 13
 #endif
@@ -399,4 +402,13 @@
 #endif
 #ifndef HP_BRK_GRP
 #define HP_BRK_GRP 0               // fold wiki sen_group into bracket ctx
+#endif
+#ifndef HP_NUM_GRP
+#define HP_NUM_GRP 0               // fold wiki sen_group into num_ ctx
+#endif
+#ifndef HP_SP_GRP
+#define HP_SP_GRP 0                // fold wiki sen_group into sp13_ and sp24_
+#endif
+#ifndef HP_SENGRP_C0
+#define HP_SENGRP_C0 0             // fold c0_ into sengrp ctx (elif after WORD/POS)
 #endif

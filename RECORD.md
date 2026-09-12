@@ -998,6 +998,23 @@ v54 + fx2-manual 8 MB: **1,704,388 (-190 vs v53+fx2)**. Stacks. New 8 MB champ.
 | id | flag | 8 MB | vs v54 1,708,542 | call |
 |---|---|---:|---:|---|
 | link sen-group | `HP_LINK_GRP` | 1,708,620 | +78 | reject |
+| **bracket sen-group** | `HP_BRK_GRP` | **1,708,329** | **-213** | **accept - v55** |
+
+### v55 = v54 + brk-grp - **1,708,329 / 1.629 bpc, RT PASS**
+
+`HP_BRK_GRP` on v54: **-213**. Decode SHA matches `data/enwik8.8mb`.
+v55 + fx2-manual 8 MB: **1,704,368 (-20 vs v54+fx2)**. Stacks. New 8 MB champ.
+
+### v55 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v55 1,708,329 | call |
+|---|---|---:|---:|---|
+| sengrp position | `HP_SENGRP_POS` | 1,708,329 | 0 | reject |
+| num sen-group | `HP_NUM_GRP` | 1,708,398 | +69 | reject |
+
+### v55 + fx2 + mem 26 (100 MB) — **18,528,992 / 1.482 bpc** (encode only)
+
+vs v45 18,633,242: **−104,250**. `hp_v55_m26.exe` (`HP_SLOT_MAX=31`). RT in flight (`d --mem 26`). Do not overwrite `hp_v55_m26.exe` until RT.
 
 ### v37 + fx2 + mem 26 (100 MB) — **18,671,091 / 1.494 bpc, RT PASS**
 

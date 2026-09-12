@@ -352,3 +352,36 @@ isTemp / isMath    (optional, cheap)
 Keep the existing XML depth as a **secondary** nibble; do not drop it. Then add `linkword = linkword*2104 + j` as its own `ContextModel` (new axis). Word-keyed match is a separate port (`MatchModel` keyed on `word_hash_` instead of `hist_`).
 
 Do not copy mixer rates or LSTM. Those are not axes.
+
+---
+
+## 2026-09-12 H9 — remaining wiki-machine gaps vs hp v54
+
+§12 minimum port is done (`wiki.hpp` → `tag_`, dedicated `link_` /
+`sen_`, word-keyed match ×3+wm4). These claims in §§4–7 are stale:
+hp *has* linkword/senword hashes, word-keyed match, and SPARSE_UTF8.
+What is **still missing** from this spec:
+
+- **wiki transform:** no `fccxt`/`brcxt`/`qocxt`/`htcxt` stacks; no
+  `ColumnContext` cell ring (`HP_TABLE_ABOVE` / `HP_NLCHAR` rejected);
+  paragraph from raw `A–Z`, not WRT `FIRSTUPPER`; no list-to-paragraph /
+  `''`/`'''` / `://` first-char rules; no `removeWordsL/R` gap strip of
+  `[word|display]` / `{{a=b|c}}` from the sentence ring.
+- **mixer:** no `sets()` skip when `utf8left` / `skipSeeExternal` /
+  table / curly (hp `HP_UTF8_IDLE` weak; `HP_SECTION_MUTE` and
+  `HP_PRED_GATE` rejected). LSTM / mixer rates still out of scope here.
+- **match:** `{1}` alt-word + run-map + DirectHash still absent;
+  `MatchModel2` still does not hash `worcxt.Word(1)` into the byte
+  match table; 8 of 10 outer sparse word configs still unwired.
+- **LSTM:** not this file.
+- **preprocess:** this detector assumes post-WRT/charSwap bytes. hp
+  still sees raw enwik / fx2-manual, so a literal `#define` port of
+  `COLON='J'` etc. is wrong until Track W runs their transform.
+
+Sentence groups: fxcm keeps **four** `SentenceContext` rings
+(`sencxt` prose, `sencxtL` `*`/`#`, `sencxtT` table, `sencxtCL`
+wikilink). hp `sen_group()` is a 2-bit nibble (0 prose / 1 list /
+2 table / 3 link). Dedicated `HP_SENGRP_MOD` is an hp CM on that
+nibble — **W5 candidate**. Folds of the nibble into `tag_`/`sen_`/
+`wstr_`/`wbi_`/`col_`/`sentmem` are **hp-only**. `HP_SENT_DOM`
+(four rings) was rejected on hp; the fork already has the rings.
