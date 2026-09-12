@@ -1042,3 +1042,11 @@ vs v45 18,633,242: **−104,250**. Decode SHA matches `data/enwik8.fx2man`.
 
 vs v31 18,752,700: **−81,609**. Decode SHA matches `data/enwik8.fx2man`.
 Next 100 MB after a later champ is mem 26 with `HP_SLOT_MAX=31` (8 MB champ is MAX=35; at mem 26 that is 2^35 tables and will OOM).
+
+### v57 + fx2 + mem 26 (100 MB) - **18,527,464 / 1.482 bpc** (encode only)
+
+vs v55 18,528,992: **-1,528**. `hp_v57_m26.exe` (`HP_SLOT_MAX=31`). RT pending. Do not overwrite `hp_v57_m26.exe` until RT.
+
+### v57 + fx2 + mem 26 (100 MB) RT - **FAIL**
+
+Decode aborted immediately: `not a CYHP archive`. Encode length **18,527,464** (**-1,528** vs v55 18,528,992) is not a valid archive: no `CYHP` magic anywhere; first 6,348,800 bytes are zeros. `.out` not produced. Did not start 8 MB leftovers. Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe`.
