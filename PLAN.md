@@ -47,8 +47,9 @@ plus preprocess, not another 8 MB n-gram on this tree.
 
 | build | identity B | fx2-manual B | status |
 |---|---:|---:|---|
-| v54 (`+ SENWORD_GRP`) | 1,708,542 | 1,704,388 | RT PASS |
-| **v55 (`+ BRK_GRP`)** | **1,708,329** | **1,704,368** | **RT PASS** champ |
+| v55 (`+ BRK_GRP`) | 1,708,329 | 1,704,368 | RT PASS |
+| v56 (`+ SP_GRP`) | 1,707,742 | 1,703,460 | RT PASS |
+| **v57 (`+ SLOT_COL3`)** | **1,707,696** | **1,703,430** | **RT PASS** champ |
 
 ### 100 MB (`data/enwik8.fx2man`, `--mem 26`)
 
@@ -90,8 +91,8 @@ accept or reject on 1 MB alone. See RECORD “why 1 MB lied” / H0.5.
 
 **Binaries — do not overwrite while in use:**
 
-`hp_v37.exe`, `hp_v45.exe`, `hp_v45_m26.exe`, `hp_v46.exe`, `hp_v47.exe`,
-`hp_v49.exe`, `hp_v54.exe`, `hp_v55.exe`, `hp_v55_m26.exe`.
+`hp_v37.exe`, `hp_v45.exe`, `hp_v45_m26.exe`, `hp_v55.exe`, `hp_v55_m26.exe`,
+`hp_v56.exe`, `hp_v57.exe`.
 
 Name new builds `hp_vNN.exe` or `hp_<flag>.exe`. 100 MB at mem 26 with
 a cap other than the 8 MB default: `hp_vNN_m26.exe` and compile
@@ -118,7 +119,7 @@ Run in this order. One flag. Log every call in `RECORD.md`.
 
 | # | test | how | accept |
 |---|---|---|---|
-| H1 | Leftovers **`HP_SP_GRP`** then **`HP_SLOT_COL3`** | one 8 MB at a time vs 1,708,329 | bytes drop |
+| H1 | Champ **v57** 100 MB mem 26 | `hp_v57_m26.exe`, `-DHP_SLOT_MAX=31` only; no 8 MB job | bytes < 18,528,992 |
 | H2 | Skip `HP_SENGRP_C0` on champ | `#elif` after `HP_SENGRP_WORD` (already on) | no-op |
 | H3 | Do **not** 100 MB at `SLOT_MAX=35` | — | RAM / OOM |
 | H4 | Do **not** pair an 8 MB leftover with a 100 MB job | — | RAM |
@@ -220,8 +221,7 @@ Pointer is the RECORD heading unless noted. New evidence only.
 
 ## 8. Execution order
 
-**This machine (Track H):** H1 finish v55-100 RT → H2 leftovers
-(`SP_GRP`, `SLOT_COL3`) only after that decode exits. Never H7/H8.
+**This machine (Track H):** H1 v57-100 at `SLOT_MAX=31` (not 35). Never H7/H8.
 No Cypha into `hp`.
 
 **Track W:** W2–W3 notes any time; W4 before any enwik9 fantasy; W5

@@ -1011,8 +1011,27 @@ v55 + fx2-manual 8 MB: **1,704,368 (-20 vs v54+fx2)**. Stacks. New 8 MB champ.
 |---|---|---:|---:|---|
 | sengrp position | `HP_SENGRP_POS` | 1,708,329 | 0 | reject |
 | num sen-group | `HP_NUM_GRP` | 1,708,398 | +69 | reject |
+| **space sen-group** | `HP_SP_GRP` | **1,707,742** | **-587** | **accept - v56** |
 
-Wave stalled (2 consecutive rejects). Not run: `HP_SP_GRP`, `HP_SENGRP_C0`, `HP_SLOT_COL3`.
+Skipped `HP_SENGRP_C0` (no-op while `HP_SENGRP_WORD` is on).
+
+### v56 = v55 + sp-grp - **1,707,742 / 1.628 bpc, RT PASS**
+
+`HP_SP_GRP` on v55: **-587**. Decode SHA matches `data/enwik8.8mb`.
+v56 + fx2-manual 8 MB: **1,703,460 (-908 vs v55+fx2)**. Stacks. New 8 MB champ.
+
+### v56 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v56 1,707,742 | call |
+|---|---|---:|---:|---|
+| **col3 extra bit** | `HP_SLOT_COL3` | **1,707,696** | **-46** | **accept - v57** |
+
+### v57 = v56 + slot-col3 - **1,707,696 / 1.628 bpc, RT PASS**
+
+`HP_SLOT_COL3` on v56: **-46**. Decode SHA matches `data/enwik8.8mb`.
+v57 + fx2-manual 8 MB: **1,703,430 (-30 vs v56+fx2)**. Stacks. New 8 MB champ.
+
+v55 leftover wave complete. Skipped `HP_SENGRP_C0` (no-op). Did not start 100 MB.
 
 ### v55 + fx2 + mem 26 (100 MB) — **18,528,992 / 1.482 bpc, RT PASS**
 
