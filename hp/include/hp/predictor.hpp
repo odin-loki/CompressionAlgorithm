@@ -90,7 +90,8 @@ class Predictor {
         (HP_STEMMER ? HP_STEMMER_N : 0) +
         (HP_SENWORD ? 1 : 0) +
         (HP_SENT_STREAM ? 1 : 0) +
-        (HP_SENT_MEM ? 1 : 0);
+        (HP_SENT_MEM ? 1 : 0) +
+        (HP_SENGRP_MOD ? 1 : 0);
     static constexpr int kCtxModels = 11 + kExtraCtx;
     static constexpr int kMatchModels = 5 + (HP_MATCH_18 ? 1 : 0)
         + (HP_MATCH_13 ? 1 : 0) + (HP_MATCH_01 ? 1 : 0)
@@ -288,6 +289,9 @@ class Predictor {
 #if HP_SENT_MEM
           sentmem_cm_(slot_bits(cfg.table_bits, HP_SLOT_SMEM ? 2 : 0), 255),
 #endif
+#if HP_SENGRP_MOD
+          sengrp_(slot_bits(cfg.table_bits, HP_SLOT_SGRP ? 2 : 0), 255),
+#endif
           match_{ {cfg.buf_bits, match_bits(cfg.match_bits), 3},
                   {cfg.buf_bits, match_bits(cfg.match_bits), 4},
                   {cfg.buf_bits, match_bits(cfg.match_bits), 6},
@@ -418,6 +422,9 @@ class Predictor {
 #endif
 #if HP_SENT_MEM
         chain[nchain++] = &sentmem_cm_;
+#endif
+#if HP_SENGRP_MOD
+        chain[nchain++] = &sengrp_;
 #endif
         for (int i = 0; i < nchain; ++i) {
             chain[i]->predict(c0_, backoff, out);
@@ -635,6 +642,9 @@ class Predictor {
 #endif
 #if HP_SENT_MEM
         sentmem_cm_.update(y, ens);
+#endif
+#if HP_SENGRP_MOD
+        sengrp_.update(y, ens);
 #endif
         for (int i = 0; i < kMatchModels; ++i) match_[i].update(y);
 #if HP_SPARSE_UTF8
@@ -1142,6 +1152,15 @@ class Predictor {
 #if HP_PPMD
         ppm_.set_context(h2(28, hist_));
 #endif
+#if HP_SENGRP_MOD
+#if HP_SENGRP_WORD
+        sengrp_.set_context(h2(36, static_cast<std::uint64_t>(wiki_.sen_group()) +
+                                   ((hist_ & 0xffffffull) << 8) + word_hash_ * 17ull));
+#else
+        sengrp_.set_context(h2(36, static_cast<std::uint64_t>(wiki_.sen_group()) +
+                                   ((hist_ & 0xffffffull) << 8)));
+#endif
+#endif
     }
 
     Config cfg_;
@@ -1181,6 +1200,9 @@ class Predictor {
 #if HP_SENT_MEM
     SentenceMemory sentmem_;
     ContextModel sentmem_cm_;
+#endif
+#if HP_SENGRP_MOD
+    ContextModel sengrp_;
 #endif
     MatchModel match_[kMatchModels];
 #if HP_SPARSE_UTF8

@@ -916,6 +916,27 @@ vs v37 18,671,091: **−37,849**. `hp_v45_m26.exe` (`HP_SLOT_MAX=31`). RT not do
 
 `HP_WBI_GRP` on v46: **−258**.
 
+### v47 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v47 1,716,568 | call |
+|---|---|---:|---:|---|
+| **sentmem sen-group** | `HP_SMEM_GRP` | **1,715,657** | **−911** | **accept — v48** |
+
+### v48 = v47 + smem-grp — **1,715,657 / 1.636 bpc, RT PASS**
+
+`HP_SMEM_GRP` on v47: **−911**.
+v48 + fx2-manual 8 MB: **1,711,027 (−1,709 vs v45+fx2)**. Stacks. New 8 MB champ.
+
+### v48 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v48 1,715,657 | call |
+|---|---|---:|---:|---|
+| **sen-group expert** | `HP_SENGRP_MOD` | **1,712,541** | **−3,116** | **accept — v49** |
+
+### v49 = v48 + sengrp model — **1,712,541 / 1.633 bpc**
+
+`HP_SENGRP_MOD` on v48: **−3,116**. Own table, not a fold. RT in flight.
+
 ### v37 + fx2 + mem 26 (100 MB) — **18,671,091 / 1.494 bpc, RT PASS**
 
 vs v31 18,752,700: **−81,609**. Decode SHA matches `data/enwik8.fx2man`.

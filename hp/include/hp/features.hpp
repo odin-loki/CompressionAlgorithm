@@ -373,3 +373,12 @@
 #ifndef HP_SMEM_GRP
 #define HP_SMEM_GRP 0              // fold wiki sen_group into sentmem ctx
 #endif
+#ifndef HP_SENGRP_MOD
+#define HP_SENGRP_MOD 0            // dedicated sen_group context model
+#endif
+#ifndef HP_SLOT_SGRP
+#define HP_SLOT_SGRP 0             // grow sengrp table +2
+#endif
+#ifndef HP_SENGRP_WORD
+#define HP_SENGRP_WORD 0           // fold word hash into sengrp ctx
+#endif
