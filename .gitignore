@@ -1,0 +1,42 @@
+# Corpora (huge / generated)
+/data/
+*.zip
+
+# hp build products
+hp/build/
+*.exe
+*.hp
+*.o
+*.obj
+*.a
+*.lib
+*.pdb
+*.ilk
+*.exp
+
+# Nested winner clones (own git; do not rewrite)
+harvest/fx2-cmix/
+harvest/cmix/
+harvest/cmix-lex/
+harvest/paq8pxd/
+harvest/starlit/
+harvest/nncp/
+
+# Task / editor
+.taskmaster/
+.cursor/
+.vscode/
+*.swp
+*~
+
+# OneDrive / OS junk
+desktop.ini
+Thumbs.db
+.DS_Store
+~$
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
