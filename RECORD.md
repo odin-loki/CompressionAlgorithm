@@ -912,9 +912,9 @@ vs v37 18,671,091: **−37,849**. `hp_v45_m26.exe` (`HP_SLOT_MAX=31`). RT not do
 | sen-group mixer gate | `HP_SEN_GROUP` | 1,717,506 | +680 | reject — mixer dilution |
 | **wbi sen-group** | `HP_WBI_GRP` | **1,716,568** | **−258** | **accept — v47** |
 
-### v47 = v46 + wbi-grp — **1,716,568 / 1.637 bpc**
+### v47 = v46 + wbi-grp — **1,716,568 / 1.637 bpc, RT PASS**
 
-`HP_WBI_GRP` on v46: **−258**. RT in flight.
+`HP_WBI_GRP` on v46: **−258**.
 
 ### v37 + fx2 + mem 26 (100 MB) — **18,671,091 / 1.494 bpc, RT PASS**
 
