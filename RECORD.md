@@ -1012,11 +1012,14 @@ v55 + fx2-manual 8 MB: **1,704,368 (-20 vs v54+fx2)**. Stacks. New 8 MB champ.
 | sengrp position | `HP_SENGRP_POS` | 1,708,329 | 0 | reject |
 | num sen-group | `HP_NUM_GRP` | 1,708,398 | +69 | reject |
 
-### v55 + fx2 + mem 26 (100 MB) — **18,528,992 / 1.482 bpc** (encode only)
+Wave stalled (2 consecutive rejects). Not run: `HP_SP_GRP`, `HP_SENGRP_C0`, `HP_SLOT_COL3`.
 
-vs v45 18,633,242: **−104,250**. `hp_v55_m26.exe` (`HP_SLOT_MAX=31`). RT in flight (`d --mem 26`). Do not overwrite `hp_v55_m26.exe` until RT.
+### v55 + fx2 + mem 26 (100 MB) — **18,528,992 / 1.482 bpc, RT PASS**
+
+vs v45 18,633,242: **−104,250**. Decode SHA matches `data/enwik8.fx2man`.
+`hp_v55_m26.exe` with `HP_SLOT_MAX=31` (8 MB champ is MAX=35). New 100 MB champ.
 
 ### v37 + fx2 + mem 26 (100 MB) — **18,671,091 / 1.494 bpc, RT PASS**
 
 vs v31 18,752,700: **−81,609**. Decode SHA matches `data/enwik8.fx2man`.
-Next 100 MB is v45 at mem 26 with `HP_SLOT_MAX=31` (8 MB champ is MAX=35; at mem 26 that is 2^35 tables and will OOM). Cap 31 still lands sent-grp plus one extra o3/o4/o6 bit vs v37.
+Next 100 MB after a later champ is mem 26 with `HP_SLOT_MAX=31` (8 MB champ is MAX=35; at mem 26 that is 2^35 tables and will OOM).
