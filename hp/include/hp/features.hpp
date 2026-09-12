@@ -412,3 +412,6 @@
 #ifndef HP_SENGRP_C0
 #define HP_SENGRP_C0 0             // fold c0_ into sengrp ctx (elif after WORD/POS)
 #endif
+#ifndef HP_HEBB_GRP
+#define HP_HEBB_GRP 0              // fold wiki sen_group into hebb context
+#endif

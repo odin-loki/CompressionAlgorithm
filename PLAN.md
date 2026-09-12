@@ -120,7 +120,7 @@ Run in this order. One flag. Log every call in `RECORD.md`.
 
 | # | test | how | accept |
 |---|---|---|---|
-| H1 | Next unused leftover on v57 | one flag, 8 MB mem 22 | bytes drop vs 1,707,696 |
+| H1 | Next unused leftover on v57 | one flag, 8 MB mem 22; MATCH_20 and HEBB_GRP already reject | bytes drop vs 1,707,696 |
 | H2 | Skip `HP_SENGRP_C0` on champ | `#elif` after `HP_SENGRP_WORD` (already on) | no-op |
 | H3 | Do **not** 100 MB at `SLOT_MAX=35` | — | RAM / OOM |
 | H4 | 100 MB archives: write off OneDrive (`%LOCALAPPDATA%\hp_lab`) then copy | v57 first write was zeros | valid CYHP |
@@ -209,6 +209,8 @@ Pointer is the RECORD heading unless noted. New evidence only.
 | `HP_LINK_GRP` | RECORD v54 leftovers: +78 |
 | `HP_SENGRP_POS` | RECORD v55 leftovers: 0 |
 | `HP_NUM_GRP` | RECORD v55 leftovers: +69 |
+| `HP_MATCH_20` | RECORD v57 leftovers: +97 |
+| `HP_HEBB_GRP` | RECORD v57 leftovers: +90 |
 | `HP_SEN_GROUP` mixer gate | v46 leftovers: +680 (dilution) |
 | `HP_SLOT_WORD10` on 8 MB | +43,179 (2^32 sparse) |
 | `HP_SLOT_O34G` | −87 noise |

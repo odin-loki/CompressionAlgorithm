@@ -1056,3 +1056,36 @@ Decode aborted immediately: `not a CYHP archive`. Encode length **18,527,464** (
 Invalid OneDrive archive renamed to `hp/build/e8_fx2man_v57_m26.BAD.hp` (18,527,464, leading zeros, no CYHP). Re-encoded with `hp_v57_m26.exe c --mem 26` to `%LOCALAPPDATA%\hp_lab\e8_fx2man_v57_m26.hp`. Magic `CYHP` (43 59 48 50) at offset 0. Length **18,527,464** (**-1,528** vs v55 18,528,992). Copied to `hp/build/e8_fx2man_v57b_m26.hp`. Decode SHA matches `data/enwik8.fx2man`. New 100 MB champ.
 
 Did not start 8 MB. Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe` / `hp_v57.exe`.
+
+### v57 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v57 1,707,696 | call |
+|---|---|---:|---:|---|
+| match order 20 | `HP_MATCH_20` | 1,707,793 | +97 | reject |
+| hebb sen-group | `HP_HEBB_GRP` | 1,707,786 | +90 | reject |
+
+v57 leftover wave complete. Champ remains v57 (1,707,696 identity / 1,703,430 fx2). Did not start 100 MB. Did not run --profile.
+
+### v57 C++ profile (8 MB mem 22)
+
+`hp_v57.exe c --mem 22 --profile` on `data/enwik8.8mb`. Wall **703.7 s**. Archive **1,707,696**.
+
+| row | bytes | bpc |
+|---|---:|---:|
+| total spent | 1,707,748 | 1.628 |
+| best-expert | 217,853 | 0.207 |
+| after mixer | 1,731,001 | 1.650 |
+| sparse ctx | 811,972 | 0.774 |
+| dense ctx | 895,775 | 0.854 |
+
+Model redundancy (mixer vs best expert): **+1,513,148 B**. Coding redundancy (APM+coder vs mixer): **-23,253 B**. Parameter share (sparse contexts): **47%**. Profiled over 67,108,864 bits / 8,388,608 B.
+
+Dump: `dump_experts_v57.exe` (same v57 -D flags, `HP_SLOT_MAX=35`), stride 37, 80,000 records, mem 22. **77 experts**.
+
+| metric | v57 (80k rec, 77 exp, mem 22) |
+|---|---:|
+| participation ratio | **3.021** of 77 |
+| entropy effective rank | **11.874** of 77 |
+| top-1 variance share | 57.3% |
+
+gamma=0.000963 (Marchenko-Pastur does not apply). Did not overwrite `hp_v57.exe` / `hp_v57_m26.exe`.

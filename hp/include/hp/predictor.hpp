@@ -894,7 +894,12 @@ class Predictor {
             word_ring_[0] = prev_word_;
         }
         word_hash_prev_ = word_hash_;
+#if HP_HEBB_GRP
+        hebb_.set_context(prev_word_ +
+                          static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull);
+#else
         hebb_.set_context(prev_word_);
+#endif
 #if HP_GATE_BRANCH
         branch3_.push_byte(byte, hist_);
 #endif
