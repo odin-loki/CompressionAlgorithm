@@ -57,7 +57,8 @@ plus preprocess, not another 8 MB n-gram on this tree.
 |---|---:|---|---|
 | v37 | 18,671,091 | **RT PASS** | `hp/build/hp_v37.exe` |
 | v45 | 18,633,242 | encode only | `hp/build/hp_v45_m26.exe` (`SLOT_MAX=31`) |
-| **v55** | **18,528,992** | **RT PASS** | `hp/build/hp_v55_m26.exe` (`SLOT_MAX=31`) |
+| v55 | 18,528,992 | **RT PASS** | `hp/build/hp_v55_m26.exe` (`SLOT_MAX=31`) |
+| **v57** | **18,527,464** | **RT PASS** | `hp/build/hp_v57_m26.exe` (`SLOT_MAX=31`); write archives off OneDrive |
 
 ---
 
@@ -119,10 +120,10 @@ Run in this order. One flag. Log every call in `RECORD.md`.
 
 | # | test | how | accept |
 |---|---|---|---|
-| H1 | Champ **v57** 100 MB mem 26 | `hp_v57_m26.exe`, `-DHP_SLOT_MAX=31` only; no 8 MB job | bytes < 18,528,992 |
+| H1 | Next unused leftover on v57 | one flag, 8 MB mem 22 | bytes drop vs 1,707,696 |
 | H2 | Skip `HP_SENGRP_C0` on champ | `#elif` after `HP_SENGRP_WORD` (already on) | no-op |
 | H3 | Do **not** 100 MB at `SLOT_MAX=35` | — | RAM / OOM |
-| H4 | Do **not** pair an 8 MB leftover with a 100 MB job | — | RAM |
+| H4 | 100 MB archives: write off OneDrive (`%LOCALAPPDATA%\hp_lab`) then copy | v57 first write was zeros | valid CYHP |
 | H7 | Do **not** 100 MB at `SLOT_MAX=35` | — | RAM / OOM |
 | H8 | Do **not** pair an 8 MB leftover with a 100 MB job | — | RAM |
 | H9 | Track W inventory pass | read `harvest/cmix-lex_notes.md`, `harvest/fxcm_v26_vs_hp.md` | written gaps only |

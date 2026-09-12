@@ -1050,3 +1050,9 @@ vs v55 18,528,992: **-1,528**. `hp_v57_m26.exe` (`HP_SLOT_MAX=31`). RT pending. 
 ### v57 + fx2 + mem 26 (100 MB) RT - **FAIL**
 
 Decode aborted immediately: `not a CYHP archive`. Encode length **18,527,464** (**-1,528** vs v55 18,528,992) is not a valid archive: no `CYHP` magic anywhere; first 6,348,800 bytes are zeros. `.out` not produced. Did not start 8 MB leftovers. Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe`.
+
+### v57 + fx2 + mem 26 (100 MB) retry (non-OneDrive) - **18,527,464 / 1.482 bpc, RT PASS**
+
+Invalid OneDrive archive renamed to `hp/build/e8_fx2man_v57_m26.BAD.hp` (18,527,464, leading zeros, no CYHP). Re-encoded with `hp_v57_m26.exe c --mem 26` to `%LOCALAPPDATA%\hp_lab\e8_fx2man_v57_m26.hp`. Magic `CYHP` (43 59 48 50) at offset 0. Length **18,527,464** (**-1,528** vs v55 18,528,992). Copied to `hp/build/e8_fx2man_v57b_m26.hp`. Decode SHA matches `data/enwik8.fx2man`. New 100 MB champ.
+
+Did not start 8 MB. Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe` / `hp_v57.exe`.
