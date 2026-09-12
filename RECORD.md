@@ -933,9 +933,71 @@ v48 + fx2-manual 8 MB: **1,711,027 (−1,709 vs v45+fx2)**. Stacks. New 8 MB cha
 |---|---|---:|---:|---|
 | **sen-group expert** | `HP_SENGRP_MOD` | **1,712,541** | **−3,116** | **accept — v49** |
 
-### v49 = v48 + sengrp model — **1,712,541 / 1.633 bpc**
+### v49 = v48 + sengrp model — **1,712,541 / 1.633 bpc, RT PASS**
 
-`HP_SENGRP_MOD` on v48: **−3,116**. Own table, not a fold. RT in flight.
+`HP_SENGRP_MOD` on v48: **−3,116**. Own table, not a fold. Decode SHA matches `data/enwik8.8mb`.
+v49 + fx2-manual 8 MB: **1,707,965 (-3,062 vs v48+fx2)**. Stacks. New 8 MB champ.
+
+### v49 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v49 1,712,541 | call |
+|---|---|---:|---:|---|
+| **slot sen-group** | `HP_SLOT_SGRP` | **1,711,345** | **-1,196** | **accept - v50** |
+
+### v50 = v49 + slot-sgrp - **1,711,345 / 1.632 bpc, RT PASS**
+
+`HP_SLOT_SGRP` on v49: **-1,196**. Decode SHA matches `data/enwik8.8mb`.
+v50 + fx2-manual 8 MB: **1,706,837 (-1,128 vs v49+fx2)**. Stacks. New 8 MB champ.
+
+### v50 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v50 1,711,345 | call |
+|---|---|---:|---:|---|
+| **sengrp word fold** | `HP_SENGRP_WORD` | **1,709,366** | **-1,979** | **accept - v51** |
+
+### v51 = v50 + sengrp-word - **1,709,366 / 1.630 bpc, RT PASS**
+
+`HP_SENGRP_WORD` on v50: **-1,979**. Decode SHA matches `data/enwik8.8mb`.
+v51 + fx2-manual 8 MB: **1,705,183 (-1,654 vs v50+fx2)**. Stacks. New 8 MB champ.
+
+### v51 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v51 1,709,366 | call |
+|---|---|---:|---:|---|
+| **col sen-group** | `HP_COL_GRP` | **1,708,738** | **-628** | **accept - v52** |
+
+### v52 = v51 + col-grp - **1,708,738 / 1.629 bpc, RT PASS**
+
+`HP_COL_GRP` on v51: **-628**. Decode SHA matches `data/enwik8.8mb`.
+v52 + fx2-manual 8 MB: **1,704,635 (-548 vs v51+fx2)**. Stacks. New 8 MB champ.
+
+### v52 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v52 1,708,738 | call |
+|---|---|---:|---:|---|
+| **tag sen-group** | `HP_TAG_GRP` | **1,708,708** | **-30** | **accept - v53** |
+
+### v53 = v52 + tag-grp - **1,708,708 / 1.629 bpc, RT PASS**
+
+`HP_TAG_GRP` on v52: **-30**. Decode SHA matches `data/enwik8.8mb`.
+v53 + fx2-manual 8 MB: **1,704,578 (-57 vs v52+fx2)**. Stacks. New 8 MB champ.
+
+### v53 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v53 1,708,708 | call |
+|---|---|---:|---:|---|
+| **senword sen-group** | `HP_SENWORD_GRP` | **1,708,542** | **-166** | **accept - v54** |
+
+### v54 = v53 + senword-grp - **1,708,542 / 1.629 bpc, RT PASS**
+
+`HP_SENWORD_GRP` on v53: **-166**. Decode SHA matches `data/enwik8.8mb`.
+v54 + fx2-manual 8 MB: **1,704,388 (-190 vs v53+fx2)**. Stacks. New 8 MB champ.
+
+### v54 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v54 1,708,542 | call |
+|---|---|---:|---:|---|
+| link sen-group | `HP_LINK_GRP` | 1,708,620 | +78 | reject |
 
 ### v37 + fx2 + mem 26 (100 MB) — **18,671,091 / 1.494 bpc, RT PASS**
 

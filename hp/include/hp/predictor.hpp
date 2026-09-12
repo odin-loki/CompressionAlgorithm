@@ -958,20 +958,35 @@ class Predictor {
 
     void set_byte_contexts() {
         const int col = (col_pos_ < kLineMax) ? col_pos_ : kLineMax - 1;
+        {
+            std::uint64_t ck;
 #if HP_TABLE_ABOVE
-        if (wiki_.in_table())
-            col_.set_context(h2(21, (static_cast<std::uint64_t>(wiki_.above_cell()) << 16) |
-                                        static_cast<std::uint64_t>(col & 63)));
-        else
+            if (wiki_.in_table())
+                ck = (static_cast<std::uint64_t>(wiki_.above_cell()) << 16) |
+                     static_cast<std::uint64_t>(col & 63);
+            else
 #endif
-        col_.set_context(h2(21, (static_cast<std::uint64_t>(prev_line_[col]) << 16) |
-                                    static_cast<std::uint64_t>(col & 63)));
+                ck = (static_cast<std::uint64_t>(prev_line_[col]) << 16) |
+                     static_cast<std::uint64_t>(col & 63);
+#if HP_COL_GRP
+            ck += static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull;
+#endif
+            col_.set_context(h2(21, ck));
+        }
 #if HP_WIKI_STATES
-        tag_.set_context(h2(22, wiki_.context_key()));
+        tag_.set_context(h2(22, wiki_.context_key()
+#if HP_TAG_GRP
+            + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+        ));
 #else
         tag_.set_context(h2(22, (static_cast<std::uint64_t>(tag_depth_ & 15) << 40) |
                                     (static_cast<std::uint64_t>(in_tag_) << 39) |
-                                    (tag_name_ & 0x7FFFFFFFFFull)));
+                                    (tag_name_ & 0x7FFFFFFFFFull)
+#if HP_TAG_GRP
+                                    + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+                                    ));
 #endif
 #if HP_WBI_SENTPOS
         wbi_.set_context(h2(23, prev_word_ * 0x9E3779B97F4A7C15ull + word_hash_ +
@@ -1061,6 +1076,9 @@ class Predictor {
 #if HP_QUOTE_STACK
             bk += static_cast<std::uint64_t>(brackets_.quote()) << 24;
 #endif
+#if HP_BRK_GRP
+            bk += static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull;
+#endif
             brk_.set_context(h2(26, bk));
         }
 #endif
@@ -1078,21 +1096,41 @@ class Predictor {
 #if HP_SENWORD
 #if HP_LINK_NUM
             link_.set_context(h2(29, (lw ? lw : word_hash_) * 3301ull +
-                                   numbers_.previous() * 3191ull));
+                                   numbers_.previous() * 3191ull
+#if HP_LINK_GRP
+                                   + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+                                   ));
 #else
-            link_.set_context(h2(29, lw));
+            link_.set_context(h2(29, lw
+#if HP_LINK_GRP
+                + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+            ));
 #endif
             {
                 const std::uint64_t sw = wiki_.senword();
-                sen_.set_context(h2(31, sw ? sw * 1471ull + (hist_ & 0xffull) : 0));
+                sen_.set_context(h2(31, (sw ? sw * 1471ull + (hist_ & 0xffull) : 0)
+#if HP_SENWORD_GRP
+                    + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+                ));
             }
 #else
             const std::uint64_t sw = wiki_.senword();
             const std::uint64_t key = lw ? lw : (sw ? sw * 1471ull + (hist_ & 0xffull) : 0);
 #if HP_LINK_NUM
-            link_.set_context(h2(29, key * 3301ull + numbers_.previous() * 3191ull));
+            link_.set_context(h2(29, key * 3301ull + numbers_.previous() * 3191ull
+#if HP_LINK_GRP
+                + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+            ));
 #else
-            link_.set_context(h2(29, key));
+            link_.set_context(h2(29, key
+#if HP_LINK_GRP
+                + static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull
+#endif
+            ));
 #endif
 #endif
         }
@@ -1156,6 +1194,10 @@ class Predictor {
 #if HP_SENGRP_WORD
         sengrp_.set_context(h2(36, static_cast<std::uint64_t>(wiki_.sen_group()) +
                                    ((hist_ & 0xffffffull) << 8) + word_hash_ * 17ull));
+#elif HP_SENGRP_POS
+        sengrp_.set_context(h2(36, static_cast<std::uint64_t>(wiki_.sen_group()) +
+                                   ((hist_ & 0xffffffull) << 8) +
+                                   static_cast<std::uint64_t>(streams_.sent_pos()) * 17ull));
 #else
         sengrp_.set_context(h2(36, static_cast<std::uint64_t>(wiki_.sen_group()) +
                                    ((hist_ & 0xffffffull) << 8)));

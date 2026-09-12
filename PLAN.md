@@ -47,9 +47,9 @@ plus preprocess, not another 8 MB n-gram on this tree.
 
 | build | identity B | fx2-manual B | status |
 |---|---:|---:|---|
-| v45 (`HP_SENT_GRP_CTX`) | 1,717,483 | **1,712,736** | RT PASS |
-| v46 (`+ HP_WSTR_GRP`) | 1,716,826 | — | RT PASS |
-| **v47 (`+ HP_WBI_GRP`)** | **1,716,568** | pending | RT in flight |
+| v49 (`HP_SENGRP_MOD`) | 1,712,541 | 1,707,965 | RT PASS |
+| v53 (`+ TAG_GRP`) | 1,708,708 | 1,704,578 | RT PASS |
+| **v54 (`+ SENWORD_GRP`)** | **1,708,542** | **1,704,388** | **RT PASS** champ |
 
 ### 100 MB (`data/enwik8.fx2man`, `--mem 26`)
 
@@ -90,7 +90,8 @@ accept or reject on 1 MB alone. See RECORD “why 1 MB lied” / H0.5.
 
 **Binaries — do not overwrite while in use:**
 
-`hp_v37.exe`, `hp_v45.exe`, `hp_v45_m26.exe`, `hp_v46.exe`, `hp_v47.exe`.
+`hp_v37.exe`, `hp_v45.exe`, `hp_v45_m26.exe`, `hp_v46.exe`, `hp_v47.exe`,
+`hp_v49.exe`, `hp_v54.exe`, `hp_v54_m26.exe`.
 
 Name new builds `hp_vNN.exe` or `hp_<flag>.exe`. 100 MB at mem 26 with
 a cap other than the 8 MB default: `hp_vNN_m26.exe` and compile
@@ -117,12 +118,10 @@ Run in this order. One flag. Log every call in `RECORD.md`.
 
 | # | test | how | accept |
 |---|---|---|---|
-| H1 | Finish **v47** RT | decode v47 archive; SHA vs `data/enwik8.8mb` | must PASS or revert champ |
-| H2 | v47 + fx2-manual 8 MB | `--mem 22` on `data/enwik8.8mb.fx2man` | bytes ≤ v45 fx2 1,712,736 |
-| H3 | Leftover **`HP_SMEM_GRP`** on v47 | last sen-group fold (sentmem) | bytes drop vs 1,716,568 |
-| H4 | One unused leftover on v47 (not a twin) | e.g. next unused flag in `features.hpp` | bytes drop |
-| H5 | **v45-100 RT** | decode with `hp_v45_m26.exe` only | SHA vs `data/enwik8.fx2man` |
-| H6 | After v47 confirmed champ: **100 MB mem 26** | `-DHP_SLOT_MAX=31` only | bytes < 18,633,242 |
+| H1 | Finish **v54** leftover `HP_BRK_GRP` | live `hp_g_v54brk.exe`; then `HP_SENGRP_POS` | bytes drop vs 1,708,542 |
+| H2 | Leftover wave stall | two consecutive rejects or list exhausted | stop 8 MB |
+| H3 | Champ **v54** (or later) **100 MB mem 26** | `hp_v54_m26.exe`, `-DHP_SLOT_MAX=31` only; no 8 MB job | bytes < 18,633,242 |
+| H4 | **v45-100 RT** | decode with `hp_v45_m26.exe` only, idle cores | SHA vs `data/enwik8.fx2man` |
 | H7 | Do **not** 100 MB at `SLOT_MAX=35` | — | RAM / OOM |
 | H8 | Do **not** pair an 8 MB leftover with a 100 MB job | — | RAM |
 | H9 | Track W inventory pass | read `harvest/cmix-lex_notes.md`, `harvest/fxcm_v26_vs_hp.md` | written gaps only |
@@ -205,6 +204,7 @@ Pointer is the RECORD heading unless noted. New evidence only.
 | H2.7 pred-gate | +6,928 on 1 MB |
 | recency fold / wt3 / fword gate | RECORD v9 leftovers |
 | `HP_WORD_GRP` | RECORD v46 leftovers: +1,885 (splits word table) |
+| `HP_LINK_GRP` | RECORD v54 leftovers: +78 |
 | `HP_SEN_GROUP` mixer gate | v46 leftovers: +680 (dilution) |
 | `HP_SLOT_WORD10` on 8 MB | +43,179 (2^32 sparse) |
 | `HP_SLOT_O34G` | −87 noise |
@@ -218,9 +218,9 @@ Pointer is the RECORD heading unless noted. New evidence only.
 
 ## 8. Execution order
 
-**This machine (Track H):** H1 → H2 → H3 → H5 (v45-100 RT, idle cores
-only) → H6 (next 100 MB, `SLOT_MAX=31`) → H4 leftovers when no 100 MB
-job is up. Never H7/H8.
+**This machine (Track H):** finish v54 leftovers (`BRK_GRP` in flight,
+then `SENGRP_POS`) → H3 champ 100 MB at `SLOT_MAX=31` (not 35) → H4
+v45-100 RT only when idle. Never H7/H8. No Cypha into `hp`.
 
 **Track W:** W2–W3 notes any time; W4 before any enwik9 fantasy; W5
 only after an H accept.

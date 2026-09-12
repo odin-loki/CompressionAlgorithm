@@ -382,3 +382,21 @@
 #ifndef HP_SENGRP_WORD
 #define HP_SENGRP_WORD 0           // fold word hash into sengrp ctx
 #endif
+#ifndef HP_SENGRP_POS
+#define HP_SENGRP_POS 0            // fold sentence position into sengrp ctx
+#endif
+#ifndef HP_COL_GRP
+#define HP_COL_GRP 0               // fold wiki sen_group into col_
+#endif
+#ifndef HP_TAG_GRP
+#define HP_TAG_GRP 0               // fold wiki sen_group into tag_
+#endif
+#ifndef HP_SENWORD_GRP
+#define HP_SENWORD_GRP 0           // fold wiki sen_group into sen_ (not mixer HP_SEN_GROUP)
+#endif
+#ifndef HP_LINK_GRP
+#define HP_LINK_GRP 0              // fold wiki sen_group into link_
+#endif
+#ifndef HP_BRK_GRP
+#define HP_BRK_GRP 0               // fold wiki sen_group into bracket ctx
+#endif
