@@ -11,9 +11,12 @@ next tests). [RECORD.md](RECORD.md) is the measurement log.
 
 ## Prize bar and lab champs (2026-09-13)
 
-Hutter 1% claim on enwik9: **S < 109,685,197**. `hp` has **not** been run
-on enwik9. Closing that gap is Track W (fork SOTA), not another 8 MB n-gram
-here. If this page and PLAN/RECORD disagree, **PLAN and RECORD lead**.
+Hutter 1% claim on enwik9 vs official L (fx2-cmix): **S < 109,685,197**.
+`hp` has **not** been run on enwik9. Closing that gap is Track W (fork
+SOTA), not another 8 MB n-gram here. As of 2026-09-13 the prize page
+still lists fx2-cmix; cmix-lex is pending; cmix-obias is a **claim**
+(108,492,825). If this page and PLAN/RECORD disagree, **PLAN and RECORD
+lead**.
 
 | corpus | champ | bytes | notes |
 |---|---|---:|---|

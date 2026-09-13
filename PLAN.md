@@ -26,9 +26,13 @@ Leftover wave closed at **v61**. RECORD leads if a later run accepts.
 
 | | bytes |
 |---|---:|
-| Official L (fx2-cmix) | 110,793,128 |
-| 1% claim: S < | **109,685,197** |
-| If cmix-lex awards: next 1% ≈ | 108,553,546 |
+| Official L (fx2-cmix, prize page 2026-09-13) | 110,793,128 |
+| 1% claim vs L: S < | **109,685,197** |
+| cmix-lex (pending; Intel binary) | 109,650,047 |
+| cmix-lex AMD rebuild (claimed) | 109,671,639 |
+| If lex awards: next 1% ≈ | 108,553,546 |
+| cmix-obias (claimed, not on prize page) | 108,492,825 |
+| fx3-cmix (unsubmitted, <1%) | 109,735,627 |
 
 enwik8 SOTA: cmix v21 ~14.62 MB. hp ~18.53 MB is paq8f-era quality.
 
@@ -66,26 +70,46 @@ Do not add more without a new axis.
 
 ---
 
-## Models (from MODELS.md)
+## Models — the meta-pattern
 
-Paying family, remaining headroom in this order: unsaturated table RAM
-(slot growth under the MAX cap), then sen-group folds into CMs that
-still move bytes, then a dedicated sengrp expert (`HP_SENGRP_MOD`).
-Axis-new ports that landed (wiki states, word-match, word streams,
-bracket, pattern class) were the right kind of keep. PPMD mmap,
-Sequence Memoizer, extra n-gram twins, and LSTM-in-hp are not this
-lab’s next 1%.
+Every paying expert is the same bilinear slice, not a new algorithm:
+
+```
+logit_i = StateMap( hash( axis_i  ⊗  recent history ) )
+p       = squash( v_ctx2ᵀ  W_ctx  x )     x = stretch(logit)
+```
+
+`HP_SENGRP_MOD`, `HP_NEST_MOD`, `HP_PARA_MOD`, `HP_LINE_MOD` paid
+because each added a **new axis** (sen-group, nest-markup, paragraph
+bit, line-kind) into that outer product. Extra o1–o6 twins and match
+orders failed because they added a second row on a **saturated** axis.
+Mixer *gates* (`HP_SEN_GROUP`, word/hebb/link folds) failed because they
+switch which `W` is trained and split the data.
+
+hp is already a system of matrices: sparse hashed tables (not dense
+GEMM) plus `MixerNet` — layer-1 `W_j` is `(n_ctx × n_experts)`, layer-2
+`v` is `(n_ctx2 × k)`. The v57 profile is the hole in that product:
+77 experts, participation **3.02**, mixer-vs-best **+1,513,148 B**.
+Rewriting the codec as BLAS / Eigen / floats / GPU cannot pay (illegal
+and the lookups are sparse). The matrix move that *can* pay is a
+**low-rank factor of W** (H6): `W ≈ A B` with small integer rank,
+same Q16 dots as `mixer.hpp` today.
+
+Paying family, remaining headroom: unsaturated table RAM under the
+MAX cap, then a new wiki-domain axis as its own CM, then mixer rank.
+PPMD mmap, Sequence Memoizer, n-gram twins, and LSTM-in-hp are not
+this lab’s next 1% — LSTM / obias live on Track W.
 
 ---
 
 ## Upgrades still open (from UPGRADES.md)
 
-Proxy-era numbers in that file are dead. What remains true: mixer
-redundancy is the hole (now +1.51 MB at 8 MB); LSTM mixer is last and
-belongs on Track W; article reorder is already accepted as fx2-manual
-*test input*, not an hp preprocessor; dictionary / WRT is Track W;
-GPU / nncp is illegal. Do not re-run the discovery slot/eval sweep
-(RECORD H0.2).
+Proxy-era numbers in that file are dead. Mixer redundancy is the hole
+(+1.51 MB at 8 MB). LSTM mixer / bitlstm32 / obias belong on Track W
+(cmix-obias claim). Article reorder is fx2-manual *test input*, not an
+hp preprocessor. Dictionary / WRT is Track W. GPU / nncp is illegal.
+Do not re-run the discovery slot/eval sweep (RECORD H0.2). Do not
+rewrite hashed CMs as a dense matrix multiply.
 
 ---
 
@@ -170,12 +194,13 @@ remaining leftovers on the new champ.
 | **H1** | v58 leftover wave | nest / para / line / skip32 | **closed** — all accepted as v58–v61 |
 | **H2** | Skip `HP_SENGRP_C0` | `#elif` after `HP_SENGRP_WORD` (already on) | no-op |
 | **H3** | 100 MB off OneDrive, `MAX=31` | v61-100 is due (`SLOT_MAX=31`) | valid CYHP + RT vs 18,527,464 |
-| **H4** | Track W inventory | already in `harvest/*_notes.md` 2026-09-12 | written gaps only |
-| **H5 / W5** | Land a proven H keep on the fork | `SENGRP_MOD` is the fork candidate; sen-group folds are hp-only | enwik8 bytes down on their pipeline |
+| **H6** | Integer low-rank mixer | `HP_MIXER_RANK=4` then 8; `W ≈ AB` in Q16; one flag on v61 | bytes drop vs **1,705,939**; then fx2 vs 1,701,530 |
+| **H4** | Track W inventory | harvest notes 2026-09-12; **add cmix-obias / fx3** | written gaps only |
+| **H5 / W5** | Land a proven H keep on the fork | dedicated wiki-axis CMs (`SENGRP` then `NEST`/`PARA`/`LINE`); not folds | enwik8 bytes down on their pipeline |
 
-Do not start LSTM / WRT / `payload_lex` / POS streams in hp until H1 is
-idle. Those are Track W. W4 (time/RAM envelope, ≤10 GB ~50 h) before
-any enwik9 fantasy.
+H3 before a long leftover if RAM is free. H6 is the mixer-hole test; do
+not add another n-gram while it is open. LSTM / WRT / `payload_lex` /
+POS / bitlstm32 / obias are Track W. W4 (≤10 GB ~50 h) before enwik9.
 
 ---
 
@@ -189,7 +214,9 @@ pipeline. Use theirs. Track H will not hit S < 109,685,197 this month.
 | W1 | clones already in `harvest/cmix-lex` and `harvest/fx2-cmix` |
 | W2–W3 | inventory written 2026-09-12 (H4) |
 | W4 | time/RAM envelope still open |
-| W5 | after an H accept: land **`HP_SENGRP_MOD`** only; do not port rejected mixer gates or hp-only sen-group folds |
+| W5 | after H accept: land dedicated wiki-axis CMs one at a time; not mixer gates or hp-only folds |
+| W6 | **cmix-obias** (Freelan, claimed S **108,492,825**): 256-cell LSTM, bitlstm32 fp16 head, PPMd logit prior `g=0.15`. Fork of lex. Do **not** vendor into `hp/` (floats / SSE rcpps). Inventory only. |
+| W7 | **fx3-cmix** (Orav, unsubmitted S **109,735,627**, 0.95%): not the fork target; encode.su says not actively worked. PPM shrunk 14 GB → 1.75 GB. |
 
 ---
 

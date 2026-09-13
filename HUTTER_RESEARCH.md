@@ -1,11 +1,14 @@
 # Hutter Prize — research archive
 
-Compiled 2026-08-22. Sources: [prize.hutter1.net](http://prize.hutter1.net/),
+Compiled 2026-08-22; **frontier refresh 2026-09-13**. Sources:
+[prize.hutter1.net](http://prize.hutter1.net/),
 [hrules.htm](http://prize.hutter1.net/hrules.htm),
 [hfaq.htm](http://prize.hutter1.net/hfaq.htm),
 [Large Text Compression Benchmark](http://mattmahoney.net/dc/text.html)
 (Mahoney, last update 8 Jul 2026), winner READMEs (starlit, fast-cmix,
-fx-cmix, fx2-cmix, cmix-lex), encode.su threads, Bellard NNCP.
+fx-cmix, fx2-cmix, cmix-lex), [fx3-cmix](https://github.com/kaitz/fx3-cmix),
+[cmix-obias](https://huggingface.co/dfreelan/cmix-obias), encode.su,
+Bellard NNCP.
 
 This file is the literature. `PLAN.md` is the only living board.
 `RECORD.md` is what we measured.
@@ -41,10 +44,26 @@ binary). Command-line option length is added to S. Self-extracting
 archive is the usual form: S1 ≈ 0.4–0.5 MB packed compressor, S2 ≈
 the payload.
 
-**cmix-lex (Ibrahim Marcouch, 29 May 2026)** is in the 30-day comment
-period as of mid-2026. Claimed S = **109,650,047** (1.0317% under L).
-If it is awarded, L moves and the next 1% bar becomes ≈ **108,553,546**.
-Do not treat fx2-cmix as the only target.
+**cmix-lex (Ibrahim Marcouch, 29 May 2026)** is still **pending** as of
+2026-09-13: the official prize table still lists fx2-cmix as L. Claimed
+Intel-binary S = **109,650,047** (1.0317% under L). The Intel-built
+binary reportedly failed to self-extract on the AMD judging machine;
+an AMD source rebuild is claimed at **109,671,639** (+21,592 B). If
+lex awards, the next 1% bar becomes ≈ **108,553,546**.
+
+**2026-09-13 frontier (not on the prize page):**
+
+| entry | status | S | vs L | what changed |
+|---|---|---:|---:|---|
+| **fx2-cmix** | **official L** | **110,793,128** | — | awarded 8 Oct 2024 |
+| cmix-lex | pending | 109,650,047 (Intel) / 109,671,639 (AMD rebuild) | 1.03% / 1.01% | `payload_lex` + fxcm_v26 |
+| fx3-cmix | **unsubmitted** | 109,735,627 | 0.95% (below 1%) | smaller disk PPM; Orav not actively working (encode.su) |
+| cmix-obias | **claimed** (Freelan, fork of lex) | **108,492,825** | 2.08% | 256-cell LSTM, bitlstm32 fp16 head (23,002 B, counted twice in S), PPMd logit prior `+0.15 ln p_PPMd`; ~9.95 GiB, ~40 h, no GPU |
+
+Do not treat claimed obias or unsubmitted fx3 as L. Do not vendor obias
+(fp16 / `rcpps`) into `hp/`. Track W forks lex (or obias if it awards);
+Track H tests whether a dedicated wiki-axis CM or a low-rank integer
+mixer is the 1% worth landing.
 
 Hutter's own start advice (FAQ): you cannot win with a new idea
 alone. You have to combine it with the current messy SOTA. Every
@@ -58,8 +77,10 @@ budget.
 
 | compressor | date | S (bytes) | factor | RAM | time | prize? |
 |---|---|---:|---:|---|---|---|
-| **You (1% vs fx2)** | — | **< 109,685,197** | > 9.12 | < 10 GB | < 50 h | 5,000€+ |
+| You (1% vs fx2) | — | **< 109,685,197** | > 9.12 | < 10 GB | < 50 h | 5,000€+ |
+| cmix-obias (claimed) | 2026-09 | 108,492,825 | 9.22 | 9.95 GB | ~40 h | not on prize page |
 | cmix-lex (pending) | 2026-05 | 109,650,047 | 9.12 | 9.4 GB | ~44 h CPU | if awarded |
+| fx3-cmix (unsubmitted) | 2026 | 109,735,627 | 9.10 | ~10 GB | ~47 h | <1%, not submitted |
 | **fx2-cmix** (L) | 2024-09 | **110,793,128** | 9.03 | 8.8 GB | ~47 h eq. | 7,950€ |
 | fx-cmix | 2024-02 | 112,578,322 | 8.88 | 8.9 GB | ~50 h | 6,911€ |
 | fast-cmix | 2023-07 | 114,156,155 | 8.76 | 8.4 GB | 43 h | 5,187€ |
@@ -405,7 +426,9 @@ stalled at rank ~3.9 / 64.
 
 | # | technique | who | hp | why test |
 |---|---|---|---|---|
-| M1 | Skip mixer update if error < θ | fx2 | no | free speed |
+| M1 | Skip mixer update if error < θ | fx2 | **have** (`HP_MIXER_SKIP=32`, v61) | keep |
+| M13 | Low-rank integer mixer `W ≈ AB` | this lab (v57 profile) | **H6** | mixer hole +1.51 MB, PR 3.02 |
+| M14 | bitlstm32 + PPMd logit prior | cmix-obias | Track W only | floats / SSE rcpps; counted in S |
 | M2 | Drop mixer L2 regularizer | fx2 | n/a | speed |
 | M3 | Delete redundant experts to fund a heavier one | fx2 | PLAN2 tried, lost | delete only after 1 MB A.3 |
 | M4 | Per-mixer learning rates | fx2 | have | keep |

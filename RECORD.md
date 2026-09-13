@@ -1140,3 +1140,7 @@ Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe` / `hp_v57.e
 
 v58 leftover wave complete (PARA restack, LINE, SKIP=32 all accepted). Champ is v61 (1,705,939 identity / 1,701,530 fx2). Did not start 100 MB.
 Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe` / `hp_v57.exe` / `hp_v57_m26.exe` / `hp_v58.exe` / `hp_v59.exe`.
+
+### 2026-09-13 prize frontier (literature, not a lab run)
+
+Official prize table still L = fx2-cmix **110,793,128**. cmix-lex still pending (Intel 109,650,047; claimed AMD rebuild 109,671,639). fx3-cmix unsubmitted 109,735,627 (<1%). cmix-obias claimed S **108,492,825** (256-cell LSTM + bitlstm32 + PPMd obias prior); not on prize.hutter1.net; do not vendor into hp. Next Track H mixer test is low-rank `W ≈ AB` (PLAN H6). Meta-pattern: paying CMs are `StateMap(hash(axis ⊗ hist))`; mixer is already `squash(vᵀ W x)` in Q16.
