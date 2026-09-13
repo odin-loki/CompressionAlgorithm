@@ -424,3 +424,12 @@
 #ifndef HP_LINE_MOD
 #define HP_LINE_MOD 0              // dedicated first-of-line char context model
 #endif
+#ifndef HP_XSIMD
+#define HP_XSIMD 0                 // integer mixer dots via xsimd; default off; bit-identical to scalar
+#endif
+#ifndef HP_WIKI_AXES
+#define HP_WIKI_AXES 0             // dedicated CMs: wiki state, sent_domain, header, depth
+#endif
+#ifndef HP_MIXER_RANK
+#define HP_MIXER_RANK 0            // 0 = full W; >0 = U(ctx)×V shared rank for layer-1
+#endif

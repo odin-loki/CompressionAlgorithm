@@ -30,6 +30,7 @@
 
 #include "hp/features.hpp"
 #include "hp/int_math.hpp"
+#include "hp/simd_dot.hpp"
 
 namespace hp {
 
@@ -48,9 +49,29 @@ class MixerNet {
         w_.resize(ctx_sizes.size());
         const int w0 = (1 << 16) / (n_inputs > 0 ? n_inputs : 1);
         for (std::size_t j = 0; j < ctx_sizes.size(); ++j) {
+#if HP_MIXER_RANK
+            (void)w0;
+            w_[j].clear();
+#else
             w_[j].assign(static_cast<std::size_t>(ctx_sizes[j]) * n_inputs, w0);
+#endif
             if (j < lrs.size()) lr1_[j] = lrs[j];
         }
+#if HP_MIXER_RANK
+        {
+            const int r = HP_MIXER_RANK;
+            hid_.assign(static_cast<std::size_t>(k_) * r, 0);
+            ufac_.resize(ctx_sizes.size());
+            vfac_.resize(ctx_sizes.size());
+            for (std::size_t j = 0; j < ctx_sizes.size(); ++j) {
+                ufac_[j].assign(static_cast<std::size_t>(ctx_sizes[j]) * r, 1 << 16);
+                vfac_[j].assign(static_cast<std::size_t>(r) * n_inputs, 0);
+                for (int i = 0; i < n_inputs; ++i) {
+                    vfac_[j][static_cast<std::size_t>(i % r) * n_inputs + i] = w0;
+                }
+            }
+        }
+#endif
         const int v0 = (1 << 16) / (k_ > 0 ? k_ : 1);
         for (auto& x : v_) x = v0;
     }
@@ -64,10 +85,27 @@ class MixerNet {
     int mix() {
         // Layer 1.
         for (int j = 0; j < k_; ++j) {
-            const std::int32_t* w = &w_[j][static_cast<std::size_t>(ctx_[j]) * n_];
+#if HP_MIXER_RANK
+            const int r = HP_MIXER_RANK;
+            const std::int32_t* V = vfac_[static_cast<std::size_t>(j)].data();
+            for (int f = 0; f < r; ++f) {
+                const std::int64_t hk =
+                    dot_i32(V + static_cast<std::size_t>(f) * n_, st_.data(), m_);
+                hid_[static_cast<std::size_t>(j) * r + f] =
+                    clamp_int(static_cast<int>(hk >> 16), -2047, 2047);
+            }
+            const std::int32_t* U =
+                &ufac_[static_cast<std::size_t>(j)][static_cast<std::size_t>(ctx_[j]) * r];
             std::int64_t sum = 0;
-            for (int i = 0; i < m_; ++i) sum += static_cast<std::int64_t>(w[i]) * st_[i];
+            for (int f = 0; f < r; ++f)
+                sum += static_cast<std::int64_t>(U[f]) *
+                       hid_[static_cast<std::size_t>(j) * r + f];
             dot_[j] = clamp_int(static_cast<int>(sum >> 16), -2047, 2047);
+#else
+            const std::int32_t* w = &w_[j][static_cast<std::size_t>(ctx_[j]) * n_];
+            const std::int64_t sum = dot_i32(w, st_.data(), m_);
+            dot_[j] = clamp_int(static_cast<int>(sum >> 16), -2047, 2047);
+#endif
             pr_[j] = squash(dot_[j]);
         }
         // Layer 2. Inputs are the layer-1 logits directly -- already in
@@ -98,14 +136,29 @@ class MixerNet {
         }
 
         for (int j = 0; j < k_; ++j) {
-            std::int32_t* w = &w_[j][static_cast<std::size_t>(ctx_[j]) * n_];
             const int err = t - pr_[j];
             const int l1 = lr1_[static_cast<std::size_t>(j)];
-            for (int i = 0; i < m_; ++i) {
-                const std::int32_t dw = static_cast<std::int32_t>(
-                    (static_cast<std::int64_t>(st_[i]) * err * l1) >> 14);
-                w[i] = clamp_int(w[i] + dw, -(1 << 22), (1 << 22));
+#if HP_MIXER_RANK
+            const int r = HP_MIXER_RANK;
+            std::int32_t* U =
+                &ufac_[static_cast<std::size_t>(j)][static_cast<std::size_t>(ctx_[j]) * r];
+            for (int f = 0; f < r; ++f) {
+                const std::int32_t Uk = U[f];
+                const std::int32_t dU = static_cast<std::int32_t>(
+                    (static_cast<std::int64_t>(hid_[static_cast<std::size_t>(j) * r + f]) *
+                     err * l1) >> 14);
+                U[f] = clamp_int(Uk + dU, -(1 << 22), (1 << 22));
+                int l1k = static_cast<int>(
+                    (static_cast<std::int64_t>(l1) * (Uk >> 8) + 128) >> 8);
+                if (l1k < 1) l1k = 1;
+                if (l1k > 4095) l1k = 4095;
+                axpy_shift_clamp(&vfac_[static_cast<std::size_t>(j)][static_cast<std::size_t>(f) * n_],
+                                 st_.data(), m_, err, l1k);
             }
+#else
+            std::int32_t* w = &w_[j][static_cast<std::size_t>(ctx_[j]) * n_];
+            axpy_shift_clamp(w, st_.data(), m_, err, l1);
+#endif
         }
     }
 
@@ -120,8 +173,13 @@ class MixerNet {
     std::vector<std::int32_t> st_;
     std::vector<int> dot_, pr_;
     std::vector<int> lr1_;                       // per-mixer layer-1 rates
-    std::vector<std::vector<std::int32_t>> w_;  // layer 1
+    std::vector<std::vector<std::int32_t>> w_;  // layer 1 (full W)
     std::vector<std::int32_t> v_;               // layer 2
+#if HP_MIXER_RANK
+    std::vector<std::vector<std::int32_t>> ufac_;  // per-ctx rank codes
+    std::vector<std::vector<std::int32_t>> vfac_;  // shared rank × experts
+    std::vector<int> hid_;
+#endif
     int m_ = 0;
     int ctx2_ = 0;
     int final_dot_ = 0;

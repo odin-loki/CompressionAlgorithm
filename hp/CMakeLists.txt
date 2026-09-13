@@ -12,7 +12,10 @@ endif()
 # toolchains. test/no_float.sh enforces this.
 
 add_library(hp_headers INTERFACE)
-target_include_directories(hp_headers INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(hp_headers INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/xsimd/include)
+# HP_XSIMD defaults off (prize-portable scalar). Pass -DHP_XSIMD=1 -msse4.1 to enable.
 
 add_executable(hp src/main.cpp)
 target_link_libraries(hp PRIVATE hp_headers)

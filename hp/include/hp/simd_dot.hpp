@@ -1,0 +1,81 @@
+#pragma once
+//
+// Integer mixer dots. HP_XSIMD=0 is the scalar mixer.hpp loops.
+// HP_XSIMD=1 uses 4-wide SSE4.1 PMULDQ (int32 x int32 -> int64).
+// int64 add is associative so the vectorized sum matches the scalar
+// sum exactly. axpy_shift_clamp stays scalar (update is less hot).
+
+#include <cstdint>
+
+#include "hp/features.hpp"
+#include "hp/int_math.hpp"
+
+#if HP_XSIMD
+#ifndef __SSE4_1__
+#error HP_XSIMD=1 requires SSE4.1 (compile with -msse4.1)
+#endif
+#include <smmintrin.h>
+#ifdef __AVX2__
+#include <immintrin.h>
+#endif
+#include <xsimd/xsimd.hpp>
+#endif
+
+namespace hp {
+
+inline std::int64_t dot_i32(const std::int32_t* a, const std::int32_t* b, int n) {
+#if HP_XSIMD
+    std::int64_t sum = 0;
+    int i = 0;
+#ifdef __AVX2__
+    using batch32_8 = xsimd::batch<std::int32_t, xsimd::avx2>;
+    __m256i acc8 = _mm256_setzero_si256();
+    for (; i + 8 <= n; i += 8) {
+        const __m256i va = batch32_8::load_unaligned(a + i);
+        const __m256i vb = batch32_8::load_unaligned(b + i);
+        const __m256i even = _mm256_mul_epi32(va, vb);
+        const __m256i odd = _mm256_mul_epi32(_mm256_srli_epi64(va, 32),
+                                            _mm256_srli_epi64(vb, 32));
+        acc8 = _mm256_add_epi64(acc8, _mm256_add_epi64(even, odd));
+    }
+    {
+        const __m128i lo = _mm256_castsi256_si128(acc8);
+        const __m128i hi = _mm256_extracti128_si256(acc8, 1);
+        const __m128i s = _mm_add_epi64(lo, hi);
+        const __m128i h = _mm_add_epi64(s, _mm_unpackhi_epi64(s, s));
+        sum += _mm_cvtsi128_si64(h);
+    }
+#endif
+    using batch32_4 = xsimd::batch<std::int32_t, xsimd::sse4_1>;
+    __m128i acc4 = _mm_setzero_si128();
+    for (; i + 4 <= n; i += 4) {
+        const __m128i va = batch32_4::load_unaligned(a + i);
+        const __m128i vb = batch32_4::load_unaligned(b + i);
+        const __m128i even = _mm_mul_epi32(va, vb);
+        const __m128i odd = _mm_mul_epi32(_mm_srli_epi64(va, 32),
+                                         _mm_srli_epi64(vb, 32));
+        acc4 = _mm_add_epi64(acc4, _mm_add_epi64(even, odd));
+    }
+    {
+        const __m128i h = _mm_add_epi64(acc4, _mm_unpackhi_epi64(acc4, acc4));
+        sum += _mm_cvtsi128_si64(h);
+    }
+    for (; i < n; ++i) sum += static_cast<std::int64_t>(a[i]) * b[i];
+    return sum;
+#else
+    std::int64_t sum = 0;
+    for (int i = 0; i < n; ++i) sum += static_cast<std::int64_t>(a[i]) * b[i];
+    return sum;
+#endif
+}
+
+inline void axpy_shift_clamp(std::int32_t* w, const std::int32_t* st, int n,
+                             std::int32_t err, std::int32_t l1) {
+    for (int i = 0; i < n; ++i) {
+        const std::int32_t dw = static_cast<std::int32_t>(
+            (static_cast<std::int64_t>(st[i]) * err * l1) >> 14);
+        w[i] = clamp_int(w[i] + dw, -(1 << 22), (1 << 22));
+    }
+}
+
+}  // namespace hp

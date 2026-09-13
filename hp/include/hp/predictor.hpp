@@ -94,7 +94,8 @@ class Predictor {
         (HP_SENGRP_MOD ? 1 : 0) +
         (HP_NEST_MOD ? 1 : 0) +
         (HP_PARA_MOD ? 1 : 0) +
-        (HP_LINE_MOD ? 1 : 0);
+        (HP_LINE_MOD ? 1 : 0) +
+        (HP_WIKI_AXES ? 4 : 0);
     static constexpr int kCtxModels = 11 + kExtraCtx;
     static constexpr int kMatchModels = 5 + (HP_MATCH_18 ? 1 : 0)
         + (HP_MATCH_13 ? 1 : 0) + (HP_MATCH_01 ? 1 : 0)
@@ -305,6 +306,12 @@ class Predictor {
 #if HP_LINE_MOD
           linemod_(cfg.table_bits, 255),
 #endif
+#if HP_WIKI_AXES
+          statemod_(cfg.table_bits, 255),
+          dommod_(cfg.table_bits, 255),
+          hdrmod_(cfg.table_bits, 255),
+          depthmod_(cfg.table_bits, 255),
+#endif
           match_{ {cfg.buf_bits, match_bits(cfg.match_bits), 3},
                   {cfg.buf_bits, match_bits(cfg.match_bits), 4},
                   {cfg.buf_bits, match_bits(cfg.match_bits), 6},
@@ -447,6 +454,12 @@ class Predictor {
 #endif
 #if HP_LINE_MOD
         chain[nchain++] = &linemod_;
+#endif
+#if HP_WIKI_AXES
+        chain[nchain++] = &statemod_;
+        chain[nchain++] = &dommod_;
+        chain[nchain++] = &hdrmod_;
+        chain[nchain++] = &depthmod_;
 #endif
         for (int i = 0; i < nchain; ++i) {
             chain[i]->predict(c0_, backoff, out);
@@ -676,6 +689,12 @@ class Predictor {
 #endif
 #if HP_LINE_MOD
         linemod_.update(y, ens);
+#endif
+#if HP_WIKI_AXES
+        statemod_.update(y, ens);
+        dommod_.update(y, ens);
+        hdrmod_.update(y, ens);
+        depthmod_.update(y, ens);
 #endif
         for (int i = 0; i < kMatchModels; ++i) match_[i].update(y);
 #if HP_SPARSE_UTF8
@@ -1267,6 +1286,16 @@ class Predictor {
         linemod_.set_context(h2(39, static_cast<std::uint64_t>(wiki_.line_kind() & 255) +
                                     ((hist_ & 0xffffffull) << 8)));
 #endif
+#if HP_WIKI_AXES
+        statemod_.set_context(h2(40, static_cast<std::uint64_t>(wiki_.state()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+        dommod_.set_context(h2(41, static_cast<std::uint64_t>(wiki_.sent_domain()) +
+                                   ((hist_ & 0xffffffull) << 8)));
+        hdrmod_.set_context(h2(42, static_cast<std::uint64_t>(wiki_.wiki_header()) +
+                                   ((hist_ & 0xffffffull) << 8)));
+        depthmod_.set_context(h2(43, static_cast<std::uint64_t>(wiki_.depth()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
     }
 
     Config cfg_;
@@ -1318,6 +1347,12 @@ class Predictor {
 #endif
 #if HP_LINE_MOD
     ContextModel linemod_;
+#endif
+#if HP_WIKI_AXES
+    ContextModel statemod_;
+    ContextModel dommod_;
+    ContextModel hdrmod_;
+    ContextModel depthmod_;
 #endif
     MatchModel match_[kMatchModels];
 #if HP_SPARSE_UTF8

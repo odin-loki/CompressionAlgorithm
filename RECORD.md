@@ -1143,4 +1143,8 @@ Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe` / `hp_v57.e
 
 ### 2026-09-13 prize frontier (literature, not a lab run)
 
-Official prize table still L = fx2-cmix **110,793,128**. cmix-lex still pending (Intel 109,650,047; claimed AMD rebuild 109,671,639). fx3-cmix unsubmitted 109,735,627 (<1%). cmix-obias claimed S **108,492,825** (256-cell LSTM + bitlstm32 + PPMd obias prior); not on prize.hutter1.net; do not vendor into hp. Next Track H mixer test is low-rank `W ≈ AB` (PLAN H6). Meta-pattern: paying CMs are `StateMap(hash(axis ⊗ hist))`; mixer is already `squash(vᵀ W x)` in Q16.
+Official prize table still L = fx2-cmix **110,793,128**. cmix-lex still pending (Intel 109,650,047; claimed AMD rebuild 109,671,639). fx3-cmix unsubmitted 109,735,627 (<1%). cmix-obias claimed S **108,492,825** (256-cell LSTM + bitlstm32 + PPMd obias prior); not on prize.hutter1.net; do not vendor into hp. Meta-pattern: paying CMs are `StateMap(hash(axis ⊗ hist))`; mixer is already `squash(vᵀ W x)` in Q16.
+
+### v62meta stack (compiled, 8 MB not started)
+
+v61-100 (`hp_v61_m26`) still live — did not start a second hp. Compiled `hp_g_v62meta.exe` = v61 flags + `HP_WIKI_AXES=1` (dedicated state / sent_domain / wiki_header / depth CMs) + `HP_MIXER_RANK=8` (U(ctx)×V shared layer-1) + `HP_XSIMD=1 -msse4.1`. Did not overwrite live champs. 8 MB mem 22 vs 1,705,939 when RAM is free.

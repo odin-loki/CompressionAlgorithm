@@ -193,14 +193,14 @@ remaining leftovers on the new champ.
 |---|---|---|---|
 | **H1** | v58 leftover wave | nest / para / line / skip32 | **closed** — all accepted as v58–v61 |
 | **H2** | Skip `HP_SENGRP_C0` | `#elif` after `HP_SENGRP_WORD` (already on) | no-op |
-| **H3** | 100 MB off OneDrive, `MAX=31` | v61-100 is due (`SLOT_MAX=31`) | valid CYHP + RT vs 18,527,464 |
-| **H6** | Integer low-rank mixer | `HP_MIXER_RANK=4` then 8; `W ≈ AB` in Q16; one flag on v61 | bytes drop vs **1,705,939**; then fx2 vs 1,701,530 |
+| **H3** | 100 MB off OneDrive, `MAX=31` | v61-100 is live (`hp_v61_m26`) | valid CYHP + RT vs 18,527,464 |
+| **H6** | Integer low-rank mixer | **landed** `HP_MIXER_RANK=8` in `hp_g_v62meta.exe` with wiki-axis bundle; 8 MB pending until v61-100 frees RAM | bytes drop vs **1,705,939** |
+| **H7** | Wiki-axis bundle | `HP_WIKI_AXES`: dedicated state / sent_domain / header / depth CMs (meta-pattern) | stacked in v62meta; same 8 MB gate |
 | **H4** | Track W inventory | harvest notes 2026-09-12; **add cmix-obias / fx3** | written gaps only |
 | **H5 / W5** | Land a proven H keep on the fork | dedicated wiki-axis CMs (`SENGRP` then `NEST`/`PARA`/`LINE`); not folds | enwik8 bytes down on their pipeline |
 
-H3 before a long leftover if RAM is free. H6 is the mixer-hole test; do
-not add another n-gram while it is open. LSTM / WRT / `payload_lex` /
-POS / bitlstm32 / obias are Track W. W4 (≤10 GB ~50 h) before enwik9.
+H6/H7 are stacked in `hp_g_v62meta.exe` (not run while v61-100 holds RAM).
+LSTM / WRT / `payload_lex` / POS / bitlstm32 / obias are Track W.
 
 ---
 
