@@ -415,3 +415,12 @@
 #ifndef HP_HEBB_GRP
 #define HP_HEBB_GRP 0              // fold wiki sen_group into hebb context
 #endif
+#ifndef HP_NEST_MOD
+#define HP_NEST_MOD 0              // dedicated nest-markup context model
+#endif
+#ifndef HP_PARA_MOD
+#define HP_PARA_MOD 0              // dedicated paragraph/FIRSTUPPER context model
+#endif
+#ifndef HP_LINE_MOD
+#define HP_LINE_MOD 0              // dedicated first-of-line char context model
+#endif

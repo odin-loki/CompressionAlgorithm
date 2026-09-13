@@ -1,3 +1,8 @@
+<!--
+ARCHIVED. Superseded by repo-root PLAN.md (board) and README.md (how-to).
+B.3 taxonomy remains historically useful; live champs and protocol live there.
+-->
+
 # PATTERNS — detected classes and B.3 decision
 
 ## Taxonomy (B.2)

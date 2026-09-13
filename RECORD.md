@@ -1089,3 +1089,54 @@ Dump: `dump_experts_v57.exe` (same v57 -D flags, `HP_SLOT_MAX=35`), stride 37, 8
 | top-1 variance share | 57.3% |
 
 gamma=0.000963 (Marchenko-Pastur does not apply). Did not overwrite `hp_v57.exe` / `hp_v57_m26.exe`.
+
+### v57 leftovers (8 MB) continued
+
+| id | flag | 8 MB | vs v57 1,707,696 | call |
+|---|---|---:|---:|---|
+| **nest-mod** | `HP_NEST_MOD` | **1,707,136** | **-560** | **accept - v58** |
+
+### v58 = v57 + nest-mod - **1,707,136 / 1.628 bpc, RT PASS**
+
+`HP_NEST_MOD` on v57: **-560**. Decode SHA matches `data/enwik8.8mb`.
+v58 + fx2-manual 8 MB: **1,702,818 (-612 vs v57+fx2)**. Stacks. New 8 MB champ.
+Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe` / `hp_v57.exe` / `hp_v57_m26.exe`.
+
+### v58 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v58 1,707,136 | call |
+|---|---|---:|---:|---|
+| para-mod (no nest, independent) | `HP_PARA_MOD` | 1,707,038 | -98 vs v58 / **-658 vs v57** | restack on v58 (no copy; lacks NEST) |
+| **para-mod on v58** | `HP_PARA_MOD` | **1,707,038** | **-98** | **accept - v59** |
+
+### v59 = v58 + para-mod - **1,707,038 / 1.628 bpc, RT PASS**
+
+`HP_PARA_MOD` on v58: **-98**. Decode SHA matches `data/enwik8.8mb`.
+Independent PARA (no nest) was also 1,707,038 (**-658 vs v57**); restack matched. Did not copy the no-nest binary.
+v59 + fx2-manual 8 MB: **1,702,703 (-115 vs v58+fx2)**. Stacks. New 8 MB champ.
+
+### v59 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v59 1,707,038 | call |
+|---|---|---:|---:|---|
+| **line-mod** | `HP_LINE_MOD` | **1,705,968** | **-1,070** | **accept - v60** |
+
+### v60 = v59 + line-mod - **1,705,968 / 1.626 bpc, RT PASS**
+
+`HP_LINE_MOD` on v59: **-1,070**. Decode SHA matches `data/enwik8.8mb`.
+v60 + fx2-manual 8 MB: **1,701,566 (-1,137 vs v59+fx2)**. Stacks. New 8 MB champ.
+
+### v60 leftovers (8 MB)
+
+| id | flag | 8 MB | vs v60 1,705,968 | call |
+|---|---|---:|---:|---|
+| **mixer skip 32** | `HP_MIXER_SKIP=32` | **1,705,939** | **-29** | **accept - v61** |
+
+### v61 = v60 + mixer-skip 32 - **1,705,939 / 1.626 bpc, RT PASS**
+
+`HP_MIXER_SKIP=32` on v60: **-29**. Decode SHA matches `data/enwik8.8mb`.
+v61 + fx2-manual 8 MB: **1,701,530 (-36 vs v60+fx2)**. Stacks. New 8 MB champ.
+Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe` / `hp_v57.exe` / `hp_v57_m26.exe` / `hp_v58.exe` / `hp_v59.exe` / `hp_v60.exe`.
+
+v58 leftover wave complete (PARA restack, LINE, SKIP=32 all accepted). Champ is v61 (1,705,939 identity / 1,701,530 fx2). Did not start 100 MB.
+Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe` / `hp_v57.exe` / `hp_v57_m26.exe` / `hp_v58.exe` / `hp_v59.exe`.

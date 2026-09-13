@@ -1,3 +1,5 @@
+<!-- Track W inventory. Living board is repo-root PLAN.md. Do not add hp leftover tests here. -->
+
 # cmix-lex harvest notes
 
 Cloned 2026-08-22 from https://github.com/blahem/cmix-lex (Hutter
@@ -88,7 +90,7 @@ Stable mmap + `MADV_DONTNEED` every 5,000 bytes (not munmap/remap).
 `MADV_RANDOM`, `O_NOATIME`, `ftruncate` for `ppm.temp` (~14.68 GB).
 RSS 9.7 GB, disk ~20.8 GB, CPU 43.5 h.
 
-## What this means for PLAN3
+## What this means for PLAN.md Track W
 
 - P5 (payload_lex) is the last published 1% and only exists *after* P4 WRT.
 - X3/X4 (stemmer + sentence groups + section mute) is the in-model gap.

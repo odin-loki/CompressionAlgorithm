@@ -7,8 +7,8 @@ Compiled 2026-08-22. Sources: [prize.hutter1.net](http://prize.hutter1.net/),
 (Mahoney, last update 8 Jul 2026), winner READMEs (starlit, fast-cmix,
 fx-cmix, fx2-cmix, cmix-lex), encode.su threads, Bellard NNCP.
 
-This file is the literature. `PLAN.md` is what we test. `RECORD.md` is
-what we measured. `PLAN3.md` is archived.
+This file is the literature. `PLAN.md` is the only living board.
+`RECORD.md` is what we measured.
 
 ---
 

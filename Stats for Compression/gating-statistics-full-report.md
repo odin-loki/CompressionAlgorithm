@@ -1,3 +1,9 @@
+<!--
+ARCHIVED measurement study. Live board is repo-root PLAN.md; log is RECORD.md.
+hp leftover mixer gates (word / sen-group / link / hebb) were later rejected
+on the 8 MB SHA gate. Do not treat this report as a license to retest them.
+-->
+
 # Gating Statistics for Context-Mixing Compression
 
 ## A measurement study on enwik8

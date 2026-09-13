@@ -1,3 +1,5 @@
+<!-- Track W inventory. Living board is repo-root PLAN.md. Do not add hp leftover tests here. -->
+
 # Wiki state machine, word streams, word-keyed match
 
 Port notes extracted from cloned `harvest/fx2-cmix` (kaitz/fx2-cmix, shallow clone succeeded).

@@ -1,30 +1,28 @@
 # PLAN — living experiment board
 
-This is the one execution plan for this workspace. `RECORD.md` is the
-measurement log; do not copy it here. Historical boards (`PLAN2.md`,
-`PLAN3.md`, `hp/PLAN.md`) are archived. `HUTTER_RESEARCH.md` is literature.
-`review-and-thinktank.md` is a **Cypha** review (Track C only).
+## Vision
 
-Three tracks, different machines of work:
+hp is an integer-exact PAQ-lineage laboratory. Goal: find which 1% is
+real, then land it on a winner fork (Track W). Official Hutter bar is
+enwik9 **S < 109,685,197** vs **L = 110,793,128**. hp has not been run
+on enwik9. 8 MB leftovers will not cash the cheque.
+
+Three tracks, different machines:
 
 | track | where | job |
 |---|---|---|
-| **H** | this repo, `hp/` | integer-exact lab; one flag at a time; SHA gates |
-| **W** | `harvest/fx2-cmix`, `harvest/cmix-lex` | fork SOTA if we want a prize cheque |
-| **C** | github.com/odin-loki/Cypha | mixer / eval remediations; **not** this tree |
+| **H** | this repo, `hp/` | one compile flag; 8 MB mem 22; bytes-down, SHA, fx2 stack; 100 MB mem 26 champ only with `SLOT_MAX=31` |
+| **W** | `harvest/fx2-cmix`, `harvest/cmix-lex` | fork SOTA |
+| **C** | github.com/odin-loki/Cypha | `review-and-thinktank.md` only |
 
-Do not vendor Cypha into `hp`. Do not add CUDA, Qt, or floats to `hp`.
-Do not treat Cypha’s 2.664 bpc (`n_eval = 2000`) as comparable to any hp
-8 MB / 100 MB SHA number.
+Never vendor Cypha, CUDA, Qt, or floats into hp. Do not treat Cypha’s
+2.664 bpc (`n_eval = 2000`) as comparable to any hp SHA number.
 
 ---
 
-## 1. Lab truth (2026-09-12)
+## Lab truth
 
-Live numbers may lead `RECORD.md` by a run or two. Use this table, then
-append new results to RECORD.
-
-### Prize bar (enwik9)
+Leftover wave closed at **v61**. RECORD leads if a later run accepts.
 
 | | bytes |
 |---|---:|
@@ -32,37 +30,97 @@ append new results to RECORD.
 | 1% claim: S < | **109,685,197** |
 | If cmix-lex awards: next 1% ≈ | 108,553,546 |
 
-`hp` has **not** been run on enwik9. Closing the prize gap is Track W
-plus preprocess, not another 8 MB n-gram on this tree.
+enwik8 SOTA: cmix v21 ~14.62 MB. hp ~18.53 MB is paq8f-era quality.
 
-### enwik8 SOTA vs this lab
+**8 MB champ** (`data/enwik8.8mb`, mem 22): **v61** (`NEST_MOD` +
+`PARA_MOD` + `LINE_MOD` + `MIXER_SKIP=32`) identity **1,705,939**, fx2
+**1,701,530**, RT PASS. Path from v57: nest −560, para −98, line
+−1,070, skip32 −29.
 
-| | bytes | notes |
-|---|---:|---|
-| cmix v21 (LTCB, not Hutter-legal RAM) | ~14.62 MB | published SOTA-ish |
-| **hp 100 MB champ (encode)** | **18,633,242** | v45 mem 26, `SLOT_MAX=31` |
-| hp 100 MB RT-confirmed | 18,671,091 | v37 mem 26 |
+**100 MB champ** (`data/enwik8.fx2man`, mem 26, `SLOT_MAX=31`): **v57**
+**18,527,464**, RT PASS. v61 has not been run at 100 MB. Write archives
+to `%LOCALAPPDATA%\hp_lab` then copy; OneDrive ate a CYHP header once.
 
-### 8 MB champ (`data/enwik8.8mb`, `--mem 22`)
+v45 100 MB encode-only 18,633,242; v37 18,671,091 RT PASS.
 
-| build | identity B | fx2-manual B | status |
-|---|---:|---:|---|
-| v55 (`+ BRK_GRP`) | 1,708,329 | 1,704,368 | RT PASS |
-| v56 (`+ SP_GRP`) | 1,707,742 | 1,703,460 | RT PASS |
-| **v57 (`+ SLOT_COL3`)** | **1,707,696** | **1,703,430** | **RT PASS** champ |
-
-### 100 MB (`data/enwik8.fx2man`, `--mem 26`)
-
-| build | bytes | status | binary |
-|---|---:|---|---|
-| v37 | 18,671,091 | **RT PASS** | `hp/build/hp_v37.exe` |
-| v45 | 18,633,242 | encode only | `hp/build/hp_v45_m26.exe` (`SLOT_MAX=31`) |
-| v55 | 18,528,992 | **RT PASS** | `hp/build/hp_v55_m26.exe` (`SLOT_MAX=31`) |
-| **v57** | **18,527,464** | **RT PASS** | `hp/build/hp_v57_m26.exe` (`SLOT_MAX=31`); write archives off OneDrive |
+C++ profile v57 8 MB: wall 704 s; model redundancy mixer vs best-expert
+**+1,513,148 B**; PR **3.02** of 77 experts. Mixer is the hole.
+Dedicated wiki-domain ContextModels paid (`SENGRP_MOD`); mixer gates
+and n-gram twins mostly did not.
 
 ---
 
-## 2. Track H protocol
+## Axes (from AXES.md)
+
+hp already has: o1–o6 + PY, sparse/skip + discovery, word + wbi, case /
+first-char / sentence streams, column, wiki states, table/link/template,
+byte match 3/4/6/10/16, word-keyed match ×3, Hebbian, bracket nest,
+pattern class, CTW (off), per-mixer lr / NCL / Hedge-L1.
+
+Still thin vs winners: wiki transform stacks (`fccxt` / `brcxt` /
+`ColumnContext`), LSTM mixer, WRT / `payload_lex`, POS / stem streams,
+pronoun and partial-sentence rings.
+
+Saturated: extra o1–o6 twins, match-order pile-ons, mixer-gate dilution.
+Do not add more without a new axis.
+
+---
+
+## Models (from MODELS.md)
+
+Paying family, remaining headroom in this order: unsaturated table RAM
+(slot growth under the MAX cap), then sen-group folds into CMs that
+still move bytes, then a dedicated sengrp expert (`HP_SENGRP_MOD`).
+Axis-new ports that landed (wiki states, word-match, word streams,
+bracket, pattern class) were the right kind of keep. PPMD mmap,
+Sequence Memoizer, extra n-gram twins, and LSTM-in-hp are not this
+lab’s next 1%.
+
+---
+
+## Upgrades still open (from UPGRADES.md)
+
+Proxy-era numbers in that file are dead. What remains true: mixer
+redundancy is the hole (now +1.51 MB at 8 MB); LSTM mixer is last and
+belongs on Track W; article reorder is already accepted as fx2-manual
+*test input*, not an hp preprocessor; dictionary / WRT is Track W;
+GPU / nncp is illegal. Do not re-run the discovery slot/eval sweep
+(RECORD H0.2).
+
+---
+
+## Closed from PLAN2 / PLAN3
+
+Those files are gone. Measurements live in `RECORD.md`. What still binds:
+
+- Axis-purity cuts that drop correlated twins can lose bits at equal
+  memory (PLAN2 v4 +479 B on 1 MB; same v4 **−1,531** at 8 MB — H0.4).
+  Rank is a compass, not an accept gate.
+- 1 MB (`data/enwik8.1mb`) is 84% redirects (H0.5). Never accept or
+  reject on it alone. Memory scaling on that slice plateaued at mem 28
+  (H0.1, −3 B vs mem 26).
+- First bundle keeps: wiki states, word-match-1, bracket, per-mixer lr /
+  Hedge-L1 / NCL. First bundle rejects: CTW, stacked word-match-2/3,
+  `pat_`+bracket, case-preserving word stream, PPMD, B.3 library.
+- Prize-era H0–H2 queue is closed (discovery sweep, mute-in-math, stem
+  as extra experts, dict/WRT on 8 MB, pred-gate). Do not reopen from
+  memory; pointer is RECORD / the table below.
+- Article reorder is accepted as fx2-manual *test input* (H1.2), not an
+  hp preprocessor. W1–W3 inventory is written; W4/W5 remain in Track W.
+
+---
+
+## Patterns (from PATTERNS.md)
+
+B.2 online class taxonomy (table / cite / time / infobox / link) stays.
+B.1 pattern cache stays. **B.3 shipped pattern library / dict: NO-GO**
+— transform win 1,498 B vs storage 10,121 B. Prefer zero-transmitted
+Hebbian / wiki-state / class. Revisit only if stored size < 30% of an
+enwik8 transform gain.
+
+---
+
+## Protocol, RAM, binaries
 
 One compile flag per binary. Same binary encodes and decodes. No
 `float` / `double` / `<cmath>` in `hp/include` or `hp/src`.
@@ -74,190 +132,124 @@ One compile flag per binary. Same binary encodes and decodes. No
 3. **Accept if archive bytes drop** vs the current 8 MB champ.
 4. Round-trip SHA of the decompressed file vs the input slice.
 5. If accepted: stack-check on `data/enwik8.8mb.fx2man` (same mem 22).
-6. Champ only: full enwik8 fx2-manual at `--mem 26`.
-
-1 MB (`data/enwik8.1mb`) is hostile (84% redirects). It may lie. Never
-accept or reject on 1 MB alone. See RECORD “why 1 MB lied” / H0.5.
-
----
-
-## 3. RAM and binary naming
+6. Champ only: full enwik8 fx2-manual at `--mem 26`, `SLOT_MAX=31`.
 
 | job | typical RSS | rule |
 |---|---|---|
-| 8 MB leftover, mem 22, `SLOT_MAX` ≤ 35 | ~ high-single to ~15 GB | one at a time is fine |
-| 100 MB mem 26, `SLOT_MAX=31` | ~15 GB | champ confirmation only |
+| 8 MB leftover, mem 22, `SLOT_MAX` ≤ 35 | ~15 GB | one at a time |
+| 100 MB mem 26, `SLOT_MAX=31` | ~38–40 GB | champ confirmation only |
 | 100 MB mem 26, `SLOT_MAX=35` | OOM | **do not run** |
-| 8 MB leftover **plus** 100 MB | ~38 GB + 15 GB | **do not run together** |
+| 8 MB leftover **plus** 100 MB | ~15 GB + ~38 GB | **never together** |
 
-**Binaries — do not overwrite while in use:**
-
-`hp_v37.exe`, `hp_v45.exe`, `hp_v45_m26.exe`, `hp_v55.exe`, `hp_v55_m26.exe`,
-`hp_v56.exe`, `hp_v57.exe`.
+**Protect:** `hp_v37.exe`, `hp_v45_m26.exe`, `hp_v55_m26.exe`,
+`hp_v57.exe`, `hp_v57_m26.exe`, `hp_v58.exe`, `hp_v59.exe`,
+`hp_v60.exe`, `hp_v61.exe`.
 
 Name new builds `hp_vNN.exe` or `hp_<flag>.exe`. 100 MB at mem 26 with
 a cap other than the 8 MB default: `hp_vNN_m26.exe` and compile
 `-DHP_SLOT_MAX=31` (not 35).
 
-Build (Windows / g++):
-
 ```
 g++ -O3 -std=c++17 -I hp/include hp/src/main.cpp -o hp/build/hp_vNN.exe
-```
-
-Compress / decompress:
-
-```
 hp/build/hp_vNN.exe c --mem 22 data/enwik8.8mb hp/build/e8_8mb_vNN.hp
 hp/build/hp_vNN.exe d hp/build/e8_8mb_vNN.hp hp/build/e8_8mb_vNN.out
 ```
 
+Write 100 MB archives to `%LOCALAPPDATA%\hp_lab` then copy into
+`hp/build`. Harvest clones stay in `harvest/`; do not rewrite them.
+
 ---
 
-## 4. Track H — next tests
+## Next tests
 
-Run in this order. One flag. Log every call in `RECORD.md`.
+One flag. Log every call in `RECORD.md`. After an 8 MB accept, recompile
+remaining leftovers on the new champ.
 
 | # | test | how | accept |
 |---|---|---|---|
-| H1 | Next unused leftover on v57 | one flag, 8 MB mem 22; MATCH_20 and HEBB_GRP already reject | bytes drop vs 1,707,696 |
-| H2 | Skip `HP_SENGRP_C0` on champ | `#elif` after `HP_SENGRP_WORD` (already on) | no-op |
-| H3 | Do **not** 100 MB at `SLOT_MAX=35` | — | RAM / OOM |
-| H4 | 100 MB archives: write off OneDrive (`%LOCALAPPDATA%\hp_lab`) then copy | v57 first write was zeros | valid CYHP |
-| H7 | Do **not** 100 MB at `SLOT_MAX=35` | — | RAM / OOM |
-| H8 | Do **not** pair an 8 MB leftover with a 100 MB job | — | RAM |
-| H9 | Track W inventory pass | read `harvest/cmix-lex_notes.md`, `harvest/fxcm_v26_vs_hp.md` | written gaps only |
-| H10 | Land a **proven** H keep on the fork | only after H accept + fx2 stack | enwik8 bytes down on their pipeline |
+| **H1** | v58 leftover wave | nest / para / line / skip32 | **closed** — all accepted as v58–v61 |
+| **H2** | Skip `HP_SENGRP_C0` | `#elif` after `HP_SENGRP_WORD` (already on) | no-op |
+| **H3** | 100 MB off OneDrive, `MAX=31` | v61-100 is due (`SLOT_MAX=31`) | valid CYHP + RT vs 18,527,464 |
+| **H4** | Track W inventory | already in `harvest/*_notes.md` 2026-09-12 | written gaps only |
+| **H5 / W5** | Land a proven H keep on the fork | `SENGRP_MOD` is the fork candidate; sen-group folds are hp-only | enwik8 bytes down on their pipeline |
 
-Still thin vs winners (do **not** start until H1–H6 are idle): article
-reorder already accepted (fx2-manual); wiki transform / payload_lex;
-stemmer streams (H2.1 rejected as extra experts — fold variants only
-with new evidence); LSTM mixer last; PPMD mmap only if RSS < 10 GB.
+Do not start LSTM / WRT / `payload_lex` / POS streams in hp until H1 is
+idle. Those are Track W. W4 (time/RAM envelope, ≤10 GB ~50 h) before
+any enwik9 fantasy.
 
 ---
 
-## 5. Track W — winner fork (the cheque)
+## Track W — winner fork
 
 Hutter’s FAQ: combine with SOTA. Do not invent a third self-extracting
-pipeline. Use theirs.
+pipeline. Use theirs. Track H will not hit S < 109,685,197 this month.
 
-| id | test | accept |
-|---|---|---|
-| W1 | `harvest/cmix-lex` and `harvest/fx2-cmix` already cloned | binaries run; README S recorded |
-| W2 | Diff fx2 vs lex (`payload_lex`, `R1ORD3`, fxcm_v26) | inventory in harvest notes |
-| W3 | Diff fxcm_v26 vs `hp/include/hp/wiki.hpp` / streams | port list with axis tags |
-| W4 | Time/RAM envelope on this machine | go / no-go for enwik9 (≤10 GB, ~50 h) |
-| W5 | After an H keep, land **one** change on the fork | enwik8 down, then enwik9 |
-
-Track H will not hit S < 109,685,197 this month. Use H to pick the 1%,
-then W to cash it.
+| id | status |
+|---|---|
+| W1 | clones already in `harvest/cmix-lex` and `harvest/fx2-cmix` |
+| W2–W3 | inventory written 2026-09-12 (H4) |
+| W4 | time/RAM envelope still open |
+| W5 | after an H accept: land **`HP_SENGRP_MOD`** only; do not port rejected mixer gates or hp-only sen-group folds |
 
 ---
 
-## 6. Track C — Cypha programme
+## Track C — Cypha only
 
-Source: `review-and-thinktank.md` (Cypha @ `b686658`, not this repo).
-Work happens in the Cypha tree. **hp already has** binary decomposition,
+Work happens in the Cypha tree. hp already has binary decomposition,
 logistic mixing, integer tables, and SHA round-trips. The think-tank
 mixer rewrite is a Cypha fix, not an hp port.
 
-**Do (in Cypha):**
+**Do (in Cypha):** C1 `n_eval` ≥ 100k + 95% CI; C2 log-loss mixer
+gradient `w_i (p_i/p_mix − 1)`; then C3 drop `neural_weight_floor`,
+C4 binary logistic mix, C5 hash-pointer match, C6 nibble-bucketed
+tables, C7 integer-only RT, C8 external baselines, C9 ablation.
 
-| # | action | why |
-|---|---|---|
-| C1 | `n_eval` ≥ 100k, ≥5 seeds, report 95% CI | 2000-char lock is ±0.103 bpc; best-of-25 expected spurious gain ≈ 0.104 bpc |
-| C2 | Log-loss mixer gradient: `w_i (p_i/p_mix − 1)` | Hedge linear reward vs codec log loss; measured −38.7% on their harness |
-| C3 | After C2, try removing `neural_weight_floor` | floor was a tourniquet |
-| C4 | Binary decomposition + logistic (PAQ) mix | linear p-mix cannot beat its sharpest expert; harness −22.4% vs C2 |
-| C5 | Hash-pointer match; drop quadratic `find_match` | enwik9-infeasible as written |
-| C6 | Fixed-budget nibble-bucketed tables | `unordered_map<uint64_t, vector<float>>` will not fit 10 GB |
-| C7 | Integer-only codec path + cross-toolchain RT | `exp`/`log` + FMA desync on Hutter’s machine |
-| C8 | External baselines (xz / zpaq / lpaq / ppmd) | 2.664 is unanchored |
-| C9 | Ablation registry; delete knobs that do not pay | 148-field god object |
-
-**Do not:**
-
-- Merge Cypha LM / Qt / REST / CUDA into `hp/`.
-- Quote Cypha 2.664 bpc next to hp 1.637 / 1.490 bpc as a horse race.
-- Treat the prize as a revenue line (think-tank §3.6). Track W is a
-  credential and a forcing function.
-
-Think-tank §8 Q2 is answered: **yes**, `hp` already implements binary
-logistic mixing. Priority list in that review applies to Cypha’s
-`AdaptivePredictorMixer`, not to Track H.
+**Do not:** merge Cypha LM / Qt / REST / CUDA into `hp/`; quote 2.664
+bpc next to hp SHA numbers; treat the prize as a revenue line.
 
 ---
 
-## 7. Do not retest
+## Do not retest
 
 Pointer is the RECORD heading unless noted. New evidence only.
 
 | item | evidence |
 |---|---|
-| CTW | RECORD A.3: r = 0.930 vs o2:py |
-| case-preserving word stream | A.3: r = 0.944 vs word:py |
-| stacked word-match-2/3 as twins | A.3: r = 0.969 |
-| `pat_` + bracket together | A.3: r = 0.971 |
-| B.3 shipped pattern library / dict on proxy | PATTERNS.md; +1,498 B transform vs 10,121 B storage |
-| H1.4 dict on 8 MB | RECORD H1.4: +33,369 |
+| CTW / case-word / stacked word-match-2/3 / `pat_`+bracket | RECORD A.3 |
+| B.3 pattern library / dict | PATTERNS.md; H1.4 +33,369 |
 | discovery slot/eval sweep | RECORD H0.2: all reject |
 | H2.2 section mute | +15,052 on 8 MB |
 | H2.1 stem as extra experts | +288 vs v5 |
 | H2.7 pred-gate | +6,928 on 1 MB |
 | recency fold / wt3 / fword gate | RECORD v9 leftovers |
-| `HP_WORD_GRP` | RECORD v46 leftovers: +1,885 (splits word table) |
+| `HP_WORD_GRP` | RECORD v46 leftovers: +1,885 |
+| `HP_SEN_GROUP` mixer gate | v46 leftovers: +680 (dilution) |
 | `HP_LINK_GRP` | RECORD v54 leftovers: +78 |
 | `HP_SENGRP_POS` | RECORD v55 leftovers: 0 |
 | `HP_NUM_GRP` | RECORD v55 leftovers: +69 |
-| `HP_MATCH_20` | RECORD v57 leftovers: +97 |
-| `HP_HEBB_GRP` | RECORD v57 leftovers: +90 |
-| `HP_SEN_GROUP` mixer gate | v46 leftovers: +680 (dilution) |
-| `HP_SLOT_WORD10` on 8 MB | +43,179 (2^32 sparse) |
-| `HP_SLOT_O34G` | −87 noise |
+| `HP_MATCH_20` | RECORD v57 leftovers: **+97** |
+| `HP_HEBB_GRP` | RECORD v57 leftovers: **+90** |
+| `HP_SLOT_WORD10` | +43,179 (2^32 sparse) |
+| `HP_SLOT_O34G` / `HP_MATCH_GROW2` | −87 noise |
 | `HP_MATCH_12` | +100 vs v43 |
-| `HP_MATCH_GROW2` | −87 noise vs v37 leftovers |
-| 100 MB at `SLOT_MAX=35` | OOM (this plan §3) |
-| GPU / nncp in hp | illegal for Hutter |
+| 100 MB at `SLOT_MAX=35` | OOM (this plan, RAM table) |
+| GPU / nncp / Qt in hp | illegal for Hutter |
 | recursive compression | Hutter FAQ |
 
 ---
 
-## 8. Execution order
+## Doc map
 
-**This machine (Track H):** H1 v57-100 at `SLOT_MAX=31` (not 35). Never H7/H8.
-No Cypha into `hp`.
-
-**Track W:** W2–W3 notes any time; W4 before any enwik9 fantasy; W5
-only after an H accept.
-
-**Track C:** in the Cypha repo, C1–C2 first (eval + one-line gradient).
-No Cypha work lands in `hp/src`.
-
----
-
-## 9. Standing constraints
-
-- No `float`, `double`, `<cmath>` in `hp/include` or `hp/src`.
-- Encoder and decoder derive all state from already-coded bytes.
-- One flag, 8 MB mem 22, bytes-down, then SHA, then fx2-manual stack.
-- 100 MB mem 26 only on a champ, `SLOT_MAX=31`.
-- Effective rank is a compass, not an accept gate by itself (1 MB lied;
-  correlated twins can still drop bytes at 8 MB — still prefer new axes).
-- Harvest clones stay in `harvest/`; do not rewrite them.
-
----
-
-## 10. Doc map
+This is the only plan file. Scoring-board history is `RECORD.md`, not
+another PLAN.
 
 | file | role |
 |---|---|
-| **PLAN.md** (this file) | what to run next |
-| **RECORD.md** | what we measured |
-| **README.md** | what the repo is; how to build |
-| HUTTER_RESEARCH.md | prize literature |
-| review-and-thinktank.md | Cypha critique → Track C |
-| MODELS.md / AXES.md | inventory / saturation |
-| UPGRADES.md / hp/UPGRADES.md | older roadmap; findings still true |
-| PATTERNS.md | B.1/B.2 taxonomy; B.3 NO-GO |
-| PLAN2.md / PLAN3.md / hp/PLAN.md | archived boards |
-| hp/README.md | hp architecture (proxy-era numbers; use §1 above for champs) |
+| **PLAN.md** (this file) | living board |
+| **RECORD.md** | measurement log only |
+| **README.md** | build / run |
+| HUTTER_RESEARCH.md | literature |
+| review-and-thinktank.md | Cypha Track C only |
+| harvest/*_notes.md | Track W gaps; not the hp queue |
+| MODELS.md AXES.md PATTERNS.md UPGRADES.md hp/UPGRADES.md hp/README.md | archived inventories |
+| Stats for Compression/gating-statistics-full-report.md | archived study; hp leftover mixer gates rejected |

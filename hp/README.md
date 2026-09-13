@@ -1,3 +1,9 @@
+<!--
+ARCHIVED architecture narrative (proxy-era bpc tables). Live champs and
+protocol live in root README.md and PLAN.md. Tools: --profile,
+dump_experts, rank.cpp.
+-->
+
 # hp — an integer-exact context-mixing compressor
 
 A bit-reproducible lossless compressor built as a testbed for Hutter Prize

@@ -1,3 +1,5 @@
+<!-- Track W inventory. Living board is repo-root PLAN.md. Do not add hp leftover tests here. -->
+
 # W3 — fxcm_v26 vs hp (unported list)
 
 Source: `harvest/cmix-lex/src/models/fxcmv1.cpp` (Orav fxcm_v26 inside

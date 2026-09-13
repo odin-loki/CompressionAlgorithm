@@ -1,3 +1,8 @@
+<!--
+ARCHIVED. Superseded by repo-root PLAN.md (board) and README.md (how-to).
+Do not add new experiments here. Findings may still be true; live queue is PLAN.md.
+-->
+
 # hp — Upgrade Paths
 
 Roadmap for continuing this work in Cursor. Every item lists the target file,

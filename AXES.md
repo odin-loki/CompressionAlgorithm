@@ -1,3 +1,8 @@
+<!--
+ARCHIVED. Superseded by repo-root PLAN.md (board) and README.md (how-to).
+Coverage matrix remains historically useful; live champs and protocol live there.
+-->
+
 # AXES — coverage matrix
 
 An axis is an information direction, not a model. Adding a second model on a

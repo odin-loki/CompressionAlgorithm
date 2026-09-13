@@ -223,6 +223,7 @@ class WikiMachine {
     std::uint64_t tag_name() const { return tag_name_; }
     std::uint64_t linkword() const { return linkword_; }
     std::uint64_t senword() const { return senword_; }
+    int line_kind() const { return line_kind_; }
     int sen_group() const {
         if (in_table_ || state_ == kWkWikiTable || state_ == kWkVerticalBar)
             return 2;

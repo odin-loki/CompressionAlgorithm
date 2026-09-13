@@ -1,3 +1,8 @@
+<!--
+ARCHIVED. Superseded by repo-root PLAN.md (board) and README.md (how-to).
+Inventory remains historically useful; live champs and protocol live there.
+-->
+
 # MODELS — prize-lineage inventory
 
 Sorted by **axis novelty versus current hp**, then port effort.
