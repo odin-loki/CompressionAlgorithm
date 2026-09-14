@@ -1,7 +1,12 @@
 # hp — Cypha Hutter Prize core
 CXX      ?= g++
-CXXFLAGS ?= -std=c++17 -O2 -Wall -Iinclude
+XSIMD    ?= 1
 BIN      ?= build
+XSIMD_FLAGS :=
+ifeq ($(XSIMD),1)
+  XSIMD_FLAGS := -DHP_XSIMD=1 -msse4.1 -Ithird_party/xsimd/include
+endif
+CXXFLAGS ?= -std=c++17 -O2 -Wall -Iinclude $(XSIMD_FLAGS)
 
 all: $(BIN)/hp $(BIN)/dump_experts $(BIN)/bench
 

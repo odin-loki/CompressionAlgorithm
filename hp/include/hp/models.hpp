@@ -8,6 +8,7 @@
 // not a maximal model zoo. Adding models is the step-2/3 work and it bolts on
 // here without touching the coder or the mixer.
 
+#include <array>
 #include <cstdint>
 #include <cstring>
 #include <vector>
@@ -91,7 +92,7 @@ class ContextModel {
 #if HP_HASH_CHK
           chk_(static_cast<std::size_t>(1) << table_bits, 0),
 #endif
-          sm_(StateTable::kStates) {}
+          sm_() {}
 
     void set_context(std::uint32_t h) { h_ = h; idle_ = false; }
     // fx2 sets(): keep a mixer slot but do not pollute the table.
@@ -265,8 +266,7 @@ class MatchModel {
     MatchModel(ByteRing* ring, int table_bits, int order = 6, int skip = 1)
         : ring_(ring), order_(order), skip_(skip < 1 ? 1 : skip),
           tab_mask_((1u << table_bits) - 1),
-          tab_(static_cast<std::size_t>(1) << table_bits, 0),
-          st_(64) {
+          tab_(static_cast<std::size_t>(1) << table_bits, 0) {
         counter_init(st_.data(), st_.size());
     }
 
@@ -349,7 +349,7 @@ class MatchModel {
     int skip_;
     std::uint32_t tab_mask_;
     std::vector<std::uint32_t> tab_;
-    std::vector<Counter> st_;
+    std::array<Counter, 64> st_{};
     std::uint32_t ptr_ = 0;
     int len_ = 0;
     int expected_ = 0;
@@ -384,8 +384,9 @@ class HebbianModel {
  public:
     HebbianModel(int table_bits, int limit)
         : mask_((1u << table_bits) - 1),
-          syn_(static_cast<std::size_t>(1) << table_bits),
-          sm_(StateTable::kStates),
+          syn_target_(static_cast<std::size_t>(1) << table_bits, 0),
+          syn_strength_(static_cast<std::size_t>(1) << table_bits, 0),
+          sm_(),
           t_(static_cast<std::size_t>(1) << table_bits, 0),
           limit_(limit) {}
 
@@ -395,19 +396,20 @@ class HebbianModel {
         if (prev_word == 0) return;
         const std::uint32_t slot = static_cast<std::uint32_t>(
             mix64(prev_word)) & mask_;
-        Syn& s = syn_[slot];
-        if (s.target == cur_word) {
-            if (s.strength < 255) ++s.strength;          // potentiation
-        } else if (s.strength > 0) {
-            --s.strength;                                 // competition
-            if (s.strength == 0) s.target = cur_word;     // takeover
+        std::uint64_t& target = syn_target_[slot];
+        std::uint8_t& strength = syn_strength_[slot];
+        if (target == cur_word) {
+            if (strength < 255) ++strength;          // potentiation
+        } else if (strength > 0) {
+            --strength;                               // competition
+            if (strength == 0) target = cur_word;     // takeover
         } else {
-            s.target = cur_word;
-            s.strength = 1;
+            target = cur_word;
+            strength = 1;
         }
         // Synaptic scaling: global slow decay keeps strengths bounded and
         // lets the network forget associations that stop being reinforced.
-        if ((++tick_ & 0x3FF) == 0 && s.strength > 0) --s.strength;
+        if ((++tick_ & 0x3FF) == 0 && strength > 0) --strength;
     }
 
     // Context for the current bit: the strongest association from the
@@ -415,12 +417,13 @@ class HebbianModel {
     void set_context(std::uint64_t prev_word) {
         const std::uint32_t slot = static_cast<std::uint32_t>(
             mix64(prev_word)) & mask_;
-        const Syn& s = syn_[slot];
-        strength_ = s.strength;
+        const std::uint64_t target = syn_target_[slot];
+        const std::uint8_t strength = syn_strength_[slot];
+        strength_ = strength;
         h_ = hash2(0x48454242ull,
-                   s.target * 131ull + static_cast<std::uint64_t>(
-                       s.strength >= 32 ? 3 : (s.strength >= 8 ? 2 :
-                       (s.strength >= 2 ? 1 : 0))));
+                   target * 131ull + static_cast<std::uint64_t>(
+                       strength >= 32 ? 3 : (strength >= 8 ? 2 :
+                       (strength >= 2 ? 1 : 0))));
     }
 
     int predict(int c0) {
@@ -437,9 +440,9 @@ class HebbianModel {
     int strength() const { return strength_; }
 
  private:
-    struct Syn { std::uint64_t target = 0; std::uint16_t strength = 0; };
     std::uint32_t mask_;
-    std::vector<Syn> syn_;
+    std::vector<std::uint64_t> syn_target_;
+    std::vector<std::uint8_t> syn_strength_;
     StateMap sm_;
     std::vector<std::uint16_t> t_;
     int limit_;
@@ -522,8 +525,7 @@ class LzpModel {
  public:
     LzpModel(int table_bits)
         : mask_((1u << table_bits) - 1),
-          pred_(static_cast<std::size_t>(1) << table_bits, 0),
-          st_(64) {
+          pred_(static_cast<std::size_t>(1) << table_bits, 0) {
         counter_init(st_.data(), st_.size());
     }
 
@@ -554,7 +556,7 @@ class LzpModel {
  private:
     std::uint32_t mask_;
     std::vector<std::uint8_t> pred_;
-    std::vector<Counter> st_;
+    std::array<Counter, 64> st_{};
     int expected_ = 0;
     int expected_bit_ = 0;
     int sidx_ = 0;

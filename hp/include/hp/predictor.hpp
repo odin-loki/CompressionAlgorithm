@@ -13,6 +13,7 @@
 // depend only on data both sides already have.
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -480,7 +481,7 @@ class Predictor {
 #else
           hedge_(kBaseExperts),
 #endif
-          bias_(256) {
+          bias_() {
         counter_init(bias_.data(), bias_.size());
 #if HP_ENGLISH_PRIOR
         for (int i = 0; i < 256; ++i) {
@@ -900,122 +901,126 @@ class Predictor {
     int last_match_len() const { return last_mlen_; }
 
  private:
-    static std::vector<int> gate_sizes() {
-        std::vector<int> s = {256, GriaGate::kBuckets, 256, 32,
+    static const std::vector<int>& gate_sizes() {
+        static const std::vector<int> s = [] {
+        std::vector<int> out = {256, GriaGate::kBuckets, 256, 32,
                               GriaGate::kEntBuckets, 16};
 #if HP_EXTRA_GATES
-        s.push_back(32);   // wiki state × isParagraph
-        s.push_back(PatternCache::kNClass);
+        out.push_back(32);   // wiki state × isParagraph
+        out.push_back(PatternCache::kNClass);
 #endif
 #if HP_POS_GATE
-        s.push_back(32);
+        out.push_back(32);
 #endif
 #if HP_GATE_SHAPE
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_BRANCH
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_DISP
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_MLEN2
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_ARGMAX
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_SEN_GROUP
-        s.push_back(4);
+        out.push_back(4);
 #endif
 #if HP_GATE_BREAK
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_WORDPOS
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_HEDGE
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_FWORD
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_UTF8
-        s.push_back(4);
+        out.push_back(4);
 #endif
 #if HP_GATE_NEST
-        s.push_back(2);
+        out.push_back(2);
 #endif
 #if HP_GATE_AGREE
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_FCLASS
-        s.push_back(4);
+        out.push_back(4);
 #endif
 #if HP_GATE_WMLEN
-        s.push_back(16);
+        out.push_back(16);
 #endif
+        return out;
+        }();
         return s;
     }
 
-    static std::vector<int> gate_rates(int base) {
+    static const std::vector<int>& gate_rates(int base) {
 #if HP_PER_MIXER_LR
-        // Spread inspired by fx2-cmix's 0.0003–0.005, mapped onto hp's
-        // integer lr where 2 is the historical shared default.
         (void)base;
-        std::vector<int> r = {2, 3, 2, 4, 3, 4};
+        static const std::vector<int> r = [] {
+        std::vector<int> out = {2, 3, 2, 4, 3, 4};
 #if HP_EXTRA_GATES
-        r.push_back(3);
-        r.push_back(3);
+        out.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_POS_GATE
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_SHAPE
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_BRANCH
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_DISP
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_MLEN2
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_ARGMAX
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_SEN_GROUP
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_BREAK
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_WORDPOS
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_HEDGE
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_FWORD
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_UTF8
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_NEST
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_AGREE
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_FCLASS
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_WMLEN
-        r.push_back(3);
+        out.push_back(3);
 #endif
+        return out;
+        }();
         return r;
 #else
         return std::vector<int>(static_cast<std::size_t>(kNumGates), base);
@@ -1864,7 +1869,7 @@ class Predictor {
     MixerNet mixer_;
     APM apm_c0_, apm_lex_, apm_gria_;
     Hedge hedge_;
-    std::vector<Counter> bias_;
+    std::array<Counter, 256> bias_{};
     GriaGate gria_;
     WikiMachine wiki_;
     WordStreams streams_;

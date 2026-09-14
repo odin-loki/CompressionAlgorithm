@@ -30,8 +30,8 @@
 // nonstationary sources should forget contradicted evidence rather than
 // average it forever. Cap 20 per side keeps the table small and adaptive.
 
+#include <array>
 #include <cstdint>
-#include <vector>
 
 #include "hp/features.hpp"
 #include "hp/int_math.hpp"
@@ -101,12 +101,12 @@ inline const StateTable& state_table() {
 
 class StateMap {
  public:
-    explicit StateMap(int n) : t_(static_cast<std::size_t>(n)) {
+    StateMap() {
         for (auto& v : t_) v = (1u << 31) | 0u;  // p = 0.5, count = 0
     }
 
     int predict(int cx) {
-        idx_ = cx;
+        idx_ = static_cast<std::size_t>(cx);
         return static_cast<int>(t_[idx_] >> 20);  // 12-bit
     }
 
@@ -126,7 +126,7 @@ class StateMap {
     }
 
  private:
-    std::vector<std::uint32_t> t_;
+    std::array<std::uint32_t, StateTable::kStates> t_{};
     std::size_t idx_ = 0;
 };
 

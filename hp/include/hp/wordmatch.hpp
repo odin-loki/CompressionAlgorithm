@@ -11,6 +11,7 @@
 // order = how many completed words are hashed. Smaller tables than the byte
 // match bank — this is a specialist.
 
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -23,8 +24,7 @@ class WordMatchModel {
     WordMatchModel(ByteRing* ring, int table_bits, int word_order)
         : ring_(ring), order_(word_order < 1 ? 1 : word_order),
           tab_mask_((1u << table_bits) - 1),
-          tab_(static_cast<std::size_t>(1) << table_bits, 0),
-          st_(64) {
+          tab_(static_cast<std::size_t>(1) << table_bits, 0) {
         counter_init(st_.data(), st_.size());
     }
 
@@ -86,7 +86,7 @@ class WordMatchModel {
     int order_;
     std::uint32_t tab_mask_;
     std::vector<std::uint32_t> tab_;
-    std::vector<Counter> st_;
+    std::array<Counter, 64> st_{};
     std::uint32_t ptr_ = 0;
     int len_ = 0, expected_ = 0, sidx_ = 0;
     bool valid_ = false;
