@@ -259,9 +259,7 @@ class Predictor {
     }
 
     explicit Predictor(const Config& cfg)
-        : cfg_(cfg),
-          byte_ring_(cfg.buf_bits),
-          wmatch_ring_(cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits),
+        : byte_ring_(cfg.buf_bits),
           o1_(add_bits(slot_bits(cfg.table_bits, -2), HP_SLOT_O12 ? 1 : 0), 1023),
           o2_(add_bits(slot_bits(cfg.table_bits, -2), HP_SLOT_O12 ? 1 : 0), 1023),
           o3_(add_bits(slot_bits(cfg.table_bits, 0),
@@ -454,19 +452,24 @@ class Predictor {
 #endif
 #if HP_WORD_MATCH
           wmatch_{
-              WordMatchModel(&wmatch_ring_,
-                             cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 1),
-              WordMatchModel(&wmatch_ring_,
-                             cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 2),
-              WordMatchModel(&wmatch_ring_,
-                             cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 3)
+              WordMatchModel(&byte_ring_,
+                             cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 1,
+                             cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits),
+              WordMatchModel(&byte_ring_,
+                             cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 2,
+                             cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits),
+              WordMatchModel(&byte_ring_,
+                             cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 3,
+                             cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits)
 #if HP_WMATCH_4
-              , WordMatchModel(&wmatch_ring_,
-                               cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 3)
+              , WordMatchModel(&byte_ring_,
+                               cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 3,
+                               cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits)
 #endif
 #if HP_WMATCH_5
-              , WordMatchModel(&wmatch_ring_,
-                               cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 1)
+              , WordMatchModel(&byte_ring_,
+                               cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 1,
+                               cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits)
 #endif
           },
 #endif
@@ -621,11 +624,24 @@ class Predictor {
         mixer_.set_ctx(kGateAlpha, gria_.bucket());
         mixer_.set_ctx(kGatePrev, static_cast<int>(hist_ & 0xff));
         int mlen = 0;
-        for (int i = 0; i < kMatchModels; ++i)
-            if (match_[i].match_len() > mlen) mlen = match_[i].match_len();
+        int wml = 0;
+#if HP_GATE_MLEN2
+        int l0 = 0, l1 = 0;
+#endif
+        for (int i = 0; i < kMatchModels; ++i) {
+            const int l = match_[i].match_len();
+            if (l > mlen) mlen = l;
+#if HP_GATE_MLEN2
+            if (l > l0) { l1 = l0; l0 = l; }
+            else if (l > l1) l1 = l;
+#endif
+        }
 #if HP_WORD_MATCH
-        for (int i = 0; i < kWordMatch; ++i)
-            if (wmatch_[i].match_len() > mlen) mlen = wmatch_[i].match_len();
+        for (int i = 0; i < kWordMatch; ++i) {
+            const int l = wmatch_[i].match_len();
+            if (l > mlen) mlen = l;
+            if (l > wml) wml = l;
+        }
 #endif
         mixer_.set_ctx(kGateMatch, mlen > 31 ? 31 : mlen);
         last_mlen_ = mlen;
@@ -645,15 +661,7 @@ class Predictor {
         mixer_.set_ctx(kGateDisp, disp_var_bin(exp_p_, n_exp_));
 #endif
 #if HP_GATE_MLEN2
-        {
-            int l0 = 0, l1 = 0;
-            for (int i = 0; i < kMatchModels; ++i) {
-                const int l = match_[i].match_len();
-                if (l > l0) { l1 = l0; l0 = l; }
-                else if (l > l1) l1 = l;
-            }
-            mixer_.set_ctx(kGateMlen2, mlen2_bin(l0, l1));
-        }
+        mixer_.set_ctx(kGateMlen2, mlen2_bin(l0, l1));
 #endif
 #if HP_GATE_ARGMAX
         mixer_.set_ctx(kGateArgmax, argmax_bin(exp_p_, n_exp_));
@@ -694,14 +702,7 @@ class Predictor {
         mixer_.set_ctx(kGateFclass, streams_.first_class());
 #endif
 #if HP_GATE_WMLEN
-        {
-            int wml = 0;
-#if HP_WORD_MATCH
-            for (int i = 0; i < kWordMatch; ++i)
-                if (wmatch_[i].match_len() > wml) wml = wmatch_[i].match_len();
-#endif
-            mixer_.set_ctx(kGateWmLen, wml > 15 ? 15 : wml);
-        }
+        mixer_.set_ctx(kGateWmLen, wml > 15 ? 15 : wml);
 #endif
         mixer_.set_ctx2(c0_);
         int pr = mixer_.mix();
@@ -1196,7 +1197,6 @@ class Predictor {
         whist[nw++] = streams_.stream(1);
 #endif
         (void)nw;
-        wmatch_ring_.push(static_cast<std::uint8_t>(byte));
         for (int i = 0; i < kWordMatch; ++i)
             wmatch_[i].push_byte(byte, whist[i], at_boundary);
 #endif
@@ -1723,9 +1723,7 @@ class Predictor {
                eq("you") || eq("their");
     }
 
-    Config cfg_;
     ByteRing byte_ring_;
-    ByteRing wmatch_ring_;
     ContextModel o1_, o2_, o3_, o4_, o6_;
 #if HP_HASH2_O6
     ContextModel o6b_;

@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <vector>
 
 namespace hp {
@@ -35,7 +36,9 @@ inline std::uint32_t split(std::uint32_t x1, std::uint32_t x2, int p) {
 
 class Encoder {
  public:
-    explicit Encoder(std::FILE* out) : out_(out) {}
+    static constexpr std::size_t kBufSize = 65536;
+
+    explicit Encoder(std::FILE* out) : out_(out) { buf_.reserve(kBufSize); }
 
     // p = P(bit == 1), 16-bit (1 .. 65535). Caller must clamp.
     void encode(int bit, int p) {
@@ -44,31 +47,48 @@ class Encoder {
 
         // Renormalise: emit leading bytes once they agree.
         while (((x1_ ^ x2_) & 0xff000000u) == 0) {
-            std::fputc(static_cast<int>(x2_ >> 24), out_);
+            emit_byte(static_cast<std::uint8_t>(x2_ >> 24));
             x1_ <<= 8;
             x2_ = (x2_ << 8) | 255u;
         }
     }
 
     void flush() {
+        flush_buf();
         // Emit all four bytes of x1: unambiguous, costs 3 bytes over the
         // minimum. Irrelevant at enwik scale, and it removes a whole class of
         // end-of-stream edge cases.
         for (int i = 0; i < 4; ++i) {
-            std::fputc(static_cast<int>(x1_ >> 24), out_);
+            emit_byte(static_cast<std::uint8_t>(x1_ >> 24));
             x1_ <<= 8;
         }
+        flush_buf();
     }
 
  private:
+    void emit_byte(std::uint8_t b) {
+        buf_.push_back(b);
+        if (buf_.size() >= kBufSize) flush_buf();
+    }
+
+    void flush_buf() {
+        if (buf_.empty()) return;
+        std::fwrite(buf_.data(), 1, buf_.size(), out_);
+        buf_.clear();
+    }
+
     std::FILE* out_;
+    std::vector<std::uint8_t> buf_;
     std::uint32_t x1_ = 0;
     std::uint32_t x2_ = 0xffffffffu;
 };
 
 class Decoder {
  public:
-    explicit Decoder(std::FILE* in) : in_(in) {
+    static constexpr std::size_t kBufSize = 65536;
+
+    explicit Decoder(std::FILE* in) : in_(in), buf_(kBufSize, 0) {
+        refill();
         for (int i = 0; i < 4; ++i) x_ = (x_ << 8) | next_byte();
     }
 
@@ -86,12 +106,22 @@ class Decoder {
     }
 
  private:
+    void refill() {
+        if (buf_pos_ < buf_len_) return;
+        buf_len_ = std::fread(buf_.data(), 1, kBufSize, in_);
+        buf_pos_ = 0;
+    }
+
     std::uint32_t next_byte() {
-        const int c = std::fgetc(in_);
-        return c == EOF ? 0u : static_cast<std::uint32_t>(c);
+        refill();
+        if (buf_pos_ >= buf_len_) return 0u;
+        return static_cast<std::uint32_t>(buf_[buf_pos_++]);
     }
 
     std::FILE* in_;
+    std::vector<std::uint8_t> buf_;
+    std::size_t buf_pos_ = 0;
+    std::size_t buf_len_ = 0;
     std::uint32_t x1_ = 0;
     std::uint32_t x2_ = 0xffffffffu;
     std::uint32_t x_ = 0;

@@ -21,9 +21,12 @@ namespace hp {
 
 class WordMatchModel {
  public:
-    WordMatchModel(ByteRing* ring, int table_bits, int word_order)
+    // ring_bits: history window for match distance; default uses ring->mask().
+    // Word-match shares byte_ring_ with a shorter window than the byte models.
+    WordMatchModel(ByteRing* ring, int table_bits, int word_order, int ring_bits = -1)
         : ring_(ring), order_(word_order < 1 ? 1 : word_order),
           tab_mask_((1u << table_bits) - 1),
+          ring_mask_(ring_bits >= 0 ? ((1u << ring_bits) - 1) : ring->mask()),
           tab_(table_bits) {
         counter_init(st_.data(), st_.size());
     }
@@ -54,7 +57,7 @@ class WordMatchModel {
             }
             tab_.ref(h) = pos;
         }
-        if (len_ > 0 && (pos - ptr_) > ring_->mask()) len_ = 0;
+        if (len_ > 0 && (pos - ptr_) > ring_mask_) len_ = 0;
     }
 
     int predict(int c0, int bitpos) {
@@ -85,6 +88,7 @@ class WordMatchModel {
     ByteRing* ring_;
     int order_;
     std::uint32_t tab_mask_;
+    std::uint32_t ring_mask_;
     HashTable<std::uint32_t> tab_;
     std::array<Counter, 64> st_{};
     std::uint32_t ptr_ = 0;

@@ -188,7 +188,13 @@ int decompress(const char* inp, const char* outp) {
     hp::Predictor pred(cfg);
     hp::Decoder dec(in);
     std::vector<std::uint8_t> body;
-    body.reserve(static_cast<std::size_t>(nbody));
+    if (use_dict) body.reserve(static_cast<std::size_t>(nbody));
+
+    std::FILE* out = nullptr;
+    if (!use_dict) {
+        out = std::fopen(outp, "wb");
+        if (!out) { std::perror(outp); std::fclose(in); return 1; }
+    }
 
     for (std::uint64_t i = 0; i < nbody; ++i) {
         int byte = 0;
@@ -198,7 +204,10 @@ int decompress(const char* inp, const char* outp) {
             pred.update(bit);
             byte = (byte << 1) | bit;
         }
-        body.push_back(static_cast<std::uint8_t>(byte));
+        if (use_dict)
+            body.push_back(static_cast<std::uint8_t>(byte));
+        else
+            std::fputc(byte, out);
         if ((i & 0xfffff) == 0 && i) {
             std::fprintf(stderr, "\r%llu MB", (unsigned long long)(i >> 20));
             std::fflush(stderr);
@@ -206,9 +215,16 @@ int decompress(const char* inp, const char* outp) {
     }
     std::fclose(in);
 
-    if (body.size() != nraw && !use_dict) {
-        std::fprintf(stderr, "\nsize mismatch: got %zu want %llu\n",
-                     body.size(), (unsigned long long)nraw);
+    if (use_dict) {
+        if (body.size() != nraw) {
+            std::fprintf(stderr, "\nsize mismatch: got %zu want %llu\n",
+                         body.size(), (unsigned long long)nraw);
+            return 1;
+        }
+    } else if (static_cast<std::uint64_t>(std::ftell(out)) != nraw) {
+        std::fprintf(stderr, "\nsize mismatch: got %ld want %llu\n",
+                     std::ftell(out), (unsigned long long)nraw);
+        std::fclose(out);
         return 1;
     }
 
@@ -222,12 +238,11 @@ int decompress(const char* inp, const char* outp) {
         }
     }
 
-    std::FILE* out = std::fopen(outp, "wb");
-    if (!out) { std::perror(outp); return 1; }
-    if (use_dict)
+    if (use_dict) {
+        out = std::fopen(outp, "wb");
+        if (!out) { std::perror(outp); return 1; }
         std::fwrite(raw.data(), 1, raw.size(), out);
-    else
-        std::fwrite(body.data(), 1, body.size(), out);
+    }
     std::fclose(out);
     std::fprintf(stderr, "\rdecompressed %llu B\n", (unsigned long long)nraw);
     return 0;
