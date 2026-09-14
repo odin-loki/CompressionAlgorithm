@@ -5,6 +5,8 @@ BIN      ?= build
 XSIMD_FLAGS :=
 ifeq ($(XSIMD),1)
   XSIMD_FLAGS := -DHP_XSIMD=1 -msse4.1 -Ithird_party/xsimd/include
+else
+  XSIMD_FLAGS := -DHP_XSIMD=0
 endif
 CXXFLAGS ?= -std=c++17 -O2 -Wall -Iinclude $(XSIMD_FLAGS)
 

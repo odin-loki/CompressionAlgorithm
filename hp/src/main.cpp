@@ -117,6 +117,10 @@ int compress(const char* inp, const char* outp, hp::Config cfg, bool use_dict,
 
     std::FILE* out = std::fopen(outp, "wb");
     if (!out) { std::perror(outp); return 1; }
+    {
+        static char outbuf[65536];
+        setvbuf(out, outbuf, _IOFBF, sizeof(outbuf));
+    }
 
     std::fwrite(kMagic, 1, 4, out);
     std::fputc(kVersion, out);

@@ -19,6 +19,7 @@
 // 16-bit. Encoder and decoder evaluate the identical expression, so they
 // agree exactly by construction.
 
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -87,7 +88,7 @@ class Decoder {
  public:
     static constexpr std::size_t kBufSize = 65536;
 
-    explicit Decoder(std::FILE* in) : in_(in), buf_(kBufSize, 0) {
+    explicit Decoder(std::FILE* in) : in_(in) {
         refill();
         for (int i = 0; i < 4; ++i) x_ = (x_ << 8) | next_byte();
     }
@@ -119,7 +120,7 @@ class Decoder {
     }
 
     std::FILE* in_;
-    std::vector<std::uint8_t> buf_;
+    std::array<std::uint8_t, kBufSize> buf_{};
     std::size_t buf_pos_ = 0;
     std::size_t buf_len_ = 0;
     std::uint32_t x1_ = 0;

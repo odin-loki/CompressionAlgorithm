@@ -9,10 +9,11 @@ set -u
 cd "$(dirname "$0")/.."
 IN=${1:?usage: determinism.sh <file>}
 TMP=$(mktemp -d)
+XSIMD_FLAGS=(-DHP_XSIMD=1 -msse4.1 -Ithird_party/xsimd/include)
 FLAGS=("-O0" "-O1" "-O2" "-O3" "-Os" "-O3 -march=native" "-O2 -ffast-math" "-O3 -funroll-loops")
 names=()
 for i in "${!FLAGS[@]}"; do
-  g++ -std=c++17 ${FLAGS[$i]} -Iinclude -o "$TMP/hp$i" src/main.cpp 2>/dev/null || { echo "build $i failed"; exit 1; }
+  g++ -std=c++17 ${FLAGS[$i]} -Iinclude "${XSIMD_FLAGS[@]}" -o "$TMP/hp$i" src/main.cpp 2>/dev/null || { echo "build $i failed"; exit 1; }
   "$TMP/hp$i" c "$IN" "$TMP/a$i.hp" 2>/dev/null
   names+=("$i")
 done

@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 
 #include "hp/bracket.hpp"
@@ -499,17 +500,26 @@ class Predictor {
 
     int predict() {
         mixer_.reset_inputs();
-        mixer_.add(counter_predict(bias_[c0_]));
-        exp_p_[0] = counter_predict_p(bias_[c0_]);
-
+        const int bias_p = counter_predict_p(bias_[c0_]);
+        mixer_.add(stretch(bias_p));
+#if HP_TRACK_EXP_P
         n_exp_ = 0;
+#endif
+
         int out[ContextModel::kOutputs];
-        int backoff = counter_predict_p(bias_[c0_]);
+        int backoff = bias_p;
+        int mlen = 0;
+        int wml = 0;
+#if HP_GATE_MLEN2
+        int l0 = 0, l1 = 0;
+#endif
         for (int i = 0; i < n_ctx_chain_; ++i) {
             ctx_chain_[i]->predict(c0_, backoff, out);
             for (int j = 0; j < ContextModel::kOutputs; ++j) {
                 mixer_.add(out[j]);
+#if HP_TRACK_EXP_P
                 exp_p_[n_exp_++] = squash(out[j]);
+#endif
             }
             if (i < 4) backoff = ctx_chain_[i]->last_p();
             else if (i == 4) backoff = o1_.last_p();
@@ -517,75 +527,106 @@ class Predictor {
         for (int i = 0; i < kMatchModels; ++i) {
             const int ms = match_[i].predict(c0_, bitpos_);
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
+            const int l = match_[i].match_len();
+            if (l > mlen) mlen = l;
+#if HP_GATE_MLEN2
+            if (l > l0) { l1 = l0; l0 = l; }
+            else if (l > l1) l1 = l;
+#endif
         }
 #if HP_SPARSE_UTF8
         {
             const int ms = smatch_.predict(c0_, bitpos_);
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
         }
 #endif
 #if HP_SKIPK_MOD
         {
             const int ms = skipk_.predict(c0_, bitpos_);
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
         }
 #endif
 #if HP_SKIP3_MOD
         {
             const int ms = skip3_.predict(c0_, bitpos_);
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
         }
 #endif
 #if HP_SKIP4_MOD
         {
             const int ms = skip4_.predict(c0_, bitpos_);
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
         }
 #endif
 #if HP_SKIP5_MOD
         {
             const int ms = skip5_.predict(c0_, bitpos_);
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
         }
 #endif
 #if HP_LZP_MOD
         {
             const int ms = lzp_.predict(c0_, bitpos_);
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
         }
 #endif
 #if HP_SR_MOD
         {
             const int ms = sr_.predict(c0_);
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
         }
 #endif
 #if HP_DMC_MOD
         {
             const int ms = dmc_.predict();
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
         }
 #endif
 #if HP_WORD_MATCH
         for (int i = 0; i < kWordMatch; ++i) {
             const int ms = wmatch_[i].predict(c0_, bitpos_);
             mixer_.add(ms);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(ms);
+#endif
+            const int l = wmatch_[i].match_len();
+            if (l > mlen) mlen = l;
+            if (l > wml) wml = l;
         }
 #endif
         {
             const int hs = hebb_.predict(c0_);
             mixer_.add(hs);
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = squash(hs);
+#endif
         }
 #if HP_CTW
         {
@@ -598,7 +639,9 @@ class Predictor {
                 p = (kt + p) >> 1;
             }
             mixer_.add(stretch(p));
+#if HP_TRACK_EXP_P
             exp_p_[n_exp_++] = p;
+#endif
         }
 #endif
         {
@@ -606,7 +649,9 @@ class Predictor {
             pool_.predict(c0_, o1_.last_p(), dout);
             for (int i = 0; i < kDiscovered; ++i) {
                 mixer_.add(dout[i]);
+#if HP_TRACK_EXP_P
                 exp_p_[n_exp_++] = squash(dout[i]);
+#endif
             }
         }
         sparse_ = o6_.sparsity();
@@ -623,26 +668,6 @@ class Predictor {
         mixer_.set_ctx(kGateC0, c0_);
         mixer_.set_ctx(kGateAlpha, gria_.bucket());
         mixer_.set_ctx(kGatePrev, static_cast<int>(hist_ & 0xff));
-        int mlen = 0;
-        int wml = 0;
-#if HP_GATE_MLEN2
-        int l0 = 0, l1 = 0;
-#endif
-        for (int i = 0; i < kMatchModels; ++i) {
-            const int l = match_[i].match_len();
-            if (l > mlen) mlen = l;
-#if HP_GATE_MLEN2
-            if (l > l0) { l1 = l0; l0 = l; }
-            else if (l > l1) l1 = l;
-#endif
-        }
-#if HP_WORD_MATCH
-        for (int i = 0; i < kWordMatch; ++i) {
-            const int l = wmatch_[i].match_len();
-            if (l > mlen) mlen = l;
-            if (l > wml) wml = l;
-        }
-#endif
         mixer_.set_ctx(kGateMatch, mlen > 31 ? 31 : mlen);
         last_mlen_ = mlen;
         mixer_.set_ctx(kGateHebb, hebb_.strength() > 15 ? 15 : hebb_.strength());
@@ -885,8 +910,20 @@ class Predictor {
 
     const GriaGate& gria() const { return gria_; }
     int discovery_replacements() const { return pool_.replaced(); }
-    int cache_hits() const { return cache_.hits(); }
-    int cache_lookups() const { return cache_.lookups(); }
+    int cache_hits() const {
+#if HP_PATTERN_CACHE_STATS
+        return cache_.hits();
+#else
+        return 0;
+#endif
+    }
+    int cache_lookups() const {
+#if HP_PATTERN_CACHE_STATS
+        return cache_.lookups();
+#else
+        return 0;
+#endif
+    }
     const PatternCache& patterns() const { return cache_; }
 
     int expert_count() const { return n_exp_; }
@@ -1024,7 +1061,8 @@ class Predictor {
         }();
         return r;
 #else
-        return std::vector<int>(static_cast<std::size_t>(kNumGates), base);
+        static const std::vector<int> r(static_cast<std::size_t>(kNumGates), base);
+        return r;
 #endif
     }
 
@@ -1080,11 +1118,14 @@ class Predictor {
         }
 
         if (byte == '\n') {
-            for (int i = 0; i < kLineMax; ++i)
-                prev_line_[i] = (i < col_pos_) ? cur_line_[i] : 0;
+            if (col_pos_ < kLineMax)
+                std::memset(line_buf_[cur_line_idx_] + col_pos_, 0,
+                            static_cast<std::size_t>(kLineMax - col_pos_));
+            cur_line_idx_ ^= 1;
             col_pos_ = 0;
         } else {
-            if (col_pos_ < kLineMax) cur_line_[col_pos_] = static_cast<std::uint8_t>(byte);
+            if (col_pos_ < kLineMax)
+                line_buf_[cur_line_idx_][col_pos_] = static_cast<std::uint8_t>(byte);
             if (col_pos_ < kLineMax - 1) ++col_pos_;
         }
 
@@ -1227,7 +1268,7 @@ class Predictor {
                      static_cast<std::uint64_t>(col & 63);
             else
 #endif
-                ck = (static_cast<std::uint64_t>(prev_line_[col]) << 16) |
+                ck = (static_cast<std::uint64_t>(line_buf_[cur_line_idx_ ^ 1][col]) << 16) |
                      static_cast<std::uint64_t>(col & 63);
 #if HP_COL_GRP
             ck += static_cast<std::uint64_t>(wiki_.sen_group()) * 131ull;
@@ -1532,7 +1573,8 @@ class Predictor {
                 for (int p = 2; p <= 32 && p * 2 <= n; ++p) {
                     int ok = 1;
                     for (int k = 0; k < 8; ++k) {
-                        if (cur_line_[n - 1 - k] != cur_line_[n - 1 - k - p]) {
+                        if (line_buf_[cur_line_idx_][n - 1 - k] !=
+                            line_buf_[cur_line_idx_][n - 1 - k - p]) {
                             ok = 0;
                             break;
                         }
@@ -1891,8 +1933,8 @@ class Predictor {
     std::uint64_t letter_hash_ = 0;
     std::uint64_t hist2_ = 0;
     static constexpr int kLineMax = 256;
-    std::uint8_t prev_line_[kLineMax] = {0};
-    std::uint8_t cur_line_[kLineMax] = {0};
+    std::uint8_t line_buf_[2][kLineMax] = {{0}};
+    int cur_line_idx_ = 0;
     int col_pos_ = 0;
     int tag_depth_ = 0;
     int in_tag_ = 0;

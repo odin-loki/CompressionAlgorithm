@@ -1,7 +1,6 @@
 #pragma once
 //
-// Integer mixer dots. HP_XSIMD=0 is the scalar mixer.hpp loops.
-// HP_XSIMD=1 uses 4-wide SSE4.1 PMULDQ (int32 x int32 -> int64).
+// Integer mixer dots. HP_XSIMD=0 uses scalar loops; HP_XSIMD=1 (default) uses SSE4.1.
 // int64 add is associative so the vectorized sum matches the scalar
 // sum exactly. axpy_shift_clamp stays scalar (update is less hot).
 

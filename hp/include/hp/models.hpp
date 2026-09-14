@@ -104,6 +104,7 @@ class ContextModel {
     void predict(int c0, int backoff_p12, int* out) {
         const std::uint32_t mixed =
             h_ ^ (static_cast<std::uint32_t>(c0) * 0x9E3779B1u);
+        const StateTable& st = state_table();
 #if HP_HASH_CHK
         const std::uint32_t idx0 = mixed & mask_;
         const std::uint8_t want =
@@ -111,7 +112,6 @@ class ContextModel {
         int best = 0;
         int best_pri = 1 << 30;
         int found = -1;
-        const StateTable& stfind = state_table();
         const int nprobe = HP_HASH_P5 ? 5 : 3;
         for (int p = 0; p < nprobe; ++p) {
             const std::uint32_t i = idx0 ^ static_cast<std::uint32_t>(p);
@@ -122,7 +122,7 @@ class ContextModel {
             const int stt = t_.get(i);
             const int pri = (chk_[i] == 0)
                                 ? -1
-                                : (stfind.n0(stt) + stfind.n1(stt));
+                                : (st.n0(stt) + st.n1(stt));
             if (pri < best_pri) {
                 best_pri = pri;
                 best = static_cast<int>(i);
@@ -140,7 +140,6 @@ class ContextModel {
 #endif
         state_ = t_.get(idx_);
         p_ind_ = sm_.predict(state_);
-        const StateTable& st = state_table();
 #if HP_PY_EXPERT
 #if HP_STATE_TABLE2
         {
