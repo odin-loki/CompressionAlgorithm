@@ -79,11 +79,18 @@ class ContextModel {
     // Both come from the SAME stored state, so cost is 2 bytes per slot instead
     // of the 4 the old {p,n} counter used -- twice the table for the same RAM,
     // which is itself worth a couple of percent.
-    static constexpr int kOutputs = 2;
+    static constexpr int kOutputs = HP_PY_EXPERT ? 2 : 1;
 
     ContextModel(int table_bits, int limit)
-        : mask_((1u << table_bits) - 1), limit_(limit),
+        : mask_((1u << table_bits) - 1),
+#if HP_HASH_CHK
+          bits_(table_bits),
+#endif
+          limit_(limit),
           t_(static_cast<std::size_t>(1) << table_bits, 0),
+#if HP_HASH_CHK
+          chk_(static_cast<std::size_t>(1) << table_bits, 0),
+#endif
           sm_(StateTable::kStates) {}
 
     void set_context(std::uint32_t h) { h_ = h; idle_ = false; }
@@ -93,10 +100,46 @@ class ContextModel {
     // Writes kOutputs stretched values into out[]. backoff is the parent
     // order's probability, used by the PY estimate.
     void predict(int c0, int backoff_p12, int* out) {
-        idx_ = (h_ ^ (static_cast<std::uint32_t>(c0) * 0x9E3779B1u)) & mask_;
+        const std::uint32_t mixed =
+            h_ ^ (static_cast<std::uint32_t>(c0) * 0x9E3779B1u);
+#if HP_HASH_CHK
+        const std::uint32_t idx0 = mixed & mask_;
+        const std::uint8_t want =
+            static_cast<std::uint8_t>(((mixed >> bits_) & 255u) + 1u);
+        int best = 0;
+        int best_pri = 1 << 30;
+        int found = -1;
+        const StateTable& stfind = state_table();
+        const int nprobe = HP_HASH_P5 ? 5 : 3;
+        for (int p = 0; p < nprobe; ++p) {
+            const std::uint32_t i = idx0 ^ static_cast<std::uint32_t>(p);
+            if (chk_[i] == want) {
+                found = static_cast<int>(i);
+                break;
+            }
+            const int stt = t_[i];
+            const int pri = (chk_[i] == 0)
+                                ? -1
+                                : (stfind.n0(stt) + stfind.n1(stt));
+            if (pri < best_pri) {
+                best_pri = pri;
+                best = static_cast<int>(i);
+            }
+        }
+        if (found >= 0) {
+            idx_ = static_cast<std::uint32_t>(found);
+        } else {
+            idx_ = static_cast<std::uint32_t>(best);
+            t_[idx_] = 0;
+            chk_[idx_] = want;
+        }
+#else
+        idx_ = mixed & mask_;
+#endif
         state_ = t_[idx_];
         p_ind_ = sm_.predict(state_);
         const StateTable& st = state_table();
+#if HP_PY_EXPERT
 #if HP_STATE_TABLE2
         {
             int a0 = st.n0(state_), a1 = st.n1(state_);
@@ -109,6 +152,11 @@ class ContextModel {
 #endif
         out[0] = stretch(p_ind_);
         out[1] = stretch(p_py_);
+#else
+        (void)backoff_p12;
+        (void)st;
+        out[0] = stretch(p_ind_);
+#endif
     }
 
     int last_p() const { return p_ind_; }
@@ -142,8 +190,14 @@ class ContextModel {
 
  private:
     std::uint32_t mask_;
+#if HP_HASH_CHK
+    int bits_;
+#endif
     int limit_;
     std::vector<std::uint16_t> t_;  // bit-history states (882 states -> 16 bit)
+#if HP_HASH_CHK
+    std::vector<std::uint8_t> chk_;
+#endif
     StateMap sm_;
     std::uint32_t h_ = 0;
     bool idle_ = false;
@@ -177,8 +231,8 @@ class MatchModel {
     // short orders fire often and loosely, long orders fire rarely and
     // authoritatively, and they decorrelate from each other far more than
     // adjacent context models do.
-    MatchModel(int buf_bits, int table_bits, int order = 6)
-        : order_(order), buf_bits_(buf_bits),
+    MatchModel(int buf_bits, int table_bits, int order = 6, int skip = 1)
+        : order_(order), skip_(skip < 1 ? 1 : skip), buf_bits_(buf_bits),
           buf_mask_((1u << buf_bits) - 1),
           tab_mask_((1u << table_bits) - 1),
           buf_(static_cast<std::size_t>(1) << buf_bits, 0),
@@ -205,11 +259,23 @@ class MatchModel {
         ++pos_;
 
         // 3. Index this suffix; adopt a new match if we have none.
-        const std::uint64_t maskbits =
-            (order_ >= 8) ? ~0ull : ((1ull << (order_ * 8)) - 1ull);
+        std::uint64_t key = 0;
+        if (skip_ <= 1) {
+            const std::uint64_t maskbits =
+                (order_ >= 8) ? ~0ull : ((1ull << (order_ * 8)) - 1ull);
+            key = hist & maskbits;
+        } else {
+            std::uint64_t h = hist;
+            for (int i = 0; i < order_; ++i) {
+                h >>= (8u * static_cast<unsigned>(skip_ - 1));
+                key = (key << 8) | (h & 0xffull);
+                h >>= 8;
+            }
+        }
         const std::uint32_t h =
-            hash2(0x4D415443ull + static_cast<std::uint64_t>(order_),
-                  hist & maskbits) & tab_mask_;
+            hash2(0x4D415443ull + static_cast<std::uint64_t>(order_) +
+                      static_cast<std::uint64_t>(skip_) * 17ull,
+                  key) & tab_mask_;
         if (len_ == 0) {
             const std::uint32_t cand = tab_[h];
             if (cand > 0 && cand < pos_) {
@@ -252,6 +318,7 @@ class MatchModel {
 
  private:
     int order_;
+    int skip_;
     int buf_bits_;
     std::uint32_t buf_mask_;
     std::uint32_t tab_mask_;
@@ -355,6 +422,153 @@ class HebbianModel {
     std::uint32_t h_ = 0, idx_ = 0;
     int state_ = 0, strength_ = 0;
     std::uint32_t tick_ = 0;
+};
+
+// Small DMC graph. Clone-on-threshold, integer counts, one stretched p.
+class DmcModel {
+ public:
+    explicit DmcModel(int cap_bits = 18)
+        : cap_(static_cast<std::uint32_t>(1u << (cap_bits > 20 ? 20 : cap_bits))) {
+        nodes_.resize(256);
+        for (int i = 0; i < 256; ++i) {
+            nodes_[static_cast<std::size_t>(i)].n0 = 1;
+            nodes_[static_cast<std::size_t>(i)].n1 = 1;
+            nodes_[static_cast<std::size_t>(i)].nx[0] =
+                static_cast<std::uint32_t>((i << 1) & 255);
+            nodes_[static_cast<std::size_t>(i)].nx[1] =
+                static_cast<std::uint32_t>(((i << 1) & 255) | 1);
+        }
+    }
+
+    int predict() {
+        const Node& n = nodes_[cur_];
+        const int den = static_cast<int>(n.n0) + static_cast<int>(n.n1);
+        int p12 = (static_cast<int>(n.n1) << 12) / (den ? den : 1);
+        if (p12 < 1) p12 = 1;
+        if (p12 > 4094) p12 = 4094;
+        return stretch(p12);
+    }
+
+    void update(int y) {
+        Node& n = nodes_[cur_];
+        if (y) {
+            if (n.n1 < 65535) ++n.n1;
+        } else {
+            if (n.n0 < 65535) ++n.n0;
+        }
+        std::uint32_t nxt = n.nx[y];
+        if (nxt >= nodes_.size()) nxt = 0;
+        const int tot = static_cast<int>(n.n0) + static_cast<int>(n.n1);
+        const Node ch = nodes_[nxt];
+        const int cht = static_cast<int>(ch.n0) + static_cast<int>(ch.n1);
+        if (tot >= 8 && cht > 2 && tot >= cht * 4 &&
+            nodes_.size() < cap_) {
+            Node nn = ch;
+            const int tn = cht ? cht : 1;
+            nn.n0 = static_cast<std::uint16_t>(
+                1 + (static_cast<int>(ch.n0) * tot) / (tn * 2));
+            nn.n1 = static_cast<std::uint16_t>(
+                1 + (static_cast<int>(ch.n1) * tot) / (tn * 2));
+            if (nn.n0 > ch.n0) nn.n0 = ch.n0;
+            if (nn.n1 > ch.n1) nn.n1 = ch.n1;
+            const std::uint32_t parent = cur_;
+            if (ch.n0 > nn.n0)
+                nodes_[nxt].n0 = static_cast<std::uint16_t>(ch.n0 - nn.n0 + 1);
+            if (ch.n1 > nn.n1)
+                nodes_[nxt].n1 = static_cast<std::uint16_t>(ch.n1 - nn.n1 + 1);
+            nodes_.push_back(nn);
+            nodes_[parent].nx[y] = static_cast<std::uint32_t>(nodes_.size() - 1);
+            nxt = nodes_[parent].nx[y];
+        }
+        cur_ = nxt;
+    }
+
+ private:
+    struct Node {
+        std::uint16_t n0 = 1, n1 = 1;
+        std::uint32_t nx[2] = {0, 0};
+    };
+    std::vector<Node> nodes_;
+    std::uint32_t cap_;
+    std::uint32_t cur_ = 0;
+};
+
+// Last-occurrence of order-3 context predicts the following byte. No length.
+class LzpModel {
+ public:
+    LzpModel(int table_bits)
+        : mask_((1u << table_bits) - 1),
+          pred_(static_cast<std::size_t>(1) << table_bits, 0),
+          st_(64) {
+        counter_init(st_.data(), st_.size());
+    }
+
+    void push_byte(int byte, std::uint64_t hist) {
+        const std::uint32_t h =
+            hash2(0x4C5A5033ull, hist & 0xffffffull) & mask_;
+        expected_ = pred_[h];
+        pred_[h] = static_cast<std::uint8_t>(byte);
+        have_ = 1;
+    }
+
+    int predict(int c0, int bitpos) {
+        valid_ = false;
+        if (!have_) return 0;
+        if (bitpos > 0) {
+            if (((expected_ | 0x100) >> (8 - bitpos)) != c0) return 0;
+        }
+        expected_bit_ = (expected_ >> (7 - bitpos)) & 1;
+        sidx_ = (bitpos * 2) + expected_bit_;
+        valid_ = true;
+        return counter_predict(st_[sidx_]);
+    }
+
+    void update(int y) {
+        if (valid_) counter_update(st_[sidx_], y, 255);
+    }
+
+ private:
+    std::uint32_t mask_;
+    std::vector<std::uint8_t> pred_;
+    std::vector<Counter> st_;
+    int expected_ = 0;
+    int expected_bit_ = 0;
+    int sidx_ = 0;
+    int have_ = 0;
+    bool valid_ = false;
+};
+
+// Move-to-front rank of the previous byte, mixed with c0.
+class SrModel {
+ public:
+    SrModel() {
+        for (int i = 0; i < 256; ++i) mtf_[i] = static_cast<std::uint8_t>(i);
+        counter_init(st_, 256);
+    }
+
+    void push_byte(int byte) {
+        int r = 0;
+        while (r < 256 && mtf_[r] != static_cast<std::uint8_t>(byte)) ++r;
+        last_rank_ = r > 31 ? 31 : r;
+        if (r > 0 && r < 256) {
+            const std::uint8_t v = mtf_[r];
+            for (int i = r; i > 0; --i) mtf_[i] = mtf_[i - 1];
+            mtf_[0] = v;
+        }
+    }
+
+    int predict(int c0) {
+        sidx_ = (last_rank_ << 3) | (c0 & 7);
+        return counter_predict(st_[sidx_]);
+    }
+
+    void update(int y) { counter_update(st_[sidx_], y, 255); }
+
+ private:
+    std::uint8_t mtf_[256];
+    Counter st_[256];
+    int last_rank_ = 0;
+    int sidx_ = 0;
 };
 
 }  // namespace hp

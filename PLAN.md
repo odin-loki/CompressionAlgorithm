@@ -22,7 +22,7 @@ Never vendor Cypha, CUDA, Qt, or floats into hp. Do not treat Cypha’s
 
 ## Lab truth
 
-Leftover wave closed at **v61**. RECORD leads if a later run accepts.
+Leftover wave **closed** at **v75**. RECORD leads if a later run accepts.
 
 | | bytes |
 |---|---:|
@@ -36,16 +36,18 @@ Leftover wave closed at **v61**. RECORD leads if a later run accepts.
 
 enwik8 SOTA: cmix v21 ~14.62 MB. hp ~18.53 MB is paq8f-era quality.
 
-**8 MB champ** (`data/enwik8.8mb`, mem 22): **v61** (`NEST_MOD` +
-`PARA_MOD` + `LINE_MOD` + `MIXER_SKIP=32`) identity **1,705,939**, fx2
-**1,701,530**, RT PASS. Path from v57: nest −560, para −98, line
-−1,070, skip32 −29.
+**8 MB champ** (`data/enwik8.8mb`, mem 22): **v75** identity
+**1,694,607** (−10,873 vs v62 1,705,480), **1.616 bpc**, RT PASS.
+fx2-manual **1,690,955** (−10,135 vs v62 fx2 1,701,090), RT PASS.
+Stack: v73 + `HP_CAT_MOD` + `HP_HEADING_MOD`.
+v74 CAT **1,694,707** / fx2 **1,691,045**; v73 identity **1,695,141** / fx2 **1,691,386**.
+100 MB mem 26 `SLOT_MAX=31` still **v73** **18,434,740 RT PASS** until v75 100 MB lands.
 
-**100 MB champ** (`data/enwik8.fx2man`, mem 26, `SLOT_MAX=31`): **v57**
-**18,527,464**, RT PASS. v61 has not been run at 100 MB. Write archives
-to `%LOCALAPPDATA%\hp_lab` then copy; OneDrive ate a CYHP header once.
+**100 MB champ** (`data/enwik8.fx2man`, mem 26, `SLOT_MAX=31`): **v73**
+**18,434,740** (−8,665 vs v70 18,443,405), RT PASS. Write archives to
+`%LOCALAPPDATA%\hp_lab` then copy; OneDrive ate a CYHP header once.
 
-v45 100 MB encode-only 18,633,242; v37 18,671,091 RT PASS.
+v57 100 MB 18,527,464 RT PASS; v45 encode-only 18,633,242; v37 18,671,091 RT PASS.
 
 C++ profile v57 8 MB: wall 704 s; model redundancy mixer vs best-expert
 **+1,513,148 B**; PR **3.02** of 77 experts. Mixer is the hole.
@@ -160,14 +162,18 @@ One compile flag per binary. Same binary encodes and decodes. No
 
 | job | typical RSS | rule |
 |---|---|---|
-| 8 MB leftover, mem 22, `SLOT_MAX` ≤ 35 | ~15 GB | one at a time |
+| 8 MB leftover, mem 22, `SLOT_MAX` ≤ 35 | ~15 GB | **two at a time** (user 2026-09-13) |
 | 100 MB mem 26, `SLOT_MAX=31` | ~38–40 GB | champ confirmation only |
 | 100 MB mem 26, `SLOT_MAX=35` | OOM | **do not run** |
 | 8 MB leftover **plus** 100 MB | ~15 GB + ~38 GB | **never together** |
 
 **Protect:** `hp_v37.exe`, `hp_v45_m26.exe`, `hp_v55_m26.exe`,
 `hp_v57.exe`, `hp_v57_m26.exe`, `hp_v58.exe`, `hp_v59.exe`,
-`hp_v60.exe`, `hp_v61.exe`.
+`hp_v60.exe`, `hp_v61.exe`, `hp_v61_m26.exe`, `hp_v62.exe`,
+`hp_v63.exe`, `hp_v64.exe`, `hp_v65.exe`, `hp_v66.exe`, `hp_v67.exe`,
+`hp_v68.exe`, `hp_v69.exe`, `hp_v70.exe`, `hp_v70_m26.exe`,
+`hp_v71.exe`, `hp_v72.exe`, `hp_v73.exe`, `hp_v73_m26.exe`,
+`hp_v74.exe`, `hp_v75.exe`, `hp_v75_m26.exe`.
 
 Name new builds `hp_vNN.exe` or `hp_<flag>.exe`. 100 MB at mem 26 with
 a cap other than the 8 MB default: `hp_vNN_m26.exe` and compile
@@ -193,14 +199,52 @@ remaining leftovers on the new champ.
 |---|---|---|---|
 | **H1** | v58 leftover wave | nest / para / line / skip32 | **closed** — all accepted as v58–v61 |
 | **H2** | Skip `HP_SENGRP_C0` | `#elif` after `HP_SENGRP_WORD` (already on) | no-op |
-| **H3** | 100 MB off OneDrive, `MAX=31` | v61-100 is live (`hp_v61_m26`) | valid CYHP + RT vs 18,527,464 |
-| **H6** | Integer low-rank mixer | **landed** `HP_MIXER_RANK=8` in `hp_g_v62meta.exe` with wiki-axis bundle; 8 MB pending until v61-100 frees RAM | bytes drop vs **1,705,939** |
-| **H7** | Wiki-axis bundle | `HP_WIKI_AXES`: dedicated state / sent_domain / header / depth CMs (meta-pattern) | stacked in v62meta; same 8 MB gate |
+| **H3** | 100 MB off OneDrive, `MAX=31` | v61 **18,490,445** RT PASS | **closed** — new 100 MB champ |
+| **H6** | Integer low-rank mixer | `HP_MIXER_RANK=8` **REJECT +702,383** (2,407,863) | no — do not sweep 4/16 |
+| **H7** | Wiki-axis 4-CM bundle | `HP_WIKI_AXES` **REJECT +432** (1,706,371) | split into singles |
+| **H7a** | `HP_DOM_MOD` | sent_domain CM **REJECT +276** (1,706,215) | no |
+| **H7b** | `HP_STATE_MOD` | wiki.state **1,705,480 / fx2 1,701,090 both RT PASS** | new 8 MB champ |
+| **H7c** | `HP_HDR_MOD` | wiki_header CM **REJECT +288** (1,705,768) | no |
+| **H7d** | `HP_DEPTH_MOD` | wiki.depth CM **REJECT +97** (1,705,577) | no |
 | **H4** | Track W inventory | harvest notes 2026-09-12; **add cmix-obias / fx3** | written gaps only |
-| **H5 / W5** | Land a proven H keep on the fork | dedicated wiki-axis CMs (`SENGRP` then `NEST`/`PARA`/`LINE`); not folds | enwik8 bytes down on their pipeline |
+| **H8** | Drop PY mixer input | `HP_PY_EXPERT=0` **REJECT +18,224** (1,723,704) | keep PY |
+| **H9** | Mixer precision / estimation | GPU sweep on frozen v57 dump | compass — Q4 x / Q6 W free; <32 experts not free |
+| **H10** | Cluster-MoE of experts | GPU hierarchical mix **sizeable** (best 0.781 vs 0.254) | no leftover — do not flag |
+| **H11** | v62 first-wave leftovers | skip40 **REJECT +52**; fccxt **REJECT +146 / +241 vs v69**; period **REJECT +6**; SR **REJECT +143**; baridx **REJECT +266**; pron **REJECT +122** | **closed** |
+| **H12** | Dual-stage hash `HP_HASH_CHK` | **1,699,746 / 1.621 bpc RT PASS −5,734** / fx2 **1,695,486** | v64 rung |
+| **H13** | Restack paying leftovers on HASH_CHK | TPL −3,179; DMC −110; LZP −283; skip-k −511; infokey −125; HASH2 −23 | **v70 1,695,515** |
+| **H14** | New axes on v70 | skip-3 **−152**; link-pipe **−141**; skip-4 **−81**; cite **REJECT +187**; HASH_P5 **REJECT +423**; DMC_GROW **REJECT +1**; skip-5 **REJECT +8** | **v73 1,695,141** |
+| **H15** | Wiki-domain CMs on v73 | CAT **−434** → v74; HEADING **−100** → v75 **1,694,607** / fx2 **1,690,955**; REDIR **+234**; EXTLINK **+521**; REFNAME **+300**; QOCXT **+363**; ENTITY **+309** | **v75 1,694,607** |
 
-H6/H7 are stacked in `hp_g_v62meta.exe` (not run while v61-100 holds RAM).
-LSTM / WRT / `payload_lex` / POS / bitlstm32 / obias are Track W.
+v62 wiki-axis singles closed (only STATE paid). H6 rank-8 **REJECT +702k**. H8 nopy **REJECT +18k**. Mixer width and low-rank W are closed.
+H9: mixer dots are already more precise than they need; wall time is the 77 StateMaps, not Q16.
+H10: clustering experts then mixing cluster opinions loses ~3× vs one linear W. Hard MoE is worse. Phase B dump-with-gates is not promoted. LSTM router stays Track W.
+H11/H13 leftover wave **closed** on v70. H14 new-axis wave **closed** on v73 (skip-3/4 + link-pipe paid; cite / 5-probe / DMC grow / skip-5 rejected). Do not reopen rank-W / cluster-MoE / pairwise / mean-mix / skip40 / fccxt / period / SR / baridx / pronoun / HASH_P5 / skip-5.
+H15 **closed** on v75: Category-namespace **−434** and heading-level **−100** paid; `#REDIRECT` / `[http` / ref-name / quote-CM / entity-name rejected. Do not reopen those five.
+100 MB v73 **18,434,740 RT PASS**. v75 100 MB mem 26 `SLOT_MAX=31` running. Skip-k saturates at 4. LSTM / WRT / `payload_lex` / POS / bitlstm32 / obias are Track W.
+
+---
+
+## GPU trial queue (3090, 24 GB, compass only)
+
+Full board: canvases/gpu-trial-queue.canvas.tsx. Codec stays integer.
+Do not estimate the mix. Do not retry H6 / H10 / pairwise / mean-mix.
+
+80k-record dump is ~12 MB — the GPU is starved. First job after H8
+(RAM free): stride-1 v62 dump into `%LOCALAPPDATA%\hp_lab` (int16 ≈ 10.5 GB,
+fits). Then run Wave 1 on that dump, not another 80k toy.
+
+| wave | job | dump | kill if |
+|---|---|---|---|
+| **G0** | stride-1 v62 dump + gate ids + layer-1 logits | hp, mem 22, off OneDrive | write fails |
+| **G1** | residual mix, C(77,3), integer W, Q-MoE by \|x\|, APM knots, online Q16 replay | G0 or current | sizeable vs 0.254 |
+| **G2** | context-conditional W (few buckets), skip-table classifier | G0 with gates | dilution / sizeable |
+| **G3** | function skip: predict quiet StateMap from c0/wiki/match | G0 with n0/n1 | cannot skip without the table |
+| **G4** | LSTM / 1-layer transformer ceiling on logits | G0 stride-1 | cannot beat 0.254 → Track W only |
+
+Wide experimental net (Mandelbrot/fractal, SM, DMC, grammar, LLM, fxcm
+gaps): canvases/wide-trial-net.canvas.tsx. Most items are GPU compass or
+Track W. Promote at most one integer leftover if compass is free/visible.
 
 ---
 

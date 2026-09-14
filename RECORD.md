@@ -1145,6 +1145,286 @@ Did not overwrite `hp_v37.exe` / `hp_v45_m26.exe` / `hp_v55_m26.exe` / `hp_v57.e
 
 Official prize table still L = fx2-cmix **110,793,128**. cmix-lex still pending (Intel 109,650,047; claimed AMD rebuild 109,671,639). fx3-cmix unsubmitted 109,735,627 (<1%). cmix-obias claimed S **108,492,825** (256-cell LSTM + bitlstm32 + PPMd obias prior); not on prize.hutter1.net; do not vendor into hp. Meta-pattern: paying CMs are `StateMap(hash(axis ⊗ hist))`; mixer is already `squash(vᵀ W x)` in Q16.
 
-### v62meta stack (compiled, 8 MB not started)
+### v61 + fx2 mem26 - **18,490,445 / 1.479 bpc, RT PASS**
 
-v61-100 (`hp_v61_m26`) still live — did not start a second hp. Compiled `hp_g_v62meta.exe` = v61 flags + `HP_WIKI_AXES=1` (dedicated state / sent_domain / wiki_header / depth CMs) + `HP_MIXER_RANK=8` (U(ctx)×V shared layer-1) + `HP_XSIMD=1 -msse4.1`. Did not overwrite live champs. 8 MB mem 22 vs 1,705,939 when RAM is free.
+`hp_v61_m26.exe` on `data/enwik8.fx2man` `--mem 26` `SLOT_MAX=31`.
+Archive **18,490,445** (−**37,019** vs v57 18,527,464). CYHP magic OK.
+Decode SHA matches `data/enwik8.fx2man`
+`9FA638182A0384AF0040762CBD3C67DC1613B90085BAE37F6E567350B9336A51`.
+Wrote `%LOCALAPPDATA%\hp_lab\e8_fx2man_v61_m26.hp` (copy in `hp/build`).
+Did not overwrite `hp_v57_m26.exe`. New 100 MB champ.
+
+### v62meta stack - **2,403,533 / 2.292 bpc, REJECT**
+
+v61 + `HP_WIKI_AXES` + `HP_MIXER_RANK=8` + `HP_XSIMD` mem 22: **2,403,533** (**+697,594** vs v61 1,705,939). Bundle loses. Do not blame SIMD. Splitting: wiki-axis CMs alone first (`hp_g_v62wiki.exe`), then rank mixer.
+
+### v62wiki - **1,706,371 / 1.627 bpc, REJECT +432**
+
+`HP_WIKI_AXES` four-CM bundle on v61: **1,706,371** vs 1,705,939. Small loss; a paying axis may be hidden. Split into `HP_STATE_MOD` / `HP_DOM_MOD` / `HP_HDR_MOD` / `HP_DEPTH_MOD`. Rank mixer deferred (v62meta already showed it as the +697k).
+
+### v62dom - **1,706,215 / 1.627 bpc, REJECT +276**
+
+`HP_DOM_MOD` on v61: **1,706,215** vs 1,705,939. sent_domain CM does not pay alone.
+
+### v62state - **1,705,480 / 1.626 bpc, RT PASS −459**
+
+`HP_STATE_MOD` on v61: **1,705,480**. Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v62.exe`. Did not overwrite `hp_v61.exe`. fx2-manual **1,701,090 (−440 vs v61 fx2 1,701,530)**. Stacks.
+fx2 decode SHA matches `data/enwik8.8mb.fx2man`. New 8 MB champ identity+fx2.
+
+### CUDA mixer search (compass, not a gate)
+
+`hp/tools/gpu_mixer_search.cu` cuBLAS v2 on RTX 3090 (8,203 mixers, 16k symbolic). Wall **15.1 s**. Linear **0.254**; Q16 snap **0.254** (no loss); prefix-16 **0.263**; 8192×8-sparse best **0.271**; pairwise top-12 products **0.392** (lose); symbolic add **0.266**. Q16 is enough for this mixer; extra bilinear features are not. Codec untouched. JSON: `%LOCALAPPDATA%\hp_lab\gpu_mixer_search.json`.
+
+### CUDA simple-algorithm search (subsets of top-12)
+
+`hp/tools/gpu_simple_search.cu` — all 4095 nonempty subsets of the 12 best v57 experts, plus 27k integer 3-term mixes. Knee at **k=4–5** (0.261 bits). Full top-12 **0.270** (extra elite experts hurt). Integer `(x37+x7+x11)/3` **0.275**. Full 77-expert linear still **0.254**. Simpler mixer exists; it is fewer tables, not a new formula.
+
+### v62hdr - **1,705,768 / 1.626 bpc, REJECT +288**
+
+`HP_HDR_MOD` on v62: **1,705,768** vs 1,705,480. wiki_header CM does not pay.
+
+### v62depth - **1,705,577 / 1.626 bpc, REJECT +97**
+
+`HP_DEPTH_MOD` on v62: **1,705,577** vs 1,705,480. depth CM does not pay. Wiki-axis singles: state −459, dom +276, hdr +288, depth +97.
+
+### v62rank - **2,407,863 / 2.296 bpc, REJECT +702,383**
+
+`HP_MIXER_RANK=8` isolate on v62: **2,407,863** vs 1,705,480. Same class of loss as v62meta (+697,594). Low-rank W is the catastrophe, not SIMD or the wiki bundle. Do not sweep rank 4/16.
+
+### v62nopy - **1,723,704 / 1.643 bpc, REJECT +18,224**
+
+`HP_PY_EXPERT=0` on v62: **1,723,704** vs 1,705,480. Dropping the Pitman-Yor mixer slot loses. Half-width CM inputs do not pay. Do not default PY off.
+
+### CUDA precision / estimation sweep (compass, not a gate)
+
+`hp/tools/gpu_precision_search.cu` on RTX 3090, frozen v57 dump, 80 ms. Offline linear mix **0.2540**. Visible = +0.001 val bits; sizeable = +0.010. Codec untouched.
+
+| approx | val | delta | call |
+|---|---:|---:|---|
+| Q16 / Q12 / Q8 logits | 0.2540 | ~0 | free |
+| Q4 logits | 0.2537 | −0.0002 | free |
+| Q3 logits | 0.2553 | +0.0013 | visible |
+| Q6 weights | 0.2542 | +0.0003 | free |
+| Q4 weights | 0.2610 | +0.007 | visible |
+| Q3 weights | 0.3068 | +0.053 | sizeable |
+| static 32 / 48 / 77 experts | 0.2588 / 0.2555 / 0.2540 | +0.0048 / +0.0015 / 0 | visible / visible / free |
+| static ≤24 experts | ≥0.264 | ≥+0.010 | sizeable |
+| dyn \|x\| top-32 | 0.2562 | +0.0022 | visible |
+| zero \|x\| < 256 | 0.2532 | −0.0008 | free (still computes them) |
+| equal-weight mean | 0.356 | +0.102 | sizeable |
+| best expert | 0.313 | +0.059 | sizeable |
+| logit noise ±256 | 0.2542 | +0.0002 | free |
+
+Knee: mixer math can drop to ~4-bit x and ~6-bit W. Cheap estimators cannot replace W. Cutting below ~32 of 77 experts is not free even as a mix-time skip. Layer-1 gate count not in this dump (stride 37). JSON: `%LOCALAPPDATA%\hp_lab\gpu_precision_search.json`.
+
+### CUDA cluster-MoE (compass, not a gate)
+
+`hp/tools/gpu_moe_cluster.cu` on RTX 3090, frozen v57 dump, wall **15.3 s**. k-means on 77 expert time series, mix inside cluster (`W·x`), squash, uneven `v` across clusters. Mix is never replaced by a mean.
+
+| setup | val bits | delta vs linear 0.2540 | call |
+|---|---:|---:|---|
+| linear all 77 | 0.2540 | 0 | baseline |
+| Q4 logits + Q6 W | 0.2541 | +0.00008 | free |
+| prefix-48 retrain | 0.2555 | +0.0015 | visible |
+| prefix-32 retrain | 0.2584 | +0.0044 | visible |
+| **K=4 soft MoE** (best cluster) | **0.7814** | **+0.527** | sizeable |
+| K=4 hard top-1 | 0.8633 | +0.609 | sizeable |
+| K=8..24 soft/hard | 0.85–0.99 | +0.60–0.73 | sizeable |
+
+Clustering then mixing cluster opinions loses ~3×. Hard routing is worse. No leftover flag. JSON: `%LOCALAPPDATA%\hp_lab\gpu_moe_cluster.json`.
+
+### Wide experimental net (Mandelbrot and friends)
+
+Searched Mandelbrot/Mandelbrotz, IFS, Sequence Memoizer, DMC, GLZA/RePair, fxcm, PMC, paq8px models, STARLIT, Nacrith, FineZip, L3TC/RWKV, diffusion LMs, NanoZip/BWT, LTCB oddballs. There is **no** working lossless Mandelbrot text compressor (lossy image IFS / Chi 1993 vapor). hp-legal slice = skip-k match, table period, cheap affine residual.
+
+Board: `canvases/wide-trial-net.canvas.tsx` (**240** trials). Tags: H leftover / G GPU / W Track W / X skip. First wave waits on `dump_profile_v62` (M9 mute gate, M3 residual, S2 skip tables) then one-at-a-time DMC / LZP / SR / fccxt / template-name / infobox key. Do not vendor LSTM/fractal/LLM into `hp/`.
+
+### v62 dump + GPU importance (compass)
+
+`dump_profile_v62` on 8 MB mem 22, stride 16: **4,194,304** rec, **85** experts, **10** gates → `%LOCALAPPDATA%\hp_lab\v62_profile.i16`. Names match n_exp.
+
+`gpu_importance` 500k rec (400k/100k), RTX 3090, 325 ms. Offline linear mix of stretched experts **0.020** val bits (not comparable to v57 dump 0.254 — different scale/subsample). Residual mix **4.77** (sizeable fail). Softmax **0.025** worse than linear. Q4 x / Q6 W free vs that linear. Prefix-k looks “free” because 85-d W is undertrained in 80 SGD steps — do not mute disc slots from this. Gate mute is a linear mix of layer-1 *dots*, misspecified; all 10 mutes slightly “help”; **do not leftover-mute a gate**. No mixer leftover from this dump.
+
+### H11 leftover wave (in flight)
+
+Flags default off: `HP_FCCXT_MOD`, `HP_TPLNAME_MOD`, `HP_INFOKEY_MOD`, `HP_BARIDX_MOD`, `HP_PERIOD_MOD`, `HP_PRONOUN_MOD`, `HP_DMC_MOD`, `HP_LZP_MOD`, `HP_SR_MOD`, `HP_SKIPK_MOD`. One compile flag each vs v62 **1,705,480**.
+
+`HP_MIXER_SKIP=40` 8 MB mem 22: **1,705,532 (+52)** REJECT. Keep skip32.
+
+### v62dmc - **1,705,421 / 1.626 bpc, RT PASS −59**
+
+`HP_DMC_MOD` on v62: **1,705,421**. Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v63.exe`. Did not overwrite `hp_v62.exe`. fx2-manual stack after the dual 8 MB pair.
+
+Two 8 MB leftovers at once (user). fccxt **1,705,626 (+146 vs v62)** REJECT.
+
+### v62hashchk - **1,699,746 / 1.621 bpc, RT PASS −5,734**
+
+`HP_HASH_CHK` dual-stage index+checksum 3-probe on all CMs: **1,699,746** vs v62 **1,705,480**. Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v64.exe`. Did not overwrite `hp_v62.exe` / `hp_v63.exe`. New 8 MB champ. fx2-manual stack in flight.
+
+### v63tpl - **1,704,861 / 1.625 bpc, −560 vs v63, stale vs v64**
+
+`HP_TPLNAME_MOD` on v63 (DMC on): **1,704,861**. Pays on DMC, loses to HASH_CHK by **+5,115**. Restack tpl on v64.
+
+HASH2_O6 encoding vs v62 (one flag). Two 8 MB jobs: hash2 + v64 fx2.
+
+### v62hash2 - **1,705,176 / 1.626 bpc, −304 vs v62, stale vs v64**
+
+`HP_HASH2_O6` on v62 (no HASH_CHK): **1,705,176**. Pays vs v62, loses to HASH_CHK. Restacked on later champs.
+
+### v64 fx2 - **1,695,486 / 1.616 bpc, RT PASS −5,604 vs v62 fx2**
+
+`hp_v64.exe` on `data/enwik8.8mb.fx2man`: **1,695,486**. Decode SHA matches
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`. HASH_CHK stacks.
+
+### v64dmc - **1,699,684 / 1.620 bpc, RT PASS −62 vs v64, superseded**
+
+`HP_DMC_MOD` on v64: **1,699,684**. Decode SHA matches `data/enwik8.8mb`.
+Did not copy as champ — TPL paid more on the same rung.
+
+### v64tpl → v65 - **1,696,567 / 1.617 bpc, RT PASS −3,179**
+
+`HP_TPLNAME_MOD` on v64: **1,696,567**. Copied `hp_v65.exe`. Did not overwrite `hp_v64.exe`.
+
+### v64period - **1,699,752 / 1.621 bpc, REJECT +6**
+
+`HP_PERIOD_MOD` on v64. No RT.
+
+### v65dmc → v66 - **1,696,457 / 1.617 bpc, RT PASS −110**
+
+`HP_DMC_MOD` on v65: **1,696,457**. Copied `hp_v66.exe`.
+v65 fx2 **1,692,565** RT PASS (−2,921 vs v64 fx2). v66 fx2 **1,692,536** RT PASS (−29).
+
+### v66lzp → v67 - **1,696,174 / 1.617 bpc, RT PASS −283**
+
+`HP_LZP_MOD` on v66: **1,696,174**. Copied `hp_v67.exe`.
+v67 fx2 **1,692,228** RT PASS (−308 vs v66 fx2).
+
+### v67sr - **1,696,317 / 1.617 bpc, REJECT +143**
+
+`HP_SR_MOD` on v67. No RT.
+
+### v67skipk → v68 - **1,695,663 / 1.617 bpc, RT PASS −511**
+
+`HP_SKIPK_MOD` on v67: **1,695,663**. Copied `hp_v68.exe`.
+v68 fx2 **1,691,956** RT PASS (−272 vs v67 fx2).
+infokey vs v67 **1,696,031 (−143)** stale; restacked on v68.
+
+### v68infokey → v69 - **1,695,538 / 1.616 bpc, RT PASS −125**
+
+`HP_INFOKEY_MOD` on v68: **1,695,538**. Copied `hp_v69.exe`.
+v69 fx2 **1,691,835** RT PASS (−121 vs v68 fx2).
+
+### v69baridx / pron / fccxt - REJECT
+
+baridx **1,695,804 (+266)**. pronoun **1,695,660 (+122)**. fccxt **1,695,779 (+241)** vs v69. No RT.
+
+### v69hash2 → v70 - **1,695,515 / 1.616 bpc, RT PASS −23**
+
+`HP_HASH2_O6` on v69: **1,695,515**. Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v70.exe`. Did not overwrite `hp_v64.exe`…`hp_v69.exe`.
+New 8 MB champ. fx2-manual **1,691,740 / 1.613 bpc, RT PASS −95 vs v69 fx2
+1,691,835** (−9,350 vs v62 fx2 1,701,090). Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+H11/H13 leftover queue empty. Rejected vs champ: skip40, fccxt, period, SR, baridx, pronoun.
+
+### v70 100 MB - **18,443,405 / 1.475 bpc, RT PASS −47,040 vs v61**
+
+`hp_v70_m26.exe` `--mem 26` `SLOT_MAX=31` on `data/enwik8.fx2man`: **18,443,405**.
+Wrote `%LOCALAPPDATA%\hp_lab\e8_v70_m26.hp` then copied to `hp/build`.
+Decode SHA matches `data/enwik8.fx2man`
+`9FA638182A0384AF0040762CBD3C67DC1613B90085BAE37F6E567350B9336A51`.
+Did not overwrite `hp_v61_m26.exe`. New 100 MB champ. 8 MB wave idle.
+
+### H14 new-axis wave on v70
+
+Flags default off: `HP_SKIP3_MOD`, `HP_LINKPIPE_MOD`, `HP_CITE_MOD`, `HP_HASH_P5`, `HP_DMC_GROW`, `HP_SKIP4_MOD`, `HP_SKIP5_MOD`.
+
+### v70skip3 → v71 - **1,695,363 / 1.616 bpc, RT PASS −152**
+
+`HP_SKIP3_MOD` skip-3 MatchModel on v70: **1,695,363**. Copied `hp_v71.exe`.
+v71 fx2 **1,691,599** RT PASS (−141 vs v70 fx2).
+
+### v71linkpipe → v72 - **1,695,222 / 1.616 bpc, RT PASS −141**
+
+`HP_LINKPIPE_MOD` `[[target|display]]` after-pipe CM on v71: **1,695,222**.
+Copied `hp_v72.exe`. v72 fx2 **1,691,482** RT PASS (−117 vs v71 fx2).
+
+### v72cite / hashp5 / dmcgrow - REJECT
+
+cite **1,695,409 (+187)**. HASH_P5 **1,695,645 (+423)** — keep 3-probe. DMC_GROW **1,695,223 (+1)**.
+
+### v72skip4 → v73 - **1,695,141 / 1.616 bpc, RT PASS −81**
+
+`HP_SKIP4_MOD` on v72: **1,695,141**. Copied `hp_v73.exe`.
+v73 fx2 **1,691,386** RT PASS (−96 vs v72 fx2). skip-5 **1,695,149 (+8)** REJECT. Skip-k saturates at 4.
+
+### v73 100 MB - **18,434,740 / 1.474 bpc, RT PASS −8,665 vs v70**
+
+`hp_v73_m26.exe` `--mem 26` `SLOT_MAX=31` on `data/enwik8.fx2man`: **18,434,740**.
+Wrote `%LOCALAPPDATA%\hp_lab\e8_v73_m26.hp` then copied to `hp/build`.
+Decode SHA matches `data/enwik8.fx2man`
+`9FA638182A0384AF0040762CBD3C67DC1613B90085BAE37F6E567350B9336A51`.
+Did not overwrite `hp_v70_m26.exe`. New 100 MB champ. 8 MB wave idle.
+
+### H15 wiki-domain CMs on v73
+
+Flags default off: `HP_CAT_MOD` (`[[Category:` / `File:` / `Image:` namespace), `HP_REDIR_MOD` (`#REDIRECT`), `HP_HEADING_MOD` (leading `=` count), `HP_EXTLINK_MOD` (`[http…]`), `HP_REFNAME_MOD` (`<ref name="…">`), `HP_QOCXT_MOD` (dedicated quote CM), `HP_ENTITY_MOD` (`&nbsp;` name). One flag per leftover vs v73 **1,695,141**. Two 8 MB at a time.
+
+### v73cat → v74 - **1,694,707 / 1.616 bpc, RT PASS −434**
+
+`HP_CAT_MOD` namespace hash of `[[Category:` / `File:` / `Image:` on v73: **1,694,707**.
+Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v74.exe`. Did not overwrite `hp_v73.exe`. fx2 + remaining leftovers on v74.
+
+### v74 fx2 - **1,691,045 / 1.612 bpc, RT PASS −341 vs v73 fx2**
+
+`hp_v74.exe` on `data/enwik8.8mb.fx2man`: **1,691,045**. Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+### v74heading → v75 - **1,694,607 / 1.616 bpc, RT PASS −100**
+
+`HP_HEADING_MOD` leading `=` count on v74: **1,694,607**.
+Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v75.exe`. Did not overwrite `hp_v74.exe`. fx2 + remaining leftovers on v75.
+
+### v75 fx2 - **1,690,955 / 1.612 bpc, RT PASS −90 vs v74 fx2**
+
+`hp_v75.exe` on `data/enwik8.8mb.fx2man`: **1,690,955**. Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+### v75extlink - **1,695,128 / 1.616 bpc, REJECT +521**
+
+`HP_EXTLINK_MOD` `[http…]` on v75. Twin of `kWkHtLink` / STATE. No RT. Do not restack.
+
+### v75refname - **1,694,907 / 1.616 bpc, REJECT +300**
+
+`HP_REFNAME_MOD` `<ref name="…">` on v75. Cite-adjacent. No RT.
+
+### v75qocxt - **1,694,970 / 1.616 bpc, REJECT +363**
+
+`HP_QOCXT_MOD` dedicated quote CM on v75. Twin of `QUOTE_STACK` fold into `brk_`. No RT.
+
+### v75entity - **1,694,916 / 1.616 bpc, REJECT +309**
+
+`HP_ENTITY_MOD` `&nbsp;` / `&lt;` name on v75. Twin of `kWkAmp` / STATE. No RT.
+
+### v73redir - **1,695,375 / 1.616 bpc, REJECT +234**
+
+`HP_REDIR_MOD` `#REDIRECT` domain. No RT. Do not restack.
+
+H15 leftover queue empty. 8 MB champ is v75. v75 100 MB mem 26 `SLOT_MAX=31` started
+(`hp_v75_m26.exe` → `%LOCALAPPDATA%\hp_lab\e8_v75_m26.hp`). Did not overwrite `hp_v73_m26.exe`.
+

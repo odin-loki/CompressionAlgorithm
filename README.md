@@ -20,10 +20,10 @@ lead**.
 
 | corpus | champ | bytes | notes |
 |---|---|---:|---|
-| 8 MB leftover (`data/enwik8.8mb`, `--mem 22`) | v61 | **1,705,939** | fx2-manual **1,701,530**; both RT PASS |
-| 100 MB (`data/enwik8.fx2man`, `--mem 26`) | v57 | **18,527,464** | RT PASS, `SLOT_MAX=31`; v61 not yet at 100 MB |
+| 8 MB leftover (`data/enwik8.8mb`, `--mem 22`) | v75 | **1,694,607** | fx2-manual **1,690,955**; both RT PASS |
+| 100 MB (`data/enwik8.fx2man`, `--mem 26`) | v73 | **18,434,740** | RT PASS, `SLOT_MAX=31`; v75 100 MB running |
 
-Next leftover is idle — PLAN.md / RECORD.md lead. H3 is v61-100.
+v75 8 MB identity + fx2 both RT PASS. v73 100 MB still champ until v75 100 MB. PLAN.md / RECORD.md lead.
 
 ## Build
 

@@ -95,7 +95,26 @@ class Predictor {
         (HP_NEST_MOD ? 1 : 0) +
         (HP_PARA_MOD ? 1 : 0) +
         (HP_LINE_MOD ? 1 : 0) +
-        (HP_WIKI_AXES ? 4 : 0);
+        (HP_STATE_MOD ? 1 : 0) +
+        (HP_DOM_MOD ? 1 : 0) +
+        (HP_HDR_MOD ? 1 : 0) +
+        (HP_DEPTH_MOD ? 1 : 0) +
+        (HP_FCCXT_MOD ? 1 : 0) +
+        (HP_TPLNAME_MOD ? 1 : 0) +
+        (HP_INFOKEY_MOD ? 1 : 0) +
+        (HP_BARIDX_MOD ? 1 : 0) +
+        (HP_PERIOD_MOD ? 1 : 0) +
+        (HP_PRONOUN_MOD ? 1 : 0) +
+        (HP_HASH2_O6 ? 1 : 0) +
+        (HP_LINKPIPE_MOD ? 1 : 0) +
+        (HP_CITE_MOD ? 1 : 0) +
+        (HP_CAT_MOD ? 1 : 0) +
+        (HP_REDIR_MOD ? 1 : 0) +
+        (HP_HEADING_MOD ? 1 : 0) +
+        (HP_EXTLINK_MOD ? 1 : 0) +
+        (HP_REFNAME_MOD ? 1 : 0) +
+        (HP_QOCXT_MOD ? 1 : 0) +
+        (HP_ENTITY_MOD ? 1 : 0);
     static constexpr int kCtxModels = 11 + kExtraCtx;
     static constexpr int kMatchModels = 5 + (HP_MATCH_18 ? 1 : 0)
         + (HP_MATCH_13 ? 1 : 0) + (HP_MATCH_01 ? 1 : 0)
@@ -110,7 +129,11 @@ class Predictor {
     static constexpr int kBaseExperts =
         kCtxModels * ContextModel::kOutputs + 1 /*bias*/ + kMatchModels
         + kWordMatch + (HP_SPARSE_UTF8 ? 1 : 0)
-        + 1 /*hebb*/ + kCtw + kDiscovered;
+        + 1 /*hebb*/ + kCtw + kDiscovered
+        + (HP_DMC_MOD ? 1 : 0) + (HP_LZP_MOD ? 1 : 0)
+        + (HP_SR_MOD ? 1 : 0) + (HP_SKIPK_MOD ? 1 : 0)
+        + (HP_SKIP3_MOD ? 1 : 0) + (HP_SKIP4_MOD ? 1 : 0)
+        + (HP_SKIP5_MOD ? 1 : 0);
 #if HP_HEDGE_L1
     static constexpr int kHedgeInputs = 0;
 #else
@@ -254,6 +277,14 @@ class Predictor {
                        + (HP_SLOT_O6E ? 1 : 0) + (HP_SLOT_O6F ? 1 : 0)
                        + (HP_SLOT_O6G ? 1 : 0) + (HP_SLOT_O6H ? 1 : 0)
                        + (HP_SLOT_O6I ? 1 : 0) + (HP_SLOT_O6J ? 1 : 0)), 127),
+#if HP_HASH2_O6
+          o6b_(add_bits(slot_bits(cfg.table_bits, 0),
+                       (HP_SLOT_O6 ? 1 : 0) + (HP_SLOT_O6B ? 1 : 0)
+                       + (HP_SLOT_O6C ? 1 : 0) + (HP_SLOT_O6D ? 1 : 0)
+                       + (HP_SLOT_O6E ? 1 : 0) + (HP_SLOT_O6F ? 1 : 0)
+                       + (HP_SLOT_O6G ? 1 : 0) + (HP_SLOT_O6H ? 1 : 0)
+                       + (HP_SLOT_O6I ? 1 : 0) + (HP_SLOT_O6J ? 1 : 0)), 127),
+#endif
           word_(slot_bits(cfg.table_bits, 1), 255),
           col_(add_bits(slot_bits(cfg.table_bits, HP_SLOT_COL2 ? 2 : 0),
                        HP_SLOT_COL3 ? 1 : 0), 255),
@@ -306,11 +337,62 @@ class Predictor {
 #if HP_LINE_MOD
           linemod_(cfg.table_bits, 255),
 #endif
-#if HP_WIKI_AXES
+#if HP_STATE_MOD
           statemod_(cfg.table_bits, 255),
+#endif
+#if HP_DOM_MOD
           dommod_(cfg.table_bits, 255),
+#endif
+#if HP_HDR_MOD
           hdrmod_(cfg.table_bits, 255),
+#endif
+#if HP_DEPTH_MOD
           depthmod_(cfg.table_bits, 255),
+#endif
+#if HP_FCCXT_MOD
+          fccxtmod_(cfg.table_bits, 255),
+#endif
+#if HP_TPLNAME_MOD
+          tplmod_(cfg.table_bits, 255),
+#endif
+#if HP_INFOKEY_MOD
+          infokeymod_(cfg.table_bits, 255),
+#endif
+#if HP_BARIDX_MOD
+          baridxmod_(cfg.table_bits, 255),
+#endif
+#if HP_PERIOD_MOD
+          periodmod_(cfg.table_bits, 255),
+#endif
+#if HP_PRONOUN_MOD
+          pronounmod_(cfg.table_bits, 255),
+#endif
+#if HP_LINKPIPE_MOD
+          linkpipemod_(cfg.table_bits, 255),
+#endif
+#if HP_CITE_MOD
+          citemod_(cfg.table_bits, 255),
+#endif
+#if HP_CAT_MOD
+          catmod_(cfg.table_bits, 255),
+#endif
+#if HP_REDIR_MOD
+          redirmod_(cfg.table_bits, 255),
+#endif
+#if HP_HEADING_MOD
+          headingmod_(cfg.table_bits, 255),
+#endif
+#if HP_EXTLINK_MOD
+          extlinkmod_(cfg.table_bits, 255),
+#endif
+#if HP_REFNAME_MOD
+          refnamemod_(cfg.table_bits, 255),
+#endif
+#if HP_QOCXT_MOD
+          qocxtmod_(cfg.table_bits, 255),
+#endif
+#if HP_ENTITY_MOD
+          entitymod_(cfg.table_bits, 255),
 #endif
           match_{ {cfg.buf_bits, match_bits(cfg.match_bits), 3},
                   {cfg.buf_bits, match_bits(cfg.match_bits), 4},
@@ -347,6 +429,25 @@ class Predictor {
           },
 #if HP_SPARSE_UTF8
           smatch_(cfg.buf_bits, match_bits(cfg.match_bits), 4),
+#endif
+#if HP_SKIPK_MOD
+          skipk_(cfg.buf_bits, match_bits(cfg.match_bits), 3, 2),
+#endif
+#if HP_SKIP3_MOD
+          skip3_(cfg.buf_bits, match_bits(cfg.match_bits), 3, 3),
+#endif
+#if HP_SKIP4_MOD
+          skip4_(cfg.buf_bits, match_bits(cfg.match_bits), 3, 4),
+#endif
+#if HP_SKIP5_MOD
+          skip5_(cfg.buf_bits, match_bits(cfg.match_bits), 3, 5),
+#endif
+#if HP_LZP_MOD
+          lzp_(match_bits(cfg.match_bits) > 2 ? match_bits(cfg.match_bits) - 2
+                                              : match_bits(cfg.match_bits)),
+#endif
+#if HP_DMC_MOD
+          dmc_(HP_DMC_GROW ? 20 : 18),
 #endif
 #if HP_WORD_MATCH
           wmatch_{
@@ -455,11 +556,65 @@ class Predictor {
 #if HP_LINE_MOD
         chain[nchain++] = &linemod_;
 #endif
-#if HP_WIKI_AXES
+#if HP_STATE_MOD
         chain[nchain++] = &statemod_;
+#endif
+#if HP_DOM_MOD
         chain[nchain++] = &dommod_;
+#endif
+#if HP_HDR_MOD
         chain[nchain++] = &hdrmod_;
+#endif
+#if HP_DEPTH_MOD
         chain[nchain++] = &depthmod_;
+#endif
+#if HP_FCCXT_MOD
+        chain[nchain++] = &fccxtmod_;
+#endif
+#if HP_TPLNAME_MOD
+        chain[nchain++] = &tplmod_;
+#endif
+#if HP_INFOKEY_MOD
+        chain[nchain++] = &infokeymod_;
+#endif
+#if HP_BARIDX_MOD
+        chain[nchain++] = &baridxmod_;
+#endif
+#if HP_PERIOD_MOD
+        chain[nchain++] = &periodmod_;
+#endif
+#if HP_PRONOUN_MOD
+        chain[nchain++] = &pronounmod_;
+#endif
+#if HP_HASH2_O6
+        chain[nchain++] = &o6b_;
+#endif
+#if HP_LINKPIPE_MOD
+        chain[nchain++] = &linkpipemod_;
+#endif
+#if HP_CITE_MOD
+        chain[nchain++] = &citemod_;
+#endif
+#if HP_CAT_MOD
+        chain[nchain++] = &catmod_;
+#endif
+#if HP_REDIR_MOD
+        chain[nchain++] = &redirmod_;
+#endif
+#if HP_HEADING_MOD
+        chain[nchain++] = &headingmod_;
+#endif
+#if HP_EXTLINK_MOD
+        chain[nchain++] = &extlinkmod_;
+#endif
+#if HP_REFNAME_MOD
+        chain[nchain++] = &refnamemod_;
+#endif
+#if HP_QOCXT_MOD
+        chain[nchain++] = &qocxtmod_;
+#endif
+#if HP_ENTITY_MOD
+        chain[nchain++] = &entitymod_;
 #endif
         for (int i = 0; i < nchain; ++i) {
             chain[i]->predict(c0_, backoff, out);
@@ -478,6 +633,55 @@ class Predictor {
 #if HP_SPARSE_UTF8
         {
             const int ms = smatch_.predict(c0_, bitpos_);
+            mixer_.add(ms);
+            exp_p_[n_exp_++] = squash(ms);
+        }
+#endif
+#if HP_SKIPK_MOD
+        {
+            const int ms = skipk_.predict(c0_, bitpos_);
+            mixer_.add(ms);
+            exp_p_[n_exp_++] = squash(ms);
+        }
+#endif
+#if HP_SKIP3_MOD
+        {
+            const int ms = skip3_.predict(c0_, bitpos_);
+            mixer_.add(ms);
+            exp_p_[n_exp_++] = squash(ms);
+        }
+#endif
+#if HP_SKIP4_MOD
+        {
+            const int ms = skip4_.predict(c0_, bitpos_);
+            mixer_.add(ms);
+            exp_p_[n_exp_++] = squash(ms);
+        }
+#endif
+#if HP_SKIP5_MOD
+        {
+            const int ms = skip5_.predict(c0_, bitpos_);
+            mixer_.add(ms);
+            exp_p_[n_exp_++] = squash(ms);
+        }
+#endif
+#if HP_LZP_MOD
+        {
+            const int ms = lzp_.predict(c0_, bitpos_);
+            mixer_.add(ms);
+            exp_p_[n_exp_++] = squash(ms);
+        }
+#endif
+#if HP_SR_MOD
+        {
+            const int ms = sr_.predict(c0_);
+            mixer_.add(ms);
+            exp_p_[n_exp_++] = squash(ms);
+        }
+#endif
+#if HP_DMC_MOD
+        {
+            const int ms = dmc_.predict();
             mixer_.add(ms);
             exp_p_[n_exp_++] = squash(ms);
         }
@@ -538,6 +742,7 @@ class Predictor {
             if (wmatch_[i].match_len() > mlen) mlen = wmatch_[i].match_len();
 #endif
         mixer_.set_ctx(kGateMatch, mlen > 31 ? 31 : mlen);
+        last_mlen_ = mlen;
         mixer_.set_ctx(kGateHebb, hebb_.strength() > 15 ? 15 : hebb_.strength());
         mixer_.set_ctx(kGateEntropy, gria_.entropy_bucket());
 #if HP_EXTRA_GATES
@@ -690,15 +895,90 @@ class Predictor {
 #if HP_LINE_MOD
         linemod_.update(y, ens);
 #endif
-#if HP_WIKI_AXES
+#if HP_STATE_MOD
         statemod_.update(y, ens);
+#endif
+#if HP_DOM_MOD
         dommod_.update(y, ens);
+#endif
+#if HP_HDR_MOD
         hdrmod_.update(y, ens);
+#endif
+#if HP_DEPTH_MOD
         depthmod_.update(y, ens);
+#endif
+#if HP_FCCXT_MOD
+        fccxtmod_.update(y, ens);
+#endif
+#if HP_TPLNAME_MOD
+        tplmod_.update(y, ens);
+#endif
+#if HP_INFOKEY_MOD
+        infokeymod_.update(y, ens);
+#endif
+#if HP_BARIDX_MOD
+        baridxmod_.update(y, ens);
+#endif
+#if HP_PERIOD_MOD
+        periodmod_.update(y, ens);
+#endif
+#if HP_PRONOUN_MOD
+        pronounmod_.update(y, ens);
+#endif
+#if HP_HASH2_O6
+        o6b_.update(y, ens);
+#endif
+#if HP_LINKPIPE_MOD
+        linkpipemod_.update(y, ens);
+#endif
+#if HP_CITE_MOD
+        citemod_.update(y, ens);
+#endif
+#if HP_CAT_MOD
+        catmod_.update(y, ens);
+#endif
+#if HP_REDIR_MOD
+        redirmod_.update(y, ens);
+#endif
+#if HP_HEADING_MOD
+        headingmod_.update(y, ens);
+#endif
+#if HP_EXTLINK_MOD
+        extlinkmod_.update(y, ens);
+#endif
+#if HP_REFNAME_MOD
+        refnamemod_.update(y, ens);
+#endif
+#if HP_QOCXT_MOD
+        qocxtmod_.update(y, ens);
+#endif
+#if HP_ENTITY_MOD
+        entitymod_.update(y, ens);
 #endif
         for (int i = 0; i < kMatchModels; ++i) match_[i].update(y);
 #if HP_SPARSE_UTF8
         smatch_.update(y);
+#endif
+#if HP_SKIPK_MOD
+        skipk_.update(y);
+#endif
+#if HP_SKIP3_MOD
+        skip3_.update(y);
+#endif
+#if HP_SKIP4_MOD
+        skip4_.update(y);
+#endif
+#if HP_SKIP5_MOD
+        skip5_.update(y);
+#endif
+#if HP_LZP_MOD
+        lzp_.update(y);
+#endif
+#if HP_SR_MOD
+        sr_.update(y);
+#endif
+#if HP_DMC_MOD
+        dmc_.update(y);
 #endif
 #if HP_WORD_MATCH
         for (int i = 0; i < kWordMatch; ++i) wmatch_[i].update(y);
@@ -726,6 +1006,13 @@ class Predictor {
     int expert_p(int i) const { return exp_p_[i]; }
     int mixed_p() const { return mixed_p_; }
     int sparse_fraction() const { return sparse_; }
+    int mixer_n() const { return mixer_.num_layer1(); }
+    int mixer_dot(int j) const { return mixer_.layer1_dot(j); }
+    int mixer_p(int j) const { return mixer_.layer1_p(j); }
+    int c0() const { return c0_; }
+    int wiki_state() const { return wiki_.state(); }
+    int entropy_bucket() const { return gria_.entropy_bucket(); }
+    int last_match_len() const { return last_mlen_; }
 
  private:
     static std::vector<int> gate_sizes() {
@@ -882,8 +1169,17 @@ class Predictor {
         if (alnum) {
             word_hash_ = mix64(word_hash_ * 0x100000001B3ull +
                                static_cast<std::uint64_t>(byte | 0x20));
+#if HP_PRONOUN_MOD
+            if (pw_n_ < 11) pw_[pw_n_++] = static_cast<std::uint8_t>(byte | 32);
+#endif
         } else {
             word_hash_ = 0;
+#if HP_PRONOUN_MOD
+            if (pw_n_ > 0) {
+                pronoun_ = pronoun_word(pw_, pw_n_);
+                pw_n_ = 0;
+            }
+#endif
         }
         if (letter) {
             letter_hash_ = mix64(letter_hash_ * 0x100000001B3ull +
@@ -972,6 +1268,24 @@ class Predictor {
                 sh = (sh << 8) | ((hist_ >> (16 * i)) & 0xffull);
             smatch_.push_byte(byte, sh);
         }
+#endif
+#if HP_SKIPK_MOD
+        skipk_.push_byte(byte, hist_);
+#endif
+#if HP_SKIP3_MOD
+        skip3_.push_byte(byte, hist_);
+#endif
+#if HP_SKIP4_MOD
+        skip4_.push_byte(byte, hist_);
+#endif
+#if HP_SKIP5_MOD
+        skip5_.push_byte(byte, hist_);
+#endif
+#if HP_LZP_MOD
+        lzp_.push_byte(byte, hist_);
+#endif
+#if HP_SR_MOD
+        sr_.push_byte(byte);
 #endif
 #if HP_WORD_MATCH
         // fx2 keys: {0} current, {1,3} current-alt + word-before-prev, {7,2} letters + last
@@ -1286,20 +1600,123 @@ class Predictor {
         linemod_.set_context(h2(39, static_cast<std::uint64_t>(wiki_.line_kind() & 255) +
                                     ((hist_ & 0xffffffull) << 8)));
 #endif
-#if HP_WIKI_AXES
+#if HP_STATE_MOD
         statemod_.set_context(h2(40, static_cast<std::uint64_t>(wiki_.state()) +
                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DOM_MOD
         dommod_.set_context(h2(41, static_cast<std::uint64_t>(wiki_.sent_domain()) +
                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HDR_MOD
         hdrmod_.set_context(h2(42, static_cast<std::uint64_t>(wiki_.wiki_header()) +
                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DEPTH_MOD
         depthmod_.set_context(h2(43, static_cast<std::uint64_t>(wiki_.depth()) +
                                      ((hist_ & 0xffffffull) << 8)));
 #endif
+#if HP_FCCXT_MOD
+        fccxtmod_.set_context(h2(44, static_cast<std::uint64_t>(wiki_.cell_first()) +
+                                     (static_cast<std::uint64_t>(wiki_.above_cell()) << 8) +
+                                     (static_cast<std::uint64_t>(wiki_.tbl_cell() & 31) << 16) +
+                                     ((hist_ & 0xffull) << 24)));
+#endif
+#if HP_TPLNAME_MOD
+        tplmod_.set_context(h2(45, wiki_.tpl_name() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_INFOKEY_MOD
+        infokeymod_.set_context(h2(46, wiki_.infokey() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_BARIDX_MOD
+        baridxmod_.set_context(h2(47, static_cast<std::uint64_t>(wiki_.bar_idx()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PERIOD_MOD
+        {
+            int period = 0;
+            const int n = col_pos_;
+            if (n >= 8) {
+                for (int p = 2; p <= 32 && p * 2 <= n; ++p) {
+                    int ok = 1;
+                    for (int k = 0; k < 8; ++k) {
+                        if (cur_line_[n - 1 - k] != cur_line_[n - 1 - k - p]) {
+                            ok = 0;
+                            break;
+                        }
+                    }
+                    if (ok) { period = p; break; }
+                }
+            }
+            periodmod_.set_context(h2(48, static_cast<std::uint64_t>(period) +
+                                          ((hist_ & 0xffffffull) << 8)));
+        }
+#endif
+#if HP_PRONOUN_MOD
+        pronounmod_.set_context(h2(49, static_cast<std::uint64_t>(pronoun_) +
+                                       ((hist_ & 0xffffffull) << 8) +
+                                       (word_hash_ * 17ull)));
+#endif
+#if HP_HASH2_O6
+        o6b_.set_context(h2(106, hist_ & 0xffffffffffffull));
+#endif
+#if HP_LINKPIPE_MOD
+        linkpipemod_.set_context(h2(51, wiki_.link_disp() +
+                                        ((hist_ & 0xffffffull) << 8) +
+                                        static_cast<std::uint64_t>(wiki_.after_pipe()) * 131ull));
+#endif
+#if HP_CITE_MOD
+        citemod_.set_context(h2(52, static_cast<std::uint64_t>(wiki_.in_ref()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CAT_MOD
+        catmod_.set_context(h2(53, wiki_.cat_ns() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REDIR_MOD
+        redirmod_.set_context(h2(54, static_cast<std::uint64_t>(wiki_.in_redir()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HEADING_MOD
+        headingmod_.set_context(h2(55, static_cast<std::uint64_t>(wiki_.heading_level()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_EXTLINK_MOD
+        extlinkmod_.set_context(h2(56, static_cast<std::uint64_t>(wiki_.in_ext()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REFNAME_MOD
+        refnamemod_.set_context(h2(57, wiki_.refname() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_QOCXT_MOD
+        qocxtmod_.set_context(h2(58, static_cast<std::uint64_t>(brackets_.quote()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ENTITY_MOD
+        entitymod_.set_context(h2(59, wiki_.entity() + ((hist_ & 0xffffffull) << 8)));
+#endif
+    }
+
+    static int pronoun_word(const std::uint8_t* w, int n) {
+        auto eq = [&](const char* s) {
+            int m = 0;
+            while (s[m]) ++m;
+            if (m != n) return 0;
+            for (int i = 0; i < m; ++i)
+                if (w[i] != static_cast<std::uint8_t>(s[i])) return 0;
+            return 1;
+        };
+        return eq("he") || eq("she") || eq("it") || eq("his") || eq("her") ||
+               eq("him") || eq("they") || eq("them") || eq("this") ||
+               eq("that") || eq("who") || eq("its") || eq("we") || eq("our") ||
+               eq("you") || eq("their");
     }
 
     Config cfg_;
-    ContextModel o1_, o2_, o3_, o4_, o6_, word_;
+    ContextModel o1_, o2_, o3_, o4_, o6_;
+#if HP_HASH2_O6
+    ContextModel o6b_;
+#endif
+    ContextModel word_;
     ContextModel col_, tag_, wbi_;
     ContextModel sp13_, sp24_;
 #if HP_WORD_STREAMS
@@ -1348,15 +1765,87 @@ class Predictor {
 #if HP_LINE_MOD
     ContextModel linemod_;
 #endif
-#if HP_WIKI_AXES
+#if HP_STATE_MOD
     ContextModel statemod_;
+#endif
+#if HP_DOM_MOD
     ContextModel dommod_;
+#endif
+#if HP_HDR_MOD
     ContextModel hdrmod_;
+#endif
+#if HP_DEPTH_MOD
     ContextModel depthmod_;
+#endif
+#if HP_FCCXT_MOD
+    ContextModel fccxtmod_;
+#endif
+#if HP_TPLNAME_MOD
+    ContextModel tplmod_;
+#endif
+#if HP_INFOKEY_MOD
+    ContextModel infokeymod_;
+#endif
+#if HP_BARIDX_MOD
+    ContextModel baridxmod_;
+#endif
+#if HP_PERIOD_MOD
+    ContextModel periodmod_;
+#endif
+#if HP_PRONOUN_MOD
+    ContextModel pronounmod_;
+#endif
+#if HP_LINKPIPE_MOD
+    ContextModel linkpipemod_;
+#endif
+#if HP_CITE_MOD
+    ContextModel citemod_;
+#endif
+#if HP_CAT_MOD
+    ContextModel catmod_;
+#endif
+#if HP_REDIR_MOD
+    ContextModel redirmod_;
+#endif
+#if HP_HEADING_MOD
+    ContextModel headingmod_;
+#endif
+#if HP_EXTLINK_MOD
+    ContextModel extlinkmod_;
+#endif
+#if HP_REFNAME_MOD
+    ContextModel refnamemod_;
+#endif
+#if HP_QOCXT_MOD
+    ContextModel qocxtmod_;
+#endif
+#if HP_ENTITY_MOD
+    ContextModel entitymod_;
 #endif
     MatchModel match_[kMatchModels];
 #if HP_SPARSE_UTF8
     MatchModel smatch_;
+#endif
+#if HP_SKIPK_MOD
+    MatchModel skipk_;
+#endif
+#if HP_SKIP3_MOD
+    MatchModel skip3_;
+#endif
+#if HP_SKIP4_MOD
+    MatchModel skip4_;
+#endif
+#if HP_SKIP5_MOD
+    MatchModel skip5_;
+#endif
+#if HP_LZP_MOD
+    LzpModel lzp_;
+#endif
+#if HP_SR_MOD
+    SrModel sr_;
+#endif
+#if HP_DMC_MOD
+    DmcModel dmc_;
 #endif
 #if HP_WORD_MATCH
     WordMatchModel wmatch_[3 + (HP_WMATCH_4 ? 1 : 0) + (HP_WMATCH_5 ? 1 : 0)];
@@ -1405,7 +1894,13 @@ class Predictor {
     int exp_p_[kNumExperts + 8] = {0};
     int n_exp_ = 0;
     int mixed_p_ = 2048;
+    int last_mlen_ = 0;
     int sparse_ = 0;
+#if HP_PRONOUN_MOD
+    std::uint8_t pw_[12] = {};
+    int pw_n_ = 0;
+    int pronoun_ = 0;
+#endif
 #if HP_UTF8_IDLE || HP_GATE_UTF8
     int utf8left_ = 0;
 #endif

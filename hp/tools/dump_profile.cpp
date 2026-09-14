@@ -1,0 +1,368 @@
+// dump_profile.cpp — diagnostic dump of experts + layer-1 mixer dots + cheap context.
+// Not the codec. Same flags as the champ binary.
+//
+// Output int16 LE records:
+//   [n_exp stretched expert_p] [n_gates layer1 dots] [c0] [wiki] [mlen] [entropy] [bit]
+// Sidecar JSON names next to the .i16.
+
+#include <cstdio>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <vector>
+
+#include "hp/predictor.hpp"
+
+static void push_cm(std::vector<std::string>* n, const char* name) {
+    n->push_back(std::string(name) + ":ind");
+    if (HP_PY_EXPERT) n->push_back(std::string(name) + ":py");
+}
+
+static std::vector<std::string> expert_names() {
+    std::vector<std::string> n;
+    push_cm(&n, "o1");
+    push_cm(&n, "o2");
+    push_cm(&n, "o3");
+    push_cm(&n, "o4");
+    push_cm(&n, "o6");
+    push_cm(&n, "word");
+    push_cm(&n, "sp13");
+    push_cm(&n, "sp24");
+    push_cm(&n, "col");
+    push_cm(&n, "tag");
+    push_cm(&n, "wbi");
+#if HP_WORD_STREAMS
+    push_cm(&n, "wstr");
+#endif
+#if HP_BRACKET
+    push_cm(&n, "brk");
+#endif
+#if HP_LINKWORD
+    push_cm(&n, "link");
+#endif
+#if HP_NUMERIC
+    push_cm(&n, "num");
+#endif
+#if HP_PAT_MODEL
+    push_cm(&n, "pat");
+#endif
+#if HP_PPMD
+    push_cm(&n, "ppm");
+#endif
+#if HP_STEMMER
+    push_cm(&n, "stem0");
+#if HP_STEMMER_N >= 2
+    push_cm(&n, "stem1");
+#endif
+#endif
+#if HP_SENWORD
+    push_cm(&n, "sen");
+#endif
+#if HP_SENT_STREAM
+    push_cm(&n, "sentst");
+#endif
+#if HP_SENT_MEM
+    push_cm(&n, "sentmem");
+#endif
+#if HP_SENGRP_MOD
+    push_cm(&n, "sengrp");
+#endif
+#if HP_NEST_MOD
+    push_cm(&n, "nest");
+#endif
+#if HP_PARA_MOD
+    push_cm(&n, "para");
+#endif
+#if HP_LINE_MOD
+    push_cm(&n, "line");
+#endif
+#if HP_STATE_MOD
+    push_cm(&n, "state");
+#endif
+#if HP_DOM_MOD
+    push_cm(&n, "dom");
+#endif
+#if HP_HDR_MOD
+    push_cm(&n, "hdr");
+#endif
+#if HP_DEPTH_MOD
+    push_cm(&n, "depth");
+#endif
+#if HP_FCCXT_MOD
+    push_cm(&n, "fccxt");
+#endif
+#if HP_TPLNAME_MOD
+    push_cm(&n, "tpl");
+#endif
+#if HP_INFOKEY_MOD
+    push_cm(&n, "infokey");
+#endif
+#if HP_BARIDX_MOD
+    push_cm(&n, "baridx");
+#endif
+#if HP_PERIOD_MOD
+    push_cm(&n, "period");
+#endif
+#if HP_PRONOUN_MOD
+    push_cm(&n, "pronoun");
+#endif
+#if HP_HASH2_O6
+    push_cm(&n, "o6b");
+#endif
+#if HP_LINKPIPE_MOD
+    push_cm(&n, "linkpipe");
+#endif
+#if HP_CITE_MOD
+    push_cm(&n, "cite");
+#endif
+#if HP_CAT_MOD
+    push_cm(&n, "cat");
+#endif
+#if HP_REDIR_MOD
+    push_cm(&n, "redir");
+#endif
+#if HP_HEADING_MOD
+    push_cm(&n, "heading");
+#endif
+#if HP_EXTLINK_MOD
+    push_cm(&n, "extlink");
+#endif
+#if HP_REFNAME_MOD
+    push_cm(&n, "refname");
+#endif
+#if HP_QOCXT_MOD
+    push_cm(&n, "qocxt");
+#endif
+#if HP_ENTITY_MOD
+    push_cm(&n, "entity");
+#endif
+    n.push_back("m3");
+    n.push_back("m4");
+    n.push_back("m6");
+    n.push_back("m10");
+    n.push_back("m16");
+#if HP_MATCH_18
+    n.push_back("m8");
+#endif
+#if HP_MATCH_13
+    n.push_back("m13");
+#endif
+#if HP_MATCH_01
+    n.push_back("m1");
+#endif
+#if HP_MATCH_02
+    n.push_back("m2");
+#endif
+#if HP_MATCH_05
+    n.push_back("m5");
+#endif
+#if HP_MATCH_07
+    n.push_back("m7");
+#endif
+#if HP_MATCH_09
+    n.push_back("m9");
+#endif
+#if HP_MATCH_12
+    n.push_back("m12");
+#endif
+#if HP_MATCH_20
+    n.push_back("m20");
+#endif
+#if HP_SPARSE_UTF8
+    n.push_back("utf8gap");
+#endif
+#if HP_SKIPK_MOD
+    n.push_back("skipk");
+#endif
+#if HP_SKIP3_MOD
+    n.push_back("skip3");
+#endif
+#if HP_SKIP4_MOD
+    n.push_back("skip4");
+#endif
+#if HP_SKIP5_MOD
+    n.push_back("skip5");
+#endif
+#if HP_LZP_MOD
+    n.push_back("lzp");
+#endif
+#if HP_SR_MOD
+    n.push_back("sr");
+#endif
+#if HP_DMC_MOD
+    n.push_back("dmc");
+#endif
+#if HP_WORD_MATCH
+    n.push_back("wm1");
+    n.push_back("wm2");
+    n.push_back("wm3");
+#if HP_WMATCH_4
+    n.push_back("wm4");
+#endif
+#if HP_WMATCH_5
+    n.push_back("wm5");
+#endif
+#endif
+    n.push_back("hebb");
+#if HP_CTW
+    n.push_back("ctw");
+#endif
+    for (int i = 0; i < hp::DiscoveryPool::kSlots; ++i) {
+        char buf[32];
+        std::snprintf(buf, sizeof(buf), "disc%d", i);
+        push_cm(&n, buf);
+    }
+    return n;
+}
+
+static std::vector<std::string> gate_names() {
+    std::vector<std::string> n = {"c0", "alpha", "prev", "match", "entropy", "hebb"};
+#if HP_EXTRA_GATES
+    n.push_back("wiki");
+    n.push_back("pattern");
+#endif
+#if HP_POS_GATE
+    n.push_back("pos");
+#endif
+#if HP_GATE_SHAPE
+    n.push_back("shape");
+#endif
+#if HP_GATE_BRANCH
+    n.push_back("branch");
+#endif
+#if HP_GATE_DISP
+    n.push_back("disp");
+#endif
+#if HP_GATE_MLEN2
+    n.push_back("mlen2");
+#endif
+#if HP_GATE_ARGMAX
+    n.push_back("argmax");
+#endif
+#if HP_SEN_GROUP
+    n.push_back("sengroup");
+#endif
+#if HP_GATE_BREAK
+    n.push_back("break");
+#endif
+#if HP_GATE_WORDPOS
+    n.push_back("wordpos");
+#endif
+#if HP_GATE_HEDGE
+    n.push_back("hedge");
+#endif
+#if HP_GATE_FWORD
+    n.push_back("fword");
+#endif
+#if HP_GATE_UTF8
+    n.push_back("utf8");
+#endif
+#if HP_GATE_NEST
+    n.push_back("nestg");
+#endif
+#if HP_GATE_AGREE
+    n.push_back("agree");
+#endif
+#if HP_GATE_FCLASS
+    n.push_back("fclass");
+#endif
+#if HP_GATE_WMLEN
+    n.push_back("wmlen");
+#endif
+    return n;
+}
+
+int main(int argc, char** argv) {
+    if (argc < 3) {
+        std::fprintf(stderr,
+                     "usage: dump_profile <in> <out.i16> [stride] [maxrec] [mem]\n");
+        return 2;
+    }
+    const int stride = argc > 3 ? std::atoi(argv[3]) : 8;
+    const long maxrec = argc > 4 ? std::atol(argv[4]) : 4000000;
+    hp::Config cfg;
+    if (argc > 5) {
+        cfg.table_bits = std::atoi(argv[5]);
+        cfg.normalize();
+    }
+    std::FILE* in = std::fopen(argv[1], "rb");
+    if (!in) {
+        std::perror(argv[1]);
+        return 1;
+    }
+    std::FILE* out = std::fopen(argv[2], "wb");
+    if (!out) {
+        std::perror(argv[2]);
+        return 1;
+    }
+
+    hp::Predictor pred(cfg);
+    auto enames = expert_names();
+    auto gnames = gate_names();
+
+    long kept = 0, seen = 0;
+    std::vector<std::int16_t> rec;
+    int c;
+    int n_exp = 0, n_gates = 0;
+    while ((c = std::fgetc(in)) != EOF && kept < maxrec) {
+        for (int i = 7; i >= 0; --i) {
+            (void)pred.predict();
+            const int bit = (c >> i) & 1;
+            if ((seen % stride) == 0) {
+                n_exp = pred.expert_count();
+                n_gates = pred.mixer_n();
+                rec.clear();
+                rec.reserve(static_cast<std::size_t>(n_exp + n_gates + 5));
+                for (int e = 0; e < n_exp; ++e)
+                    rec.push_back(static_cast<std::int16_t>(hp::stretch(
+                        hp::clamp_int(pred.expert_p(e), 1, 4094))));
+                for (int g = 0; g < n_gates; ++g)
+                    rec.push_back(static_cast<std::int16_t>(pred.mixer_dot(g)));
+                rec.push_back(static_cast<std::int16_t>(pred.c0()));
+                rec.push_back(static_cast<std::int16_t>(pred.wiki_state()));
+                rec.push_back(static_cast<std::int16_t>(pred.last_match_len()));
+                rec.push_back(static_cast<std::int16_t>(pred.entropy_bucket()));
+                rec.push_back(static_cast<std::int16_t>(bit));
+                std::fwrite(rec.data(), 2, rec.size(), out);
+                ++kept;
+                if ((kept % 200000) == 0)
+                    std::fprintf(stderr, "kept %ld\n", kept);
+            }
+            pred.update(bit);
+            ++seen;
+        }
+    }
+    std::fclose(in);
+    std::fclose(out);
+
+    std::string meta = std::string(argv[2]) + ".json";
+    std::FILE* jo = std::fopen(meta.c_str(), "wb");
+    if (jo) {
+        std::fprintf(jo,
+                     "{\n  \"n_records\": %ld,\n  \"n_exp\": %d,\n  \"n_gates\": %d,\n"
+                     "  \"n_ctx\": 4,\n  \"stride\": %d,\n  \"wrec\": %d,\n"
+                     "  \"experts\": [",
+                     kept, n_exp, n_gates, stride, n_exp + n_gates + 5);
+        for (int i = 0; i < n_exp; ++i) {
+            const char* nm = i < (int)enames.size() ? enames[i].c_str() : "?";
+            std::fprintf(jo, "%s\"%s\"", i ? "," : "", nm);
+        }
+        std::fprintf(jo, "],\n  \"gates\": [");
+        for (int i = 0; i < n_gates; ++i) {
+            const char* nm = i < (int)gnames.size() ? gnames[i].c_str() : "?";
+            std::fprintf(jo, "%s\"%s\"", i ? "," : "", nm);
+        }
+        std::fprintf(jo, "]\n}\n");
+        std::fclose(jo);
+    }
+    if ((int)enames.size() != n_exp)
+        std::fprintf(stderr, "WARN name count %zu != n_exp %d\n", enames.size(),
+                     n_exp);
+    if ((int)gnames.size() != n_gates)
+        std::fprintf(stderr, "WARN gate name count %zu != n_gates %d\n",
+                     gnames.size(), n_gates);
+    std::fprintf(stderr, "dumped %ld rec, %d experts, %d gates -> %s\n", kept, n_exp,
+                 n_gates, argv[2]);
+    return 0;
+}

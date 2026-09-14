@@ -428,8 +428,101 @@
 #define HP_XSIMD 0                 // integer mixer dots via xsimd; default off; bit-identical to scalar
 #endif
 #ifndef HP_WIKI_AXES
-#define HP_WIKI_AXES 0             // dedicated CMs: wiki state, sent_domain, header, depth
+#define HP_WIKI_AXES 0             // bundle: state + sent_domain + header + depth CMs
+#endif
+#ifndef HP_STATE_MOD
+#define HP_STATE_MOD HP_WIKI_AXES  // dedicated wiki.state() CM
+#endif
+#ifndef HP_DOM_MOD
+#define HP_DOM_MOD HP_WIKI_AXES    // dedicated sent_domain CM (body/table/link/curly)
+#endif
+#ifndef HP_HDR_MOD
+#define HP_HDR_MOD HP_WIKI_AXES    // dedicated wiki_header() CM
+#endif
+#ifndef HP_DEPTH_MOD
+#define HP_DEPTH_MOD HP_WIKI_AXES  // dedicated wiki.depth() CM
 #endif
 #ifndef HP_MIXER_RANK
 #define HP_MIXER_RANK 0            // 0 = full W; >0 = U(ctx)×V shared rank for layer-1
+#endif
+#ifndef HP_PY_EXPERT
+#define HP_PY_EXPERT 1             // 0 = drop Pitman-Yor mixer input (kOutputs=1)
+#endif
+#ifndef HP_FCCXT_MOD
+#define HP_FCCXT_MOD 0             // first-char-of-cell as own CM (not col_ fold)
+#endif
+#ifndef HP_TPLNAME_MOD
+#define HP_TPLNAME_MOD 0           // {{TemplateName hash CM
+#endif
+#ifndef HP_INFOKEY_MOD
+#define HP_INFOKEY_MOD 0           // infobox |key= value CM
+#endif
+#ifndef HP_BARIDX_MOD
+#define HP_BARIDX_MOD 0            // nth | field index CM
+#endif
+#ifndef HP_PERIOD_MOD
+#define HP_PERIOD_MOD 0            // line/table stride period CM
+#endif
+#ifndef HP_PRONOUN_MOD
+#define HP_PRONOUN_MOD 0           // pronoun-ring CM
+#endif
+#ifndef HP_DMC_MOD
+#define HP_DMC_MOD 0               // small DMC graph expert
+#endif
+#ifndef HP_LZP_MOD
+#define HP_LZP_MOD 0               // last-occurrence byte predictor
+#endif
+#ifndef HP_SR_MOD
+#define HP_SR_MOD 0                // recency-rank (MTF) CM
+#endif
+#ifndef HP_SKIPK_MOD
+#define HP_SKIPK_MOD 0             // skip-2 sparse match
+#endif
+#ifndef HP_HASH_CHK
+#define HP_HASH_CHK 0              // dual-stage hash: index + 8-bit checksum, 3-probe
+#endif
+#ifndef HP_HASH2_O6
+#define HP_HASH2_O6 0              // second salt of o6 as extra CM (twin risk)
+#endif
+#ifndef HP_HASH_P5
+#define HP_HASH_P5 0               // HASH_CHK 5-probe instead of 3
+#endif
+#ifndef HP_SKIP3_MOD
+#define HP_SKIP3_MOD 0             // skip-3 sparse MatchModel
+#endif
+#ifndef HP_SKIP4_MOD
+#define HP_SKIP4_MOD 0             // skip-4 sparse MatchModel
+#endif
+#ifndef HP_SKIP5_MOD
+#define HP_SKIP5_MOD 0             // skip-5 sparse MatchModel
+#endif
+#ifndef HP_LINKPIPE_MOD
+#define HP_LINKPIPE_MOD 0          // [[target|display]] after-pipe CM
+#endif
+#ifndef HP_CITE_MOD
+#define HP_CITE_MOD 0              // <ref>…</ref> domain CM
+#endif
+#ifndef HP_DMC_GROW
+#define HP_DMC_GROW 0              // DMC cap 20 bits instead of 18
+#endif
+#ifndef HP_CAT_MOD
+#define HP_CAT_MOD 0               // [[Category: / File: / Image: namespace CM
+#endif
+#ifndef HP_REDIR_MOD
+#define HP_REDIR_MOD 0             // #REDIRECT domain CM
+#endif
+#ifndef HP_HEADING_MOD
+#define HP_HEADING_MOD 0           // leading '=' count (0–6) CM
+#endif
+#ifndef HP_EXTLINK_MOD
+#define HP_EXTLINK_MOD 0           // [http…] single-bracket external-link CM
+#endif
+#ifndef HP_REFNAME_MOD
+#define HP_REFNAME_MOD 0           // <ref name="…"> name hash CM
+#endif
+#ifndef HP_QOCXT_MOD
+#define HP_QOCXT_MOD 0             // dedicated '' / ''' / " quote-stack CM
+#endif
+#ifndef HP_ENTITY_MOD
+#define HP_ENTITY_MOD 0            // &nbsp; / &lt; HTML-entity name CM
 #endif

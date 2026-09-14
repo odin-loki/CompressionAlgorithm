@@ -56,6 +56,25 @@ class WikiMachine {
         prev1_ = last_;
         last_ = c;
 
+#if HP_EXTLINK_MOD
+        if (in_ext_ && (c == ']' || c == '\n')) in_ext_ = 0;
+        if (ext_pend_) {
+            ext_pend_ = 0;
+            if (c != '[') in_ext_ = 1;
+        }
+#endif
+#if HP_ENTITY_MOD
+        if (c == '&') {
+            ent_collect_ = 1;
+            entity_ = 0;
+        } else if (ent_collect_) {
+            if (c == ';' || c == ' ' || c == '\n' || c == '<')
+                ent_collect_ = 0;
+            else
+                entity_ = mix64(entity_ * 31ull + static_cast<std::uint64_t>(c));
+        }
+#endif
+
         // Close states that have a terminator.
         if (state_ == kWkAmp || state_ == kWkEntity) {
             if (c == ';' || c == ' ' || c == '\n' || c == '<') state_ = kWkText;
@@ -79,20 +98,70 @@ class WikiMachine {
             tag_name_ = 0;
             if (depth_ < 15) ++depth_;
             state_ = kWkTag;
+#if HP_CITE_MOD
+            cite_slash_ = 0;
+            cite_buf_ = 0;
+#endif
+#if HP_REFNAME_MOD
+            refn_collect_ = 0;
+            refn_win_ = 0;
+            refn_skipq_ = 0;
+#endif
             return;
         }
         if (c == '>' && in_tag_) {
+#if HP_CITE_MOD
+            if ((cite_buf_ & 0xffffffu) == 0x726566u)
+                in_ref_ = cite_slash_ ? 0 : 1;
+#endif
+#if HP_REFNAME_MOD
+            refn_collect_ = 0;
+#endif
             in_tag_ = 0;
             state_ = kWkText;
             return;
         }
         if (c == '/' && in_tag_) {
+#if HP_CITE_MOD
+            if (cite_buf_ == 0) cite_slash_ = 1;
+#endif
             if (depth_ > 0) --depth_;
             state_ = kWkTagEnd;
             return;
         }
         if (in_tag_) {
             tag_name_ = mix64(tag_name_ * 31 + static_cast<std::uint64_t>(c));
+#if HP_CITE_MOD
+            {
+                const unsigned ch = static_cast<unsigned>((c | 32) & 255);
+                if (ch >= 'a' && ch <= 'z' && (cite_buf_ & 0xff0000u) == 0)
+                    cite_buf_ = (cite_buf_ << 8) | ch;
+            }
+#endif
+#if HP_REFNAME_MOD
+            {
+                const unsigned ch = static_cast<unsigned>(c & 255);
+                const unsigned lc = ch | 32u;
+                const unsigned packed = (ch == '=') ? '=' : lc;
+                refn_win_ = (refn_win_ << 8) | packed;
+                if ((refn_win_ & 0xffffffffffull) == 0x6e616d653dull) {
+                    refn_collect_ = 1;
+                    refname_ = 0;
+                    refn_skipq_ = 1;
+                } else if (refn_collect_) {
+                    if (ch == '"' || ch == '\'') {
+                        if (refn_skipq_) refn_skipq_ = 0;
+                        else refn_collect_ = 0;
+                    } else if (ch == ' ' && refn_skipq_) {
+                    } else if (ch == ' ' || ch == '>' || ch == '/') {
+                        refn_collect_ = 0;
+                    } else {
+                        refn_skipq_ = 0;
+                        refname_ = mix64(refname_ * 31ull + ch);
+                    }
+                }
+            }
+#endif
             if (prev1_ == '!' && c == '-') state_ = kWkComment;
             return;
         }
@@ -102,17 +171,53 @@ class WikiMachine {
             state_ = kWkSquareOpen;
             sq_ = 1;
             linkword_ = 0;
+#if HP_CAT_MOD
+            ns_collect_ = 1;
+            ns_hash_ = 0;
+#endif
             return;
         }
         if (state_ == kWkSquareOpen) {
             if (c == ']') {
                 if (sq_ > 0) --sq_;
-                if (sq_ == 0) { state_ = kWkText; linkword_ = 0; }
+                if (sq_ == 0) {
+                    state_ = kWkText;
+                    linkword_ = 0;
+#if HP_LINKPIPE_MOD
+                    link_pipe_ = 0;
+                    disp_ = 0;
+#endif
+#if HP_CAT_MOD
+                    ns_collect_ = 0;
+                    ns_hash_ = 0;
+#endif
+                }
             } else if (c == ':') {
                 linkword_ = 0;   // fx2: [category:...] drops the hash
+#if HP_CAT_MOD
+                if (ns_hash_ != 0) ns_collect_ = 0;
+#endif
             } else {
                 // fx2-cmix: linkword = linkword * 2104 + j
                 linkword_ = linkword_ * 2104ull + static_cast<std::uint64_t>(c);
+#if HP_LINKPIPE_MOD
+                if (c == '|') {
+                    link_pipe_ = 1;
+                    disp_ = 0;
+                } else if (link_pipe_) {
+                    disp_ = disp_ * 2104ull + static_cast<std::uint64_t>(c);
+                }
+#endif
+#if HP_CAT_MOD
+                if (ns_collect_) {
+                    const int lc = c | 32;
+                    if (lc >= 'a' && lc <= 'z')
+                        ns_hash_ = mix64(ns_hash_ * 31ull +
+                                         static_cast<std::uint64_t>(lc));
+                    else if (c != ' ' && c != '_')
+                        ns_collect_ = 0;
+                }
+#endif
             }
             return;
         }
@@ -121,12 +226,19 @@ class WikiMachine {
         if (prev1_ == '{' && c == '{') {
             state_ = kWkCurly;
             if (depth_ < 15) ++depth_;
+#if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
+            tpl_collect_ = 1;
+            tpl_name_ = 0;
+            bar_idx_ = 0;
+            key_ = 0;
+            key_collect_ = 0;
+#endif
             return;
         }
         if (prev1_ == '{' && c == '|') {
             state_ = kWkWikiTable;
             in_table_ = 1;
-#if HP_TABLE_ABOVE
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD
             table_reset();
 #endif
             return;
@@ -138,7 +250,7 @@ class WikiMachine {
         if (prev1_ == '|' && c == '}') {
             state_ = kWkText;
             in_table_ = 0;
-#if HP_TABLE_ABOVE
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD
             table_reset();
 #endif
             return;
@@ -146,11 +258,21 @@ class WikiMachine {
         if (prev1_ == '}' && c == '}') {
             if (depth_ > 0) --depth_;
             state_ = kWkText;
+#if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
+            tpl_collect_ = 0;
+            key_collect_ = 0;
+#endif
             return;
         }
 
         if (c == '|' && (in_table_ || state_ == kWkCurly || state_ == kWkWikiTable)) {
             state_ = kWkVerticalBar;
+#if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
+            tpl_collect_ = 0;
+            if (bar_idx_ < 31) ++bar_idx_;
+            key_ = 0;
+            key_collect_ = 1;
+#endif
             return;
         }
         if (state_ == kWkVerticalBar && c != '|') {
@@ -190,8 +312,23 @@ class WikiMachine {
         if (c == '.' || c == ',' || c == ':' || c == '(' || c == ')' || c == '\n')
             senword_ = 0;
 
-#if HP_TABLE_ABOVE
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD
         if (in_table_) table_push(c);
+#endif
+#if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
+        if (tpl_collect_) {
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+                (c >= '0' && c <= '9'))
+                tpl_name_ = mix64(tpl_name_ * 31ull + static_cast<std::uint64_t>(c));
+            else if (c != '{')
+                tpl_collect_ = 0;
+        }
+        if (key_collect_) {
+            if (c == '=') key_collect_ = 0;
+            else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+                     (c >= '0' && c <= '9') || c == '_')
+                key_ = mix64(key_ * 31ull + static_cast<std::uint64_t>(c));
+        }
 #endif
 #if HP_SECTION_MUTE
         push_mute(c);
@@ -202,6 +339,14 @@ class WikiMachine {
             first_of_line_ = 1;
             line_kind_ = 0;
             if (state_ == kWkText) ++para_;
+#if HP_REDIR_MOD
+            in_redir_ = 0;
+            redir_i_ = 0;
+#endif
+#if HP_HEADING_MOD
+            heading_ = 0;
+            heading_run_ = 0;
+#endif
         } else if (first_of_line_ && c != ' ' && c != '\t') {
             first_of_line_ = 0;
             line_kind_ = c;
@@ -210,7 +355,40 @@ class WikiMachine {
             wiki_header_ = (c == '>') ? 1 : 0;
             if (is_paragraph_ && state_ == kWkText) state_ = kWkFirstUpper;
             if (wiki_header_ && state_ == kWkText) state_ = kWkHeader;
+#if HP_REDIR_MOD
+            if (c == '#') redir_i_ = 1;
+#endif
+#if HP_HEADING_MOD
+            if (c == '=') {
+                heading_ = 1;
+                heading_run_ = 1;
+            }
+#endif
+        } else {
+#if HP_REDIR_MOD
+            if (!in_redir_ && redir_i_ > 0 && redir_i_ < 9) {
+                static const char rd[] = "redirect";
+                if ((c | 32) == rd[redir_i_ - 1]) {
+                    ++redir_i_;
+                    if (redir_i_ == 9) in_redir_ = 1;
+                } else {
+                    redir_i_ = 0;
+                }
+            }
+#endif
+#if HP_HEADING_MOD
+            if (heading_run_) {
+                if (c == '=') {
+                    if (heading_ < 6) ++heading_;
+                } else {
+                    heading_run_ = 0;
+                }
+            }
+#endif
         }
+#if HP_EXTLINK_MOD
+        if (c == '[' && prev1_ != '[') ext_pend_ = 1;
+#endif
     }
 
     int state() const { return state_; }
@@ -275,10 +453,109 @@ class WikiMachine {
         return 0;
     }
     int above_cell() const {
-#if HP_TABLE_ABOVE
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD
         const int r = (tbl_row_ + 3) & 3;
         const int c = tbl_cell_ > 31 ? 31 : tbl_cell_;
         return tbl_cells_[r][c];
+#else
+        return 0;
+#endif
+    }
+    int cell_first() const {
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD
+        const int c = tbl_cell_ > 31 ? 31 : tbl_cell_;
+        return tbl_cells_[tbl_row_][c];
+#else
+        return 0;
+#endif
+    }
+    int tbl_cell() const {
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD
+        return tbl_cell_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t tpl_name() const {
+#if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
+        return tpl_name_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t infokey() const {
+#if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
+        return key_;
+#else
+        return 0;
+#endif
+    }
+    int bar_idx() const {
+#if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
+        return bar_idx_;
+#else
+        return 0;
+#endif
+    }
+    int in_ref() const {
+#if HP_CITE_MOD
+        return in_ref_;
+#else
+        return 0;
+#endif
+    }
+    int after_pipe() const {
+#if HP_LINKPIPE_MOD
+        return link_pipe_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t link_disp() const {
+#if HP_LINKPIPE_MOD
+        return disp_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t cat_ns() const {
+#if HP_CAT_MOD
+        return ns_hash_;
+#else
+        return 0;
+#endif
+    }
+    int in_redir() const {
+#if HP_REDIR_MOD
+        return in_redir_;
+#else
+        return 0;
+#endif
+    }
+    int heading_level() const {
+#if HP_HEADING_MOD
+        return heading_;
+#else
+        return 0;
+#endif
+    }
+    int in_ext() const {
+#if HP_EXTLINK_MOD
+        return in_ext_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t refname() const {
+#if HP_REFNAME_MOD
+        return refname_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t entity() const {
+#if HP_ENTITY_MOD
+        return entity_;
 #else
         return 0;
 #endif
@@ -311,7 +588,49 @@ class WikiMachine {
 #if HP_WIKI_TEMP
     int is_temp_ = 0;
 #endif
-#if HP_TABLE_ABOVE
+#if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
+    std::uint64_t tpl_name_ = 0;
+    std::uint64_t key_ = 0;
+    int bar_idx_ = 0;
+    int tpl_collect_ = 0;
+    int key_collect_ = 0;
+#endif
+#if HP_CITE_MOD
+    int in_ref_ = 0;
+    int cite_slash_ = 0;
+    std::uint32_t cite_buf_ = 0;
+#endif
+#if HP_LINKPIPE_MOD
+    int link_pipe_ = 0;
+    std::uint64_t disp_ = 0;
+#endif
+#if HP_CAT_MOD
+    int ns_collect_ = 0;
+    std::uint64_t ns_hash_ = 0;
+#endif
+#if HP_REDIR_MOD
+    int in_redir_ = 0;
+    int redir_i_ = 0;
+#endif
+#if HP_HEADING_MOD
+    int heading_ = 0;
+    int heading_run_ = 0;
+#endif
+#if HP_EXTLINK_MOD
+    int in_ext_ = 0;
+    int ext_pend_ = 0;
+#endif
+#if HP_REFNAME_MOD
+    std::uint64_t refname_ = 0;
+    std::uint64_t refn_win_ = 0;
+    int refn_collect_ = 0;
+    int refn_skipq_ = 0;
+#endif
+#if HP_ENTITY_MOD
+    std::uint64_t entity_ = 0;
+    int ent_collect_ = 0;
+#endif
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD
     void table_reset() {
         for (int r = 0; r < 4; ++r)
             for (int c = 0; c < 32; ++c) tbl_cells_[r][c] = 0;
