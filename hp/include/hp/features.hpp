@@ -460,9 +460,6 @@
 #ifndef HP_BUF_DELTA
 #define HP_BUF_DELTA 3             // buf_bits = table_bits + delta; 3 is byte-identical on proxies
 #endif
-#ifndef HP_LAZY_TABLES
-#define HP_LAZY_TABLES 1           // demand-allocate context/match hash chunks
-#endif
 #ifndef HP_PY_EXPERT
 #define HP_PY_EXPERT 1             // 0 = drop Pitman-Yor mixer input (kOutputs=1)
 #endif

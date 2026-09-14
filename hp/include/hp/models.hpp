@@ -13,7 +13,7 @@
 #include <cstring>
 #include <vector>
 
-#include "hp/chunk_table.hpp"
+#include "hp/hash_table.hpp"
 #include "hp/features.hpp"
 #include "hp/int_math.hpp"
 #include "hp/statemap.hpp"
