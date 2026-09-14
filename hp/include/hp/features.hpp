@@ -445,6 +445,18 @@
 #ifndef HP_MIXER_RANK
 #define HP_MIXER_RANK 0            // 0 = full W; >0 = U(ctx)×V shared rank for layer-1
 #endif
+#ifndef HP_MIXER_CLAMP_BITS
+#define HP_MIXER_CLAMP_BITS 16     // ±(1<<N); 16 is byte-identical on proxy corpora
+#endif
+#ifndef HP_MIXER_W16
+#define HP_MIXER_W16 0             // int16 packed weights: ratio cost on proxies
+#endif
+#ifndef HP_MIXER_ST16
+#define HP_MIXER_ST16 1            // expert stretches as int16 in mixer buffer
+#endif
+#ifndef HP_HEDGE_W16
+#define HP_HEDGE_W16 1             // hedge gate weights as uint16 Q16
+#endif
 #ifndef HP_PY_EXPERT
 #define HP_PY_EXPERT 1             // 0 = drop Pitman-Yor mixer input (kOutputs=1)
 #endif

@@ -47,6 +47,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "hp/features.hpp"
 #include "hp/int_math.hpp"
 
 #ifndef HP_HEDGE_ETA
@@ -75,7 +76,13 @@ inline std::uint32_t pow2_neg(int k) {
 class Hedge {
  public:
     explicit Hedge(int n)
-        : n_(n), w_(static_cast<std::size_t>(n), (1u << 16) / (n ? n : 1)),
+        : n_(n),
+#if HP_HEDGE_W16
+          w_(static_cast<std::size_t>(n),
+             static_cast<std::uint16_t>((1u << 16) / (n ? n : 1))),
+#else
+          w_(static_cast<std::size_t>(n), (1u << 16) / (n ? n : 1)),
+#endif
           p_(static_cast<std::size_t>(n), 2048) {}
 
     // Record expert d's 12-bit probability for this bit.
@@ -111,7 +118,7 @@ class Hedge {
             // the average degenerates.
             const std::uint32_t decay = ((loss_q16 >> 8) * HP_HEDGE_ETA) >> 8;
             const std::uint32_t keepf = 65536u - (decay > 8192u ? 8192u : decay);
-            w_[d] = static_cast<std::uint32_t>(
+            w_[d] = static_cast<Weight>(
                 (static_cast<std::uint64_t>(w_[d]) * keepf) >> 16);
             if (w_[d] < 16) w_[d] = 16;   // floor: never fully kill an expert
             wsum += w_[d];
@@ -121,7 +128,7 @@ class Hedge {
         //    underflow. Total is 1<<16.
         if (wsum > 0) {
             for (int d = 0; d < n_; ++d) {
-                w_[d] = static_cast<std::uint32_t>(
+                w_[d] = static_cast<Weight>(
                     (static_cast<std::uint64_t>(w_[d]) << 16) / wsum);
             }
         }
@@ -135,7 +142,7 @@ class Hedge {
                     (static_cast<std::uint64_t>(w_[d]) * (65536u - sigma_q16)) >> 16;
                 const std::uint64_t share =
                     (static_cast<std::uint64_t>(unif) * sigma_q16) >> 16;
-                w_[d] = static_cast<std::uint32_t>(keep + share);
+                w_[d] = static_cast<Weight>(keep + share);
             }
         }
     }
@@ -145,8 +152,13 @@ class Hedge {
     int size() const { return n_; }
 
  private:
+#if HP_HEDGE_W16
+    using Weight = std::uint16_t;
+#else
+    using Weight = std::uint32_t;
+#endif
     int n_;
-    std::vector<std::uint32_t> w_;
+    std::vector<Weight> w_;
     std::vector<int> p_;
     int pr_ = 2048;
 };

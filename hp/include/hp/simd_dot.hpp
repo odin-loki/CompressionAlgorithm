@@ -9,6 +9,7 @@
 
 #include "hp/features.hpp"
 #include "hp/int_math.hpp"
+#include "hp/mixer_weights.hpp"
 
 #if HP_XSIMD
 #ifndef __SSE4_1__
@@ -69,12 +70,25 @@ inline std::int64_t dot_i32(const std::int32_t* a, const std::int32_t* b, int n)
 #endif
 }
 
-inline void axpy_shift_clamp(std::int32_t* w, const std::int32_t* st, int n,
-                             std::int32_t err, std::int32_t l1) {
+inline std::int64_t dot_mixer_wt(const MixerWt* w, const MixerSt* st, int n) {
+#if HP_XSIMD && !HP_MIXER_W16 && !HP_MIXER_ST16
+    return dot_i32(reinterpret_cast<const std::int32_t*>(w),
+                   reinterpret_cast<const std::int32_t*>(st), n);
+#else
+    std::int64_t sum = 0;
+    for (int i = 0; i < n; ++i)
+        sum += static_cast<std::int64_t>(mixer_wt_expand(w[i])) * st[i];
+    return sum;
+#endif
+}
+
+inline void axpy_mixer_wt(MixerWt* w, const MixerSt* st, int n, std::int32_t err,
+                          std::int32_t l1) {
     for (int i = 0; i < n; ++i) {
         const std::int32_t dw = static_cast<std::int32_t>(
             (static_cast<std::int64_t>(st[i]) * err * l1) >> 14);
-        w[i] = clamp_int(w[i] + dw, -(1 << 22), (1 << 22));
+        w[i] = mixer_wt_pack(
+            clamp_int(mixer_wt_expand(w[i]) + dw, -kMixerClamp, kMixerClamp));
     }
 }
 

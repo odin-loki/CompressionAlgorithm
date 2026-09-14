@@ -1,43 +1,19 @@
 #pragma once
 //
 // hp/mixer.hpp -- two-layer gated logistic mixer network + APM (SSE) stage.
-//
-// WHY TWO LAYERS
-// --------------
-// A single mixer with weight sets selected by one context forces a choice: a
-// rich gate captures more structure but splits the training data N ways, so
-// every weight vector learns from 1/N of the stream. The first build of this
-// file gated a single mixer on (alpha_bucket * 256 + c0) and MEASURABLY LOST
-// ~0.17% against the ungated baseline -- dilution beat the signal.
-//
-// The fix is the PAQ8/cmix architecture. Several layer-1 mixers each see ALL
-// the inputs and ALL the data, but each is gated on a DIFFERENT context. None
-// is diluted, because each one's context set is small enough to train
-// densely. A layer-2 mixer then learns how much to trust each layer-1
-// opinion, itself gated on the partial byte.
-//
-// This is what makes GRIA usable: alpha gets its own layer-1 mixer with just
-// 8 weight sets (one per alpha bucket), so it trains densely, and layer 2
-// learns when the entropy-regime opinion is worth listening to.
-//
-// Training is per-mixer against the true bit, not backpropagated. For
-// logistic mixing the gradient of coding loss w.r.t. a weight is exactly
-// (y - p) * input, so this is correct gradient descent at every node and
-// needs no chain rule.
 
 #include <cstdint>
 #include <vector>
 
 #include "hp/features.hpp"
 #include "hp/int_math.hpp"
+#include "hp/mixer_weights.hpp"
 #include "hp/simd_dot.hpp"
 
 namespace hp {
 
 class MixerNet {
  public:
-    // n_inputs: experts. ctx_sizes: one entry per layer-1 mixer, giving how
-    // many weight sets that mixer keeps. ctx2_size: layer-2 weight sets.
     MixerNet(int n_inputs, const std::vector<int>& ctx_sizes, int ctx2_size, int lr,
              const std::vector<int>& lrs = {})
         : n_(n_inputs), k_(static_cast<int>(ctx_sizes.size())), lr_(lr),
@@ -45,15 +21,16 @@ class MixerNet {
           st_(n_inputs, 0), dot_(ctx_sizes.size(), 0),
           pr_(ctx_sizes.size(), 2048),
           lr1_(ctx_sizes.size(), lr),
-          v_(static_cast<std::size_t>(ctx2_size) * ctx_sizes.size(), 0) {
+          v_(static_cast<std::size_t>(ctx2_size) * ctx_sizes.size(), mixer_wt_pack(0)) {
         w_.resize(ctx_sizes.size());
         const int w0 = (1 << 16) / (n_inputs > 0 ? n_inputs : 1);
+        const MixerWt w0p = mixer_wt_pack(w0);
         for (std::size_t j = 0; j < ctx_sizes.size(); ++j) {
 #if HP_MIXER_RANK
             (void)w0;
             w_[j].clear();
 #else
-            w_[j].assign(static_cast<std::size_t>(ctx_sizes[j]) * n_inputs, w0);
+            w_[j].assign(static_cast<std::size_t>(ctx_sizes[j]) * n_inputs, w0p);
 #endif
             if (j < lrs.size()) lr1_[j] = lrs[j];
         }
@@ -64,55 +41,57 @@ class MixerNet {
             ufac_.resize(ctx_sizes.size());
             vfac_.resize(ctx_sizes.size());
             for (std::size_t j = 0; j < ctx_sizes.size(); ++j) {
-                ufac_[j].assign(static_cast<std::size_t>(ctx_sizes[j]) * r, 1 << 16);
-                vfac_[j].assign(static_cast<std::size_t>(r) * n_inputs, 0);
+                ufac_[j].assign(static_cast<std::size_t>(ctx_sizes[j]) * r,
+                                 mixer_wt_pack(1 << 16));
+                vfac_[j].assign(static_cast<std::size_t>(r) * n_inputs, mixer_wt_pack(0));
                 for (int i = 0; i < n_inputs; ++i) {
-                    vfac_[j][static_cast<std::size_t>(i % r) * n_inputs + i] = w0;
+                    vfac_[j][static_cast<std::size_t>(i % r) * n_inputs + i] = w0p;
                 }
             }
         }
 #endif
         const int v0 = (1 << 16) / (k_ > 0 ? k_ : 1);
-        for (auto& x : v_) x = v0;
+        const MixerWt v0p = mixer_wt_pack(v0);
+        for (auto& x : v_) x = v0p;
     }
 
     void reset_inputs() { m_ = 0; }
-    void add(int stretched) { if (m_ < n_) st_[m_++] = stretched; }
+    void add(int stretched) {
+        if (m_ < n_) st_[m_++] = static_cast<MixerSt>(stretched);
+    }
 
     void set_ctx(int j, int c) { ctx_[j] = c % ctx_sizes_[j]; }
     void set_ctx2(int c) { ctx2_ = c; }
 
     int mix() {
-        // Layer 1.
         for (int j = 0; j < k_; ++j) {
 #if HP_MIXER_RANK
             const int r = HP_MIXER_RANK;
-            const std::int32_t* V = vfac_[static_cast<std::size_t>(j)].data();
+            const MixerWt* V = vfac_[static_cast<std::size_t>(j)].data();
             for (int f = 0; f < r; ++f) {
                 const std::int64_t hk =
-                    dot_i32(V + static_cast<std::size_t>(f) * n_, st_.data(), m_);
+                    dot_mixer_wt(V + static_cast<std::size_t>(f) * n_, st_.data(), m_);
                 hid_[static_cast<std::size_t>(j) * r + f] =
                     clamp_int(static_cast<int>(hk >> 16), -2047, 2047);
             }
-            const std::int32_t* U =
+            const MixerWt* U =
                 &ufac_[static_cast<std::size_t>(j)][static_cast<std::size_t>(ctx_[j]) * r];
             std::int64_t sum = 0;
             for (int f = 0; f < r; ++f)
-                sum += static_cast<std::int64_t>(U[f]) *
+                sum += static_cast<std::int64_t>(mixer_wt_expand(U[f])) *
                        hid_[static_cast<std::size_t>(j) * r + f];
             dot_[j] = clamp_int(static_cast<int>(sum >> 16), -2047, 2047);
 #else
-            const std::int32_t* w = &w_[j][static_cast<std::size_t>(ctx_[j]) * n_];
-            const std::int64_t sum = dot_i32(w, st_.data(), m_);
+            const MixerWt* w = &w_[j][static_cast<std::size_t>(ctx_[j]) * n_];
+            const std::int64_t sum = dot_mixer_wt(w, st_.data(), m_);
             dot_[j] = clamp_int(static_cast<int>(sum >> 16), -2047, 2047);
 #endif
             pr_[j] = squash(dot_[j]);
         }
-        // Layer 2. Inputs are the layer-1 logits directly -- already in
-        // stretch domain, so no table round-trip and no precision loss.
-        const std::int32_t* v = &v_[static_cast<std::size_t>(ctx2_) * k_];
+        const MixerWt* v = &v_[static_cast<std::size_t>(ctx2_) * k_];
         std::int64_t sum = 0;
-        for (int j = 0; j < k_; ++j) sum += static_cast<std::int64_t>(v[j]) * dot_[j];
+        for (int j = 0; j < k_; ++j)
+            sum += static_cast<std::int64_t>(mixer_wt_expand(v[j])) * dot_[j];
         final_dot_ = clamp_int(static_cast<int>(sum >> 16), -2047, 2047);
         final_pr_ = squash(final_dot_);
         return final_pr_;
@@ -128,11 +107,12 @@ class MixerNet {
         }
 #endif
 
-        std::int32_t* v = &v_[static_cast<std::size_t>(ctx2_) * k_];
+        MixerWt* v = &v_[static_cast<std::size_t>(ctx2_) * k_];
         for (int j = 0; j < k_; ++j) {
             const std::int32_t dv = static_cast<std::int32_t>(
                 (static_cast<std::int64_t>(dot_[j]) * err2 * lr_) >> 14);
-            v[j] = clamp_int(v[j] + dv, -(1 << 22), (1 << 22));
+            v[j] = mixer_wt_pack(
+                clamp_int(mixer_wt_expand(v[j]) + dv, -kMixerClamp, kMixerClamp));
         }
 
         for (int j = 0; j < k_; ++j) {
@@ -140,24 +120,24 @@ class MixerNet {
             const int l1 = lr1_[static_cast<std::size_t>(j)];
 #if HP_MIXER_RANK
             const int r = HP_MIXER_RANK;
-            std::int32_t* U =
+            MixerWt* U =
                 &ufac_[static_cast<std::size_t>(j)][static_cast<std::size_t>(ctx_[j]) * r];
             for (int f = 0; f < r; ++f) {
-                const std::int32_t Uk = U[f];
+                const std::int32_t Uk = mixer_wt_expand(U[f]);
                 const std::int32_t dU = static_cast<std::int32_t>(
                     (static_cast<std::int64_t>(hid_[static_cast<std::size_t>(j) * r + f]) *
                      err * l1) >> 14);
-                U[f] = clamp_int(Uk + dU, -(1 << 22), (1 << 22));
+                U[f] = mixer_wt_pack(clamp_int(Uk + dU, -kMixerClamp, kMixerClamp));
                 int l1k = static_cast<int>(
                     (static_cast<std::int64_t>(l1) * (Uk >> 8) + 128) >> 8);
                 if (l1k < 1) l1k = 1;
                 if (l1k > 4095) l1k = 4095;
-                axpy_shift_clamp(&vfac_[static_cast<std::size_t>(j)][static_cast<std::size_t>(f) * n_],
-                                 st_.data(), m_, err, l1k);
+                axpy_mixer_wt(&vfac_[static_cast<std::size_t>(j)][static_cast<std::size_t>(f) * n_],
+                              st_.data(), m_, err, l1k);
             }
 #else
-            std::int32_t* w = &w_[j][static_cast<std::size_t>(ctx_[j]) * n_];
-            axpy_shift_clamp(w, st_.data(), m_, err, l1);
+            MixerWt* w = &w_[j][static_cast<std::size_t>(ctx_[j]) * n_];
+            axpy_mixer_wt(w, st_.data(), m_, err, l1);
 #endif
         }
     }
@@ -170,14 +150,14 @@ class MixerNet {
     int n_, k_, lr_;
     std::vector<int> ctx_sizes_;
     std::vector<int> ctx_;
-    std::vector<std::int32_t> st_;
+    std::vector<MixerSt> st_;
     std::vector<int> dot_, pr_;
-    std::vector<int> lr1_;                       // per-mixer layer-1 rates
-    std::vector<std::vector<std::int32_t>> w_;  // layer 1 (full W)
-    std::vector<std::int32_t> v_;               // layer 2
+    std::vector<int> lr1_;
+    std::vector<std::vector<MixerWt>> w_;
+    std::vector<MixerWt> v_;
 #if HP_MIXER_RANK
-    std::vector<std::vector<std::int32_t>> ufac_;  // per-ctx rank codes
-    std::vector<std::vector<std::int32_t>> vfac_;  // shared rank × experts
+    std::vector<std::vector<MixerWt>> ufac_;
+    std::vector<std::vector<MixerWt>> vfac_;
     std::vector<int> hid_;
 #endif
     int m_ = 0;
@@ -185,16 +165,6 @@ class MixerNet {
     int final_dot_ = 0;
     int final_pr_ = 2048;
 };
-
-// ---------------------------------------------------------------------------
-// APM / SSE -- adaptive probability map
-// ---------------------------------------------------------------------------
-//
-// Learns a correction curve for a probability given a context. The mixer gets
-// the ranking roughly right but is systematically mis-calibrated in specific
-// contexts; the APM fixes exactly that. 33 knots evenly spaced in stretch
-// domain, integer linear interpolation, both straddling knots updated so the
-// curve stays smooth.
 
 class APM {
  public:
