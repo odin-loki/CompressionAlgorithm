@@ -24,7 +24,7 @@ class WordMatchModel {
     WordMatchModel(ByteRing* ring, int table_bits, int word_order)
         : ring_(ring), order_(word_order < 1 ? 1 : word_order),
           tab_mask_((1u << table_bits) - 1),
-          tab_(static_cast<std::size_t>(1) << table_bits, 0) {
+          tab_(table_bits) {
         counter_init(st_.data(), st_.size());
     }
 
@@ -46,13 +46,13 @@ class WordMatchModel {
                 hash2(0x574D0000ull + static_cast<std::uint64_t>(order_), whist) &
                 tab_mask_;
             if (len_ == 0) {
-                const std::uint32_t cand = tab_[h];
+                const std::uint32_t cand = tab_.get(h);
                 if (cand > 0 && cand < pos) {
                     ptr_ = cand;
                     len_ = 1;
                 }
             }
-            tab_[h] = pos;
+            tab_.ref(h) = pos;
         }
         if (len_ > 0 && (pos - ptr_) > ring_->mask()) len_ = 0;
     }
@@ -85,7 +85,7 @@ class WordMatchModel {
     ByteRing* ring_;
     int order_;
     std::uint32_t tab_mask_;
-    std::vector<std::uint32_t> tab_;
+    HashTable<std::uint32_t> tab_;
     std::array<Counter, 64> st_{};
     std::uint32_t ptr_ = 0;
     int len_ = 0, expected_ = 0, sidx_ = 0;

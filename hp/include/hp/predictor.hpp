@@ -69,12 +69,12 @@ struct Config {
 
     // Encoder and decoder must agree. match/buf sizes are a function of
     // table_bits (the only size the archive header carries).
-    // table_bits + 4 restores the historical default (22 -> 26).
+    // buf_bits = table_bits + HP_BUF_DELTA (default 3 -> 25 at mem 22).
     void normalize() {
         if (table_bits < 16) table_bits = 16;
         if (table_bits > 28) table_bits = 28;
         match_bits = table_bits;
-        buf_bits = table_bits + 4;
+        buf_bits = table_bits + HP_BUF_DELTA;
         if (buf_bits > 28) buf_bits = 28;
     }
 };

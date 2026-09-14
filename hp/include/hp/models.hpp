@@ -13,6 +13,7 @@
 #include <cstring>
 #include <vector>
 
+#include "hp/chunk_table.hpp"
 #include "hp/features.hpp"
 #include "hp/int_math.hpp"
 #include "hp/statemap.hpp"
@@ -88,7 +89,7 @@ class ContextModel {
           bits_(table_bits),
 #endif
           limit_(limit),
-          t_(static_cast<std::size_t>(1) << table_bits, 0),
+          t_(table_bits),
 #if HP_HASH_CHK
           chk_(static_cast<std::size_t>(1) << table_bits, 0),
 #endif
@@ -118,7 +119,7 @@ class ContextModel {
                 found = static_cast<int>(i);
                 break;
             }
-            const int stt = t_[i];
+            const int stt = t_.get(i);
             const int pri = (chk_[i] == 0)
                                 ? -1
                                 : (stfind.n0(stt) + stfind.n1(stt));
@@ -131,13 +132,13 @@ class ContextModel {
             idx_ = static_cast<std::uint32_t>(found);
         } else {
             idx_ = static_cast<std::uint32_t>(best);
-            t_[idx_] = 0;
+            t_.ref(idx_) = 0;
             chk_[idx_] = want;
         }
 #else
         idx_ = mixed & mask_;
 #endif
-        state_ = t_[idx_];
+        state_ = t_.get(idx_);
         p_ind_ = sm_.predict(state_);
         const StateTable& st = state_table();
 #if HP_PY_EXPERT
@@ -186,7 +187,7 @@ class ContextModel {
         (void)ens_p12;
 #endif
         sm_.update(y, limit_, ncl);
-        t_[idx_] = static_cast<std::uint16_t>(state_table().next(state_, y));
+        t_.ref(idx_) = static_cast<std::uint16_t>(state_table().next(state_, y));
     }
 
  private:
@@ -195,7 +196,7 @@ class ContextModel {
     int bits_;
 #endif
     int limit_;
-    std::vector<std::uint16_t> t_;  // bit-history states (882 states -> 16 bit)
+    HashTable<std::uint16_t> t_;  // bit-history states (882 states -> 16 bit)
 #if HP_HASH_CHK
     std::vector<std::uint8_t> chk_;
 #endif
@@ -266,7 +267,7 @@ class MatchModel {
     MatchModel(ByteRing* ring, int table_bits, int order = 6, int skip = 1)
         : ring_(ring), order_(order), skip_(skip < 1 ? 1 : skip),
           tab_mask_((1u << table_bits) - 1),
-          tab_(static_cast<std::size_t>(1) << table_bits, 0) {
+          tab_(table_bits) {
         counter_init(st_.data(), st_.size());
     }
 
@@ -303,13 +304,13 @@ class MatchModel {
                       static_cast<std::uint64_t>(skip_) * 17ull,
                   key) & tab_mask_;
         if (len_ == 0) {
-            const std::uint32_t cand = tab_[h];
+            const std::uint32_t cand = tab_.get(h);
             if (cand > 0 && cand < pos) {
                 ptr_ = cand;
                 len_ = 1;
             }
         }
-        tab_[h] = pos;
+        tab_.ref(h) = pos;
 
         // 3. Drop the match if it has fallen out of the ring buffer.
         if (len_ > 0 && (pos - ptr_) > ring_->mask()) len_ = 0;
@@ -348,7 +349,7 @@ class MatchModel {
     int order_;
     int skip_;
     std::uint32_t tab_mask_;
-    std::vector<std::uint32_t> tab_;
+    HashTable<std::uint32_t> tab_;
     std::array<Counter, 64> st_{};
     std::uint32_t ptr_ = 0;
     int len_ = 0;
@@ -387,7 +388,7 @@ class HebbianModel {
           syn_target_(static_cast<std::size_t>(1) << table_bits, 0),
           syn_strength_(static_cast<std::size_t>(1) << table_bits, 0),
           sm_(),
-          t_(static_cast<std::size_t>(1) << table_bits, 0),
+          t_(table_bits),
           limit_(limit) {}
 
     // Called at each word boundary with the completed word and its
@@ -428,13 +429,13 @@ class HebbianModel {
 
     int predict(int c0) {
         idx_ = (h_ ^ (static_cast<std::uint32_t>(c0) * 0x9E3779B1u)) & mask_;
-        state_ = t_[idx_];
+        state_ = t_.get(idx_);
         return stretch(sm_.predict(state_));
     }
 
     void update(int y) {
         sm_.update(y, limit_);
-        t_[idx_] = static_cast<std::uint16_t>(state_table().next(state_, y));
+        t_.ref(idx_) = static_cast<std::uint16_t>(state_table().next(state_, y));
     }
 
     int strength() const { return strength_; }
@@ -444,7 +445,7 @@ class HebbianModel {
     std::vector<std::uint64_t> syn_target_;
     std::vector<std::uint8_t> syn_strength_;
     StateMap sm_;
-    std::vector<std::uint16_t> t_;
+    HashTable<std::uint16_t> t_;
     int limit_;
     std::uint32_t h_ = 0, idx_ = 0;
     int state_ = 0, strength_ = 0;
