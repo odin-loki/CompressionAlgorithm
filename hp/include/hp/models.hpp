@@ -186,7 +186,8 @@ class ContextModel {
         (void)ens_p12;
 #endif
         sm_.update(y, limit_, ncl);
-        t_.ref(idx_) = static_cast<std::uint16_t>(state_table().next(state_, y));
+        const StateTable& st = state_table();
+        t_.ref(idx_) = static_cast<std::uint16_t>(st.next(state_, y));
     }
 
  private:
@@ -434,7 +435,8 @@ class HebbianModel {
 
     void update(int y) {
         sm_.update(y, limit_);
-        t_.ref(idx_) = static_cast<std::uint16_t>(state_table().next(state_, y));
+        const StateTable& st = state_table();
+        t_.ref(idx_) = static_cast<std::uint16_t>(st.next(state_, y));
     }
 
     int strength() const { return strength_; }

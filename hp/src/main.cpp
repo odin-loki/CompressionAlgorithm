@@ -19,6 +19,13 @@
 #include <cstdint>
 #include <vector>
 
+#ifdef __linux__
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
 #include "hp/coder.hpp"
 #include "hp/dict.hpp"
 #include "hp/predictor.hpp"
@@ -63,6 +70,47 @@ bool read_all(const char* path, std::vector<std::uint8_t>& out) {
     return true;
 }
 
+#ifdef __linux__
+struct MappedInput {
+    std::uint8_t* data = nullptr;
+    std::size_t size = 0;
+
+    ~MappedInput() { unmap(); }
+
+    void unmap() {
+        if (data) {
+            munmap(data, size);
+            data = nullptr;
+            size = 0;
+        }
+    }
+};
+
+bool map_input(const char* path, MappedInput& mapped) {
+    const int fd = open(path, O_RDONLY);
+    if (fd < 0) return false;
+    struct stat st;
+    if (fstat(fd, &st) != 0 || st.st_size < 0) {
+        close(fd);
+        return false;
+    }
+    mapped.size = static_cast<std::size_t>(st.st_size);
+    if (mapped.size == 0) {
+        close(fd);
+        mapped.data = nullptr;
+        return true;
+    }
+    void* p = mmap(nullptr, mapped.size, PROT_READ, MAP_PRIVATE, fd, 0);
+    close(fd);
+    if (p == MAP_FAILED) {
+        mapped.size = 0;
+        return false;
+    }
+    mapped.data = static_cast<std::uint8_t*>(p);
+    return true;
+}
+#endif
+
 int usage() {
     std::fprintf(stderr,
         "usage: hp c|d [--no-gria] [--dict] [--mem N] [--lr N] [--profile] "
@@ -72,11 +120,11 @@ int usage() {
 
 // Code one buffer through the predictor + coder. Shared so the profiler and
 // the real path can never diverge.
-void encode_buffer(const std::vector<std::uint8_t>& buf, hp::Config cfg,
+void encode_buffer(const std::uint8_t* buf, std::size_t len, hp::Config cfg,
                    std::FILE* out, hp::Profiler* prof) {
     hp::Predictor pred(cfg);
     hp::Encoder enc(out);
-    for (std::size_t k = 0; k < buf.size(); ++k) {
+    for (std::size_t k = 0; k < len; ++k) {
         const int c = buf[k];
         for (int i = 7; i >= 0; --i) {
             const int p = pred.predict();
@@ -96,10 +144,34 @@ void encode_buffer(const std::vector<std::uint8_t>& buf, hp::Config cfg,
 int compress(const char* inp, const char* outp, hp::Config cfg, bool use_dict,
              bool profile) {
     std::vector<std::uint8_t> raw;
-    if (!read_all(inp, raw)) return 1;
+#ifdef __linux__
+    MappedInput mapped;
+#endif
+    const std::uint8_t* raw_ptr = nullptr;
+    std::size_t raw_len = 0;
+
+    if (use_dict) {
+        if (!read_all(inp, raw)) return 1;
+        raw_ptr = raw.data();
+        raw_len = raw.size();
+    } else {
+#ifdef __linux__
+        if (map_input(inp, mapped)) {
+            raw_ptr = mapped.data;
+            raw_len = mapped.size;
+        } else
+#endif
+        {
+            if (!read_all(inp, raw)) return 1;
+            raw_ptr = raw.data();
+            raw_len = raw.size();
+        }
+    }
 
     std::vector<std::string> dict;
     std::vector<std::uint8_t> dser, body;
+    const std::uint8_t* encode_ptr = raw_ptr;
+    std::size_t encode_len = raw_len;
     if (use_dict) {
         dict = hp::dict_build(raw);
         hp::dict_serialise(dict, dser);
@@ -110,10 +182,13 @@ int compress(const char* inp, const char* outp, hp::Config cfg, bool use_dict,
             use_dict = false;
             dict.clear();
             dser.clear();
-            body = raw;
+            encode_ptr = raw_ptr;
+            encode_len = raw_len;
+        } else {
+            encode_ptr = body.data();
+            encode_len = body.size();
         }
     }
-    const std::vector<std::uint8_t>& encode_src = use_dict ? body : raw;
 
     std::FILE* out = std::fopen(outp, "wb");
     if (!out) { std::perror(outp); return 1; }
@@ -128,32 +203,32 @@ int compress(const char* inp, const char* outp, hp::Config cfg, bool use_dict,
     std::fputc(cfg.table_bits, out);
     std::fputc(cfg.mixer_lr, out);
     std::fputc(use_dict ? 1 : 0, out);
-    put64(out, raw.size());
-    put64(out, encode_src.size());
+    put64(out, raw_len);
+    put64(out, encode_len);
     put32(out, static_cast<std::uint32_t>(dser.size()));
     if (!dser.empty()) std::fwrite(dser.data(), 1, dser.size(), out);
     const long hdr = std::ftell(out);
 
     hp::Profiler prof;
-    encode_buffer(encode_src, cfg, out, profile ? &prof : nullptr);
+    encode_buffer(encode_ptr, encode_len, cfg, out, profile ? &prof : nullptr);
 
     const long csize = std::ftell(out);
     std::fclose(out);
 
-    if (!raw.empty()) {
+    if (raw_len > 0) {
         const std::uint64_t bits = static_cast<std::uint64_t>(csize) * 8;
         std::fprintf(stderr,
             "\rin %llu B  out %ld B  (hdr+dict %ld)  bpc %llu.%03llu\n",
-            (unsigned long long)raw.size(), csize, hdr,
-            (unsigned long long)(bits / raw.size()),
-            (unsigned long long)((bits * 1000 / raw.size()) % 1000));
+            (unsigned long long)raw_len, csize, hdr,
+            (unsigned long long)(bits / raw_len),
+            (unsigned long long)((bits * 1000 / raw_len) % 1000));
         if (use_dict) {
             std::fprintf(stderr, "  dict: %zu words, %zu B, body %zu B (%lld%% of raw)\n",
                 dict.size(), dser.size(), body.size(),
-                (long long)(body.size() * 100 / raw.size()));
+                (long long)(body.size() * 100 / raw_len));
         }
     }
-    if (profile) prof.report(stderr, encode_src.size());
+    if (profile) prof.report(stderr, encode_len);
     return 0;
 }
 
@@ -198,6 +273,8 @@ int decompress(const char* inp, const char* outp) {
     if (!use_dict) {
         out = std::fopen(outp, "wb");
         if (!out) { std::perror(outp); std::fclose(in); return 1; }
+        static char outbuf[65536];
+        setvbuf(out, outbuf, _IOFBF, sizeof(outbuf));
     }
 
     for (std::uint64_t i = 0; i < nbody; ++i) {

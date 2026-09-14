@@ -22,8 +22,6 @@
 #include <array>
 #include <cstdint>
 #include <cstdio>
-#include <cstring>
-#include <vector>
 
 namespace hp {
 
@@ -39,7 +37,7 @@ class Encoder {
  public:
     static constexpr std::size_t kBufSize = 65536;
 
-    explicit Encoder(std::FILE* out) : out_(out) { buf_.reserve(kBufSize); }
+    explicit Encoder(std::FILE* out) : out_(out) {}
 
     // p = P(bit == 1), 16-bit (1 .. 65535). Caller must clamp.
     void encode(int bit, int p) {
@@ -68,18 +66,19 @@ class Encoder {
 
  private:
     void emit_byte(std::uint8_t b) {
-        buf_.push_back(b);
-        if (buf_.size() >= kBufSize) flush_buf();
+        buf_[buf_len_++] = b;
+        if (buf_len_ >= kBufSize) flush_buf();
     }
 
     void flush_buf() {
-        if (buf_.empty()) return;
-        std::fwrite(buf_.data(), 1, buf_.size(), out_);
-        buf_.clear();
+        if (buf_len_ == 0) return;
+        std::fwrite(buf_.data(), 1, buf_len_, out_);
+        buf_len_ = 0;
     }
 
     std::FILE* out_;
-    std::vector<std::uint8_t> buf_;
+    std::array<std::uint8_t, kBufSize> buf_{};
+    std::size_t buf_len_ = 0;
     std::uint32_t x1_ = 0;
     std::uint32_t x2_ = 0xffffffffu;
 };
