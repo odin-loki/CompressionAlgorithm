@@ -208,6 +208,37 @@ class ContextModel {
 };
 
 // ---------------------------------------------------------------------------
+// Shared byte ring buffer for match models
+// ---------------------------------------------------------------------------
+//
+// Every byte-keyed MatchModel in a Predictor reads the same byte history.
+// Storing that history once (instead of once per model) cuts RAM by
+// (N-1) * 2^buf_bits with no effect on compression — the models only
+// differ in their hash tables and match state.
+
+class ByteRing {
+ public:
+    explicit ByteRing(int buf_bits)
+        : mask_((1u << buf_bits) - 1),
+          buf_(static_cast<std::size_t>(1) << buf_bits, 0) {}
+
+    void push(std::uint8_t byte) {
+        buf_[pos_ & mask_] = byte;
+        ++pos_;
+    }
+
+    std::uint32_t pos() const { return pos_; }
+    std::uint32_t mask() const { return mask_; }
+
+    std::uint8_t at(std::uint32_t p) const { return buf_[p & mask_]; }
+
+ private:
+    std::uint32_t mask_;
+    std::vector<std::uint8_t> buf_;
+    std::uint32_t pos_ = 0;
+};
+
+// ---------------------------------------------------------------------------
 // Match model
 // ---------------------------------------------------------------------------
 //
@@ -231,22 +262,21 @@ class MatchModel {
     // short orders fire often and loosely, long orders fire rarely and
     // authoritatively, and they decorrelate from each other far more than
     // adjacent context models do.
-    MatchModel(int buf_bits, int table_bits, int order = 6, int skip = 1)
-        : order_(order), skip_(skip < 1 ? 1 : skip), buf_bits_(buf_bits),
-          buf_mask_((1u << buf_bits) - 1),
+    MatchModel(ByteRing* ring, int table_bits, int order = 6, int skip = 1)
+        : ring_(ring), order_(order), skip_(skip < 1 ? 1 : skip),
           tab_mask_((1u << table_bits) - 1),
-          buf_(static_cast<std::size_t>(1) << buf_bits, 0),
           tab_(static_cast<std::size_t>(1) << table_bits, 0),
           st_(64) {
         counter_init(st_.data(), st_.size());
     }
 
-    // Called once per byte, after `byte` has been appended to `hist`
-    // (so the low 6 bytes of hist are the current kMinLen-byte suffix).
+    // Called once per byte after the shared ring has been updated.
+    // `hist` holds the current kMinLen-byte suffix in its low bytes.
     void push_byte(int byte, std::uint64_t hist) {
+        const std::uint32_t pos = ring_->pos();
         // 1. Verify the standing prediction before anything else.
         if (len_ > 0) {
-            if (ptr_ < pos_ && buf_[ptr_ & buf_mask_] == static_cast<std::uint8_t>(byte)) {
+            if (ptr_ < pos && ring_->at(ptr_) == static_cast<std::uint8_t>(byte)) {
                 if (len_ < 65535) ++len_;
                 ++ptr_;
             } else {
@@ -254,11 +284,7 @@ class MatchModel {
             }
         }
 
-        // 2. Append.
-        buf_[pos_ & buf_mask_] = static_cast<std::uint8_t>(byte);
-        ++pos_;
-
-        // 3. Index this suffix; adopt a new match if we have none.
+        // 2. Index this suffix; adopt a new match if we have none.
         std::uint64_t key = 0;
         if (skip_ <= 1) {
             const std::uint64_t maskbits =
@@ -278,23 +304,24 @@ class MatchModel {
                   key) & tab_mask_;
         if (len_ == 0) {
             const std::uint32_t cand = tab_[h];
-            if (cand > 0 && cand < pos_) {
+            if (cand > 0 && cand < pos) {
                 ptr_ = cand;
                 len_ = 1;
             }
         }
-        tab_[h] = pos_;
+        tab_[h] = pos;
 
-        // 4. Drop the match if it has fallen out of the ring buffer.
-        if (len_ > 0 && (pos_ - ptr_) > buf_mask_) len_ = 0;
+        // 3. Drop the match if it has fallen out of the ring buffer.
+        if (len_ > 0 && (pos - ptr_) > ring_->mask()) len_ = 0;
     }
 
     // Once per bit. bitpos is 0..7, c0 is the partial byte with sentinel.
     int predict(int c0, int bitpos) {
         valid_ = false;
-        if (len_ == 0 || ptr_ >= pos_) return 0;
+        const std::uint32_t pos = ring_->pos();
+        if (len_ == 0 || ptr_ >= pos) return 0;
 
-        const int pred_byte = buf_[ptr_ & buf_mask_];
+        const int pred_byte = ring_->at(ptr_);
         // The match only stands if the bits decoded so far in the current
         // byte agree with the predicted byte.
         if (bitpos > 0) {
@@ -317,15 +344,12 @@ class MatchModel {
     int match_len() const { return len_; }
 
  private:
+    ByteRing* ring_;
     int order_;
     int skip_;
-    int buf_bits_;
-    std::uint32_t buf_mask_;
     std::uint32_t tab_mask_;
-    std::vector<std::uint8_t> buf_;
     std::vector<std::uint32_t> tab_;
     std::vector<Counter> st_;
-    std::uint32_t pos_ = 0;
     std::uint32_t ptr_ = 0;
     int len_ = 0;
     int expected_ = 0;

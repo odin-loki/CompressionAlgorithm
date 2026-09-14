@@ -20,30 +20,26 @@ namespace hp {
 
 class WordMatchModel {
  public:
-    WordMatchModel(int buf_bits, int table_bits, int word_order)
-        : order_(word_order < 1 ? 1 : word_order),
-          buf_bits_(buf_bits),
-          buf_mask_((1u << buf_bits) - 1),
+    WordMatchModel(ByteRing* ring, int table_bits, int word_order)
+        : ring_(ring), order_(word_order < 1 ? 1 : word_order),
           tab_mask_((1u << table_bits) - 1),
-          buf_(static_cast<std::size_t>(1) << buf_bits, 0),
           tab_(static_cast<std::size_t>(1) << table_bits, 0),
           st_(64) {
         counter_init(st_.data(), st_.size());
     }
 
-    // byte is the byte just completed. whist is the rolling hash of the last
-    // `order_` completed words (0 if we have not yet seen that many).
+    // Called once per byte after the shared ring has been updated.
+    // whist is the rolling hash of the last `order_` completed words.
     void push_byte(int byte, std::uint64_t whist, int at_word_boundary) {
+        const std::uint32_t pos = ring_->pos();
         if (len_ > 0) {
-            if (ptr_ < pos_ && buf_[ptr_ & buf_mask_] == static_cast<std::uint8_t>(byte)) {
+            if (ptr_ < pos && ring_->at(ptr_) == static_cast<std::uint8_t>(byte)) {
                 if (len_ < 65535) ++len_;
                 ++ptr_;
             } else {
                 len_ = 0;
             }
         }
-        buf_[pos_ & buf_mask_] = static_cast<std::uint8_t>(byte);
-        ++pos_;
 
         if (at_word_boundary && whist != 0) {
             const std::uint32_t h =
@@ -51,20 +47,21 @@ class WordMatchModel {
                 tab_mask_;
             if (len_ == 0) {
                 const std::uint32_t cand = tab_[h];
-                if (cand > 0 && cand < pos_) {
+                if (cand > 0 && cand < pos) {
                     ptr_ = cand;
                     len_ = 1;
                 }
             }
-            tab_[h] = pos_;
+            tab_[h] = pos;
         }
-        if (len_ > 0 && (pos_ - ptr_) > buf_mask_) len_ = 0;
+        if (len_ > 0 && (pos - ptr_) > ring_->mask()) len_ = 0;
     }
 
     int predict(int c0, int bitpos) {
         valid_ = false;
-        if (len_ == 0 || ptr_ >= pos_) return 0;
-        const int pred_byte = buf_[ptr_ & buf_mask_];
+        const std::uint32_t pos = ring_->pos();
+        if (len_ == 0 || ptr_ >= pos) return 0;
+        const int pred_byte = ring_->at(ptr_);
         if (bitpos > 0) {
             if (((pred_byte | 0x100) >> (8 - bitpos)) != c0) {
                 len_ = 0;
@@ -85,14 +82,12 @@ class WordMatchModel {
     int match_len() const { return len_; }
 
  private:
+    ByteRing* ring_;
     int order_;
-    int buf_bits_;
-    std::uint32_t buf_mask_;
     std::uint32_t tab_mask_;
-    std::vector<std::uint8_t> buf_;
     std::vector<std::uint32_t> tab_;
     std::vector<Counter> st_;
-    std::uint32_t pos_ = 0, ptr_ = 0;
+    std::uint32_t ptr_ = 0;
     int len_ = 0, expected_ = 0, sidx_ = 0;
     bool valid_ = false;
 };

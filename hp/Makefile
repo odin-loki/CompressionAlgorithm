@@ -3,7 +3,7 @@ CXX      ?= g++
 CXXFLAGS ?= -std=c++17 -O2 -Wall -Iinclude
 BIN      ?= build
 
-all: $(BIN)/hp $(BIN)/dump_experts
+all: $(BIN)/hp $(BIN)/dump_experts $(BIN)/bench
 
 $(BIN):
 	mkdir -p $(BIN)
@@ -12,6 +12,9 @@ $(BIN)/hp: src/main.cpp $(wildcard include/hp/*.hpp) | $(BIN)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 $(BIN)/dump_experts: tools/dump_experts.cpp $(wildcard include/hp/*.hpp) | $(BIN)
+	$(CXX) $(CXXFLAGS) -o $@ $<
+
+$(BIN)/bench: tools/bench.cpp $(wildcard include/hp/*.hpp) | $(BIN)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 test: all
