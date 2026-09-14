@@ -8,10 +8,12 @@
 // not a maximal model zoo. Adding models is the step-2/3 work and it bolts on
 // here without touching the coder or the mixer.
 
+#include <array>
 #include <cstdint>
 #include <cstring>
 #include <vector>
 
+#include "hp/chunk_table.hpp"
 #include "hp/features.hpp"
 #include "hp/int_math.hpp"
 #include "hp/statemap.hpp"
@@ -87,11 +89,11 @@ class ContextModel {
           bits_(table_bits),
 #endif
           limit_(limit),
-          t_(static_cast<std::size_t>(1) << table_bits, 0),
+          t_(table_bits),
 #if HP_HASH_CHK
           chk_(static_cast<std::size_t>(1) << table_bits, 0),
 #endif
-          sm_(StateTable::kStates) {}
+          sm_() {}
 
     void set_context(std::uint32_t h) { h_ = h; idle_ = false; }
     // fx2 sets(): keep a mixer slot but do not pollute the table.
@@ -117,7 +119,7 @@ class ContextModel {
                 found = static_cast<int>(i);
                 break;
             }
-            const int stt = t_[i];
+            const int stt = t_.get(i);
             const int pri = (chk_[i] == 0)
                                 ? -1
                                 : (stfind.n0(stt) + stfind.n1(stt));
@@ -130,13 +132,13 @@ class ContextModel {
             idx_ = static_cast<std::uint32_t>(found);
         } else {
             idx_ = static_cast<std::uint32_t>(best);
-            t_[idx_] = 0;
+            t_.ref(idx_) = 0;
             chk_[idx_] = want;
         }
 #else
         idx_ = mixed & mask_;
 #endif
-        state_ = t_[idx_];
+        state_ = t_.get(idx_);
         p_ind_ = sm_.predict(state_);
         const StateTable& st = state_table();
 #if HP_PY_EXPERT
@@ -185,7 +187,7 @@ class ContextModel {
         (void)ens_p12;
 #endif
         sm_.update(y, limit_, ncl);
-        t_[idx_] = static_cast<std::uint16_t>(state_table().next(state_, y));
+        t_.ref(idx_) = static_cast<std::uint16_t>(state_table().next(state_, y));
     }
 
  private:
@@ -194,7 +196,7 @@ class ContextModel {
     int bits_;
 #endif
     int limit_;
-    std::vector<std::uint16_t> t_;  // bit-history states (882 states -> 16 bit)
+    HashTable<std::uint16_t> t_;  // bit-history states (882 states -> 16 bit)
 #if HP_HASH_CHK
     std::vector<std::uint8_t> chk_;
 #endif
@@ -205,6 +207,37 @@ class ContextModel {
     int state_ = 0;
     int p_ind_ = 2048;
     int p_py_ = 2048;
+};
+
+// ---------------------------------------------------------------------------
+// Shared byte ring buffer for match models
+// ---------------------------------------------------------------------------
+//
+// Every byte-keyed MatchModel in a Predictor reads the same byte history.
+// Storing that history once (instead of once per model) cuts RAM by
+// (N-1) * 2^buf_bits with no effect on compression — the models only
+// differ in their hash tables and match state.
+
+class ByteRing {
+ public:
+    explicit ByteRing(int buf_bits)
+        : mask_((1u << buf_bits) - 1),
+          buf_(static_cast<std::size_t>(1) << buf_bits, 0) {}
+
+    void push(std::uint8_t byte) {
+        buf_[pos_ & mask_] = byte;
+        ++pos_;
+    }
+
+    std::uint32_t pos() const { return pos_; }
+    std::uint32_t mask() const { return mask_; }
+
+    std::uint8_t at(std::uint32_t p) const { return buf_[p & mask_]; }
+
+ private:
+    std::uint32_t mask_;
+    std::vector<std::uint8_t> buf_;
+    std::uint32_t pos_ = 0;
 };
 
 // ---------------------------------------------------------------------------
@@ -231,22 +264,20 @@ class MatchModel {
     // short orders fire often and loosely, long orders fire rarely and
     // authoritatively, and they decorrelate from each other far more than
     // adjacent context models do.
-    MatchModel(int buf_bits, int table_bits, int order = 6, int skip = 1)
-        : order_(order), skip_(skip < 1 ? 1 : skip), buf_bits_(buf_bits),
-          buf_mask_((1u << buf_bits) - 1),
+    MatchModel(ByteRing* ring, int table_bits, int order = 6, int skip = 1)
+        : ring_(ring), order_(order), skip_(skip < 1 ? 1 : skip),
           tab_mask_((1u << table_bits) - 1),
-          buf_(static_cast<std::size_t>(1) << buf_bits, 0),
-          tab_(static_cast<std::size_t>(1) << table_bits, 0),
-          st_(64) {
+          tab_(table_bits) {
         counter_init(st_.data(), st_.size());
     }
 
-    // Called once per byte, after `byte` has been appended to `hist`
-    // (so the low 6 bytes of hist are the current kMinLen-byte suffix).
+    // Called once per byte after the shared ring has been updated.
+    // `hist` holds the current kMinLen-byte suffix in its low bytes.
     void push_byte(int byte, std::uint64_t hist) {
+        const std::uint32_t pos = ring_->pos();
         // 1. Verify the standing prediction before anything else.
         if (len_ > 0) {
-            if (ptr_ < pos_ && buf_[ptr_ & buf_mask_] == static_cast<std::uint8_t>(byte)) {
+            if (ptr_ < pos && ring_->at(ptr_) == static_cast<std::uint8_t>(byte)) {
                 if (len_ < 65535) ++len_;
                 ++ptr_;
             } else {
@@ -254,11 +285,7 @@ class MatchModel {
             }
         }
 
-        // 2. Append.
-        buf_[pos_ & buf_mask_] = static_cast<std::uint8_t>(byte);
-        ++pos_;
-
-        // 3. Index this suffix; adopt a new match if we have none.
+        // 2. Index this suffix; adopt a new match if we have none.
         std::uint64_t key = 0;
         if (skip_ <= 1) {
             const std::uint64_t maskbits =
@@ -277,24 +304,25 @@ class MatchModel {
                       static_cast<std::uint64_t>(skip_) * 17ull,
                   key) & tab_mask_;
         if (len_ == 0) {
-            const std::uint32_t cand = tab_[h];
-            if (cand > 0 && cand < pos_) {
+            const std::uint32_t cand = tab_.get(h);
+            if (cand > 0 && cand < pos) {
                 ptr_ = cand;
                 len_ = 1;
             }
         }
-        tab_[h] = pos_;
+        tab_.ref(h) = pos;
 
-        // 4. Drop the match if it has fallen out of the ring buffer.
-        if (len_ > 0 && (pos_ - ptr_) > buf_mask_) len_ = 0;
+        // 3. Drop the match if it has fallen out of the ring buffer.
+        if (len_ > 0 && (pos - ptr_) > ring_->mask()) len_ = 0;
     }
 
     // Once per bit. bitpos is 0..7, c0 is the partial byte with sentinel.
     int predict(int c0, int bitpos) {
         valid_ = false;
-        if (len_ == 0 || ptr_ >= pos_) return 0;
+        const std::uint32_t pos = ring_->pos();
+        if (len_ == 0 || ptr_ >= pos) return 0;
 
-        const int pred_byte = buf_[ptr_ & buf_mask_];
+        const int pred_byte = ring_->at(ptr_);
         // The match only stands if the bits decoded so far in the current
         // byte agree with the predicted byte.
         if (bitpos > 0) {
@@ -317,15 +345,12 @@ class MatchModel {
     int match_len() const { return len_; }
 
  private:
+    ByteRing* ring_;
     int order_;
     int skip_;
-    int buf_bits_;
-    std::uint32_t buf_mask_;
     std::uint32_t tab_mask_;
-    std::vector<std::uint8_t> buf_;
-    std::vector<std::uint32_t> tab_;
-    std::vector<Counter> st_;
-    std::uint32_t pos_ = 0;
+    HashTable<std::uint32_t> tab_;
+    std::array<Counter, 64> st_{};
     std::uint32_t ptr_ = 0;
     int len_ = 0;
     int expected_ = 0;
@@ -360,9 +385,10 @@ class HebbianModel {
  public:
     HebbianModel(int table_bits, int limit)
         : mask_((1u << table_bits) - 1),
-          syn_(static_cast<std::size_t>(1) << table_bits),
-          sm_(StateTable::kStates),
-          t_(static_cast<std::size_t>(1) << table_bits, 0),
+          syn_target_(static_cast<std::size_t>(1) << table_bits, 0),
+          syn_strength_(static_cast<std::size_t>(1) << table_bits, 0),
+          sm_(),
+          t_(table_bits),
           limit_(limit) {}
 
     // Called at each word boundary with the completed word and its
@@ -371,19 +397,20 @@ class HebbianModel {
         if (prev_word == 0) return;
         const std::uint32_t slot = static_cast<std::uint32_t>(
             mix64(prev_word)) & mask_;
-        Syn& s = syn_[slot];
-        if (s.target == cur_word) {
-            if (s.strength < 255) ++s.strength;          // potentiation
-        } else if (s.strength > 0) {
-            --s.strength;                                 // competition
-            if (s.strength == 0) s.target = cur_word;     // takeover
+        std::uint64_t& target = syn_target_[slot];
+        std::uint8_t& strength = syn_strength_[slot];
+        if (target == cur_word) {
+            if (strength < 255) ++strength;          // potentiation
+        } else if (strength > 0) {
+            --strength;                               // competition
+            if (strength == 0) target = cur_word;     // takeover
         } else {
-            s.target = cur_word;
-            s.strength = 1;
+            target = cur_word;
+            strength = 1;
         }
         // Synaptic scaling: global slow decay keeps strengths bounded and
         // lets the network forget associations that stop being reinforced.
-        if ((++tick_ & 0x3FF) == 0 && s.strength > 0) --s.strength;
+        if ((++tick_ & 0x3FF) == 0 && strength > 0) --strength;
     }
 
     // Context for the current bit: the strongest association from the
@@ -391,33 +418,34 @@ class HebbianModel {
     void set_context(std::uint64_t prev_word) {
         const std::uint32_t slot = static_cast<std::uint32_t>(
             mix64(prev_word)) & mask_;
-        const Syn& s = syn_[slot];
-        strength_ = s.strength;
+        const std::uint64_t target = syn_target_[slot];
+        const std::uint8_t strength = syn_strength_[slot];
+        strength_ = strength;
         h_ = hash2(0x48454242ull,
-                   s.target * 131ull + static_cast<std::uint64_t>(
-                       s.strength >= 32 ? 3 : (s.strength >= 8 ? 2 :
-                       (s.strength >= 2 ? 1 : 0))));
+                   target * 131ull + static_cast<std::uint64_t>(
+                       strength >= 32 ? 3 : (strength >= 8 ? 2 :
+                       (strength >= 2 ? 1 : 0))));
     }
 
     int predict(int c0) {
         idx_ = (h_ ^ (static_cast<std::uint32_t>(c0) * 0x9E3779B1u)) & mask_;
-        state_ = t_[idx_];
+        state_ = t_.get(idx_);
         return stretch(sm_.predict(state_));
     }
 
     void update(int y) {
         sm_.update(y, limit_);
-        t_[idx_] = static_cast<std::uint16_t>(state_table().next(state_, y));
+        t_.ref(idx_) = static_cast<std::uint16_t>(state_table().next(state_, y));
     }
 
     int strength() const { return strength_; }
 
  private:
-    struct Syn { std::uint64_t target = 0; std::uint16_t strength = 0; };
     std::uint32_t mask_;
-    std::vector<Syn> syn_;
+    std::vector<std::uint64_t> syn_target_;
+    std::vector<std::uint8_t> syn_strength_;
     StateMap sm_;
-    std::vector<std::uint16_t> t_;
+    HashTable<std::uint16_t> t_;
     int limit_;
     std::uint32_t h_ = 0, idx_ = 0;
     int state_ = 0, strength_ = 0;
@@ -498,8 +526,7 @@ class LzpModel {
  public:
     LzpModel(int table_bits)
         : mask_((1u << table_bits) - 1),
-          pred_(static_cast<std::size_t>(1) << table_bits, 0),
-          st_(64) {
+          pred_(static_cast<std::size_t>(1) << table_bits, 0) {
         counter_init(st_.data(), st_.size());
     }
 
@@ -530,7 +557,7 @@ class LzpModel {
  private:
     std::uint32_t mask_;
     std::vector<std::uint8_t> pred_;
-    std::vector<Counter> st_;
+    std::array<Counter, 64> st_{};
     int expected_ = 0;
     int expected_bit_ = 0;
     int sidx_ = 0;

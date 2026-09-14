@@ -13,6 +13,7 @@
 // depend only on data both sides already have.
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -68,12 +69,12 @@ struct Config {
 
     // Encoder and decoder must agree. match/buf sizes are a function of
     // table_bits (the only size the archive header carries).
-    // table_bits + 4 restores the historical default (22 -> 26).
+    // buf_bits = table_bits + HP_BUF_DELTA (default 3 -> 25 at mem 22).
     void normalize() {
         if (table_bits < 16) table_bits = 16;
         if (table_bits > 28) table_bits = 28;
         match_bits = table_bits;
-        buf_bits = table_bits + 4;
+        buf_bits = table_bits + HP_BUF_DELTA;
         if (buf_bits > 28) buf_bits = 28;
     }
 };
@@ -259,6 +260,8 @@ class Predictor {
 
     explicit Predictor(const Config& cfg)
         : cfg_(cfg),
+          byte_ring_(cfg.buf_bits),
+          wmatch_ring_(cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits),
           o1_(add_bits(slot_bits(cfg.table_bits, -2), HP_SLOT_O12 ? 1 : 0), 1023),
           o2_(add_bits(slot_bits(cfg.table_bits, -2), HP_SLOT_O12 ? 1 : 0), 1023),
           o3_(add_bits(slot_bits(cfg.table_bits, 0),
@@ -394,53 +397,53 @@ class Predictor {
 #if HP_ENTITY_MOD
           entitymod_(cfg.table_bits, 255),
 #endif
-          match_{ {cfg.buf_bits, match_bits(cfg.match_bits), 3},
-                  {cfg.buf_bits, match_bits(cfg.match_bits), 4},
-                  {cfg.buf_bits, match_bits(cfg.match_bits), 6},
-                  {cfg.buf_bits, match_bits(cfg.match_bits), 10},
-                  {cfg.buf_bits, match_bits(cfg.match_bits), 16}
+          match_{ {&byte_ring_, match_bits(cfg.match_bits), 3},
+                  {&byte_ring_, match_bits(cfg.match_bits), 4},
+                  {&byte_ring_, match_bits(cfg.match_bits), 6},
+                  {&byte_ring_, match_bits(cfg.match_bits), 10},
+                  {&byte_ring_, match_bits(cfg.match_bits), 16}
 #if HP_MATCH_18
-                  , {cfg.buf_bits, match_bits(cfg.match_bits), 8}
+                  , {&byte_ring_, match_bits(cfg.match_bits), 8}
 #endif
 #if HP_MATCH_13
-                  , {cfg.buf_bits, match_bits(cfg.match_bits), 13}
+                  , {&byte_ring_, match_bits(cfg.match_bits), 13}
 #endif
 #if HP_MATCH_01
-                  , {cfg.buf_bits, match_bits(cfg.match_bits), 1}
+                  , {&byte_ring_, match_bits(cfg.match_bits), 1}
 #endif
 #if HP_MATCH_02
-                  , {cfg.buf_bits, match_bits(cfg.match_bits), 2}
+                  , {&byte_ring_, match_bits(cfg.match_bits), 2}
 #endif
 #if HP_MATCH_05
-                  , {cfg.buf_bits, match_bits(cfg.match_bits), 5}
+                  , {&byte_ring_, match_bits(cfg.match_bits), 5}
 #endif
 #if HP_MATCH_07
-                  , {cfg.buf_bits, match_bits(cfg.match_bits), 7}
+                  , {&byte_ring_, match_bits(cfg.match_bits), 7}
 #endif
 #if HP_MATCH_09
-                  , {cfg.buf_bits, match_bits(cfg.match_bits), 9}
+                  , {&byte_ring_, match_bits(cfg.match_bits), 9}
 #endif
 #if HP_MATCH_12
-                  , {cfg.buf_bits, match_bits(cfg.match_bits), 12}
+                  , {&byte_ring_, match_bits(cfg.match_bits), 12}
 #endif
 #if HP_MATCH_20
-                  , {cfg.buf_bits, match_bits(cfg.match_bits), 20}
+                  , {&byte_ring_, match_bits(cfg.match_bits), 20}
 #endif
           },
 #if HP_SPARSE_UTF8
-          smatch_(cfg.buf_bits, match_bits(cfg.match_bits), 4),
+          smatch_(&byte_ring_, match_bits(cfg.match_bits), 4),
 #endif
 #if HP_SKIPK_MOD
-          skipk_(cfg.buf_bits, match_bits(cfg.match_bits), 3, 2),
+          skipk_(&byte_ring_, match_bits(cfg.match_bits), 3, 2),
 #endif
 #if HP_SKIP3_MOD
-          skip3_(cfg.buf_bits, match_bits(cfg.match_bits), 3, 3),
+          skip3_(&byte_ring_, match_bits(cfg.match_bits), 3, 3),
 #endif
 #if HP_SKIP4_MOD
-          skip4_(cfg.buf_bits, match_bits(cfg.match_bits), 3, 4),
+          skip4_(&byte_ring_, match_bits(cfg.match_bits), 3, 4),
 #endif
 #if HP_SKIP5_MOD
-          skip5_(cfg.buf_bits, match_bits(cfg.match_bits), 3, 5),
+          skip5_(&byte_ring_, match_bits(cfg.match_bits), 3, 5),
 #endif
 #if HP_LZP_MOD
           lzp_(match_bits(cfg.match_bits) > 2 ? match_bits(cfg.match_bits) - 2
@@ -451,18 +454,18 @@ class Predictor {
 #endif
 #if HP_WORD_MATCH
           wmatch_{
-              WordMatchModel(cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits,
+              WordMatchModel(&wmatch_ring_,
                              cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 1),
-              WordMatchModel(cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits,
+              WordMatchModel(&wmatch_ring_,
                              cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 2),
-              WordMatchModel(cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits,
+              WordMatchModel(&wmatch_ring_,
                              cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 3)
 #if HP_WMATCH_4
-              , WordMatchModel(cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits,
+              , WordMatchModel(&wmatch_ring_,
                                cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 3)
 #endif
 #if HP_WMATCH_5
-              , WordMatchModel(cfg.buf_bits > 2 ? cfg.buf_bits - 2 : cfg.buf_bits,
+              , WordMatchModel(&wmatch_ring_,
                                cfg.match_bits > 2 ? cfg.match_bits - 2 : cfg.match_bits, 1)
 #endif
           },
@@ -478,7 +481,7 @@ class Predictor {
 #else
           hedge_(kBaseExperts),
 #endif
-          bias_(256) {
+          bias_() {
         counter_init(bias_.data(), bias_.size());
 #if HP_ENGLISH_PRIOR
         for (int i = 0; i < 256; ++i) {
@@ -487,6 +490,7 @@ class Predictor {
         }
 #endif
         gria_.set_enabled(cfg.gria);
+        init_ctx_chain_();
         set_byte_contexts();
     }
 
@@ -498,131 +502,13 @@ class Predictor {
         n_exp_ = 0;
         int out[ContextModel::kOutputs];
         int backoff = counter_predict_p(bias_[c0_]);
-        ContextModel* chain[kCtxModels];
-        int nchain = 0;
-        chain[nchain++] = &o1_;
-        chain[nchain++] = &o2_;
-        chain[nchain++] = &o3_;
-        chain[nchain++] = &o4_;
-        chain[nchain++] = &o6_;
-        chain[nchain++] = &word_;
-        chain[nchain++] = &sp13_;
-        chain[nchain++] = &sp24_;
-        chain[nchain++] = &col_;
-        chain[nchain++] = &tag_;
-        chain[nchain++] = &wbi_;
-#if HP_WORD_STREAMS
-        chain[nchain++] = &wstr_sp_;
-#endif
-#if HP_BRACKET
-        chain[nchain++] = &brk_;
-#endif
-#if HP_LINKWORD
-        chain[nchain++] = &link_;
-#endif
-#if HP_NUMERIC
-        chain[nchain++] = &num_;
-#endif
-#if HP_PAT_MODEL
-        chain[nchain++] = &pat_;
-#endif
-#if HP_PPMD
-        chain[nchain++] = &ppm_;
-#endif
-#if HP_STEMMER
-        chain[nchain++] = &stem0_;
-#if HP_STEMMER_N >= 2
-        chain[nchain++] = &stem1_;
-#endif
-#endif
-#if HP_SENWORD
-        chain[nchain++] = &sen_;
-#endif
-#if HP_SENT_STREAM
-        chain[nchain++] = &sentst_;
-#endif
-#if HP_SENT_MEM
-        chain[nchain++] = &sentmem_cm_;
-#endif
-#if HP_SENGRP_MOD
-        chain[nchain++] = &sengrp_;
-#endif
-#if HP_NEST_MOD
-        chain[nchain++] = &nestmod_;
-#endif
-#if HP_PARA_MOD
-        chain[nchain++] = &paramod_;
-#endif
-#if HP_LINE_MOD
-        chain[nchain++] = &linemod_;
-#endif
-#if HP_STATE_MOD
-        chain[nchain++] = &statemod_;
-#endif
-#if HP_DOM_MOD
-        chain[nchain++] = &dommod_;
-#endif
-#if HP_HDR_MOD
-        chain[nchain++] = &hdrmod_;
-#endif
-#if HP_DEPTH_MOD
-        chain[nchain++] = &depthmod_;
-#endif
-#if HP_FCCXT_MOD
-        chain[nchain++] = &fccxtmod_;
-#endif
-#if HP_TPLNAME_MOD
-        chain[nchain++] = &tplmod_;
-#endif
-#if HP_INFOKEY_MOD
-        chain[nchain++] = &infokeymod_;
-#endif
-#if HP_BARIDX_MOD
-        chain[nchain++] = &baridxmod_;
-#endif
-#if HP_PERIOD_MOD
-        chain[nchain++] = &periodmod_;
-#endif
-#if HP_PRONOUN_MOD
-        chain[nchain++] = &pronounmod_;
-#endif
-#if HP_HASH2_O6
-        chain[nchain++] = &o6b_;
-#endif
-#if HP_LINKPIPE_MOD
-        chain[nchain++] = &linkpipemod_;
-#endif
-#if HP_CITE_MOD
-        chain[nchain++] = &citemod_;
-#endif
-#if HP_CAT_MOD
-        chain[nchain++] = &catmod_;
-#endif
-#if HP_REDIR_MOD
-        chain[nchain++] = &redirmod_;
-#endif
-#if HP_HEADING_MOD
-        chain[nchain++] = &headingmod_;
-#endif
-#if HP_EXTLINK_MOD
-        chain[nchain++] = &extlinkmod_;
-#endif
-#if HP_REFNAME_MOD
-        chain[nchain++] = &refnamemod_;
-#endif
-#if HP_QOCXT_MOD
-        chain[nchain++] = &qocxtmod_;
-#endif
-#if HP_ENTITY_MOD
-        chain[nchain++] = &entitymod_;
-#endif
-        for (int i = 0; i < nchain; ++i) {
-            chain[i]->predict(c0_, backoff, out);
+        for (int i = 0; i < n_ctx_chain_; ++i) {
+            ctx_chain_[i]->predict(c0_, backoff, out);
             for (int j = 0; j < ContextModel::kOutputs; ++j) {
                 mixer_.add(out[j]);
                 exp_p_[n_exp_++] = squash(out[j]);
             }
-            if (i < 4) backoff = chain[i]->last_p();
+            if (i < 4) backoff = ctx_chain_[i]->last_p();
             else if (i == 4) backoff = o1_.last_p();
         }
         for (int i = 0; i < kMatchModels; ++i) {
@@ -1015,122 +901,126 @@ class Predictor {
     int last_match_len() const { return last_mlen_; }
 
  private:
-    static std::vector<int> gate_sizes() {
-        std::vector<int> s = {256, GriaGate::kBuckets, 256, 32,
+    static const std::vector<int>& gate_sizes() {
+        static const std::vector<int> s = [] {
+        std::vector<int> out = {256, GriaGate::kBuckets, 256, 32,
                               GriaGate::kEntBuckets, 16};
 #if HP_EXTRA_GATES
-        s.push_back(32);   // wiki state × isParagraph
-        s.push_back(PatternCache::kNClass);
+        out.push_back(32);   // wiki state × isParagraph
+        out.push_back(PatternCache::kNClass);
 #endif
 #if HP_POS_GATE
-        s.push_back(32);
+        out.push_back(32);
 #endif
 #if HP_GATE_SHAPE
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_BRANCH
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_DISP
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_MLEN2
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_ARGMAX
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_SEN_GROUP
-        s.push_back(4);
+        out.push_back(4);
 #endif
 #if HP_GATE_BREAK
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_WORDPOS
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_HEDGE
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_FWORD
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_UTF8
-        s.push_back(4);
+        out.push_back(4);
 #endif
 #if HP_GATE_NEST
-        s.push_back(2);
+        out.push_back(2);
 #endif
 #if HP_GATE_AGREE
-        s.push_back(16);
+        out.push_back(16);
 #endif
 #if HP_GATE_FCLASS
-        s.push_back(4);
+        out.push_back(4);
 #endif
 #if HP_GATE_WMLEN
-        s.push_back(16);
+        out.push_back(16);
 #endif
+        return out;
+        }();
         return s;
     }
 
-    static std::vector<int> gate_rates(int base) {
+    static const std::vector<int>& gate_rates(int base) {
 #if HP_PER_MIXER_LR
-        // Spread inspired by fx2-cmix's 0.0003–0.005, mapped onto hp's
-        // integer lr where 2 is the historical shared default.
         (void)base;
-        std::vector<int> r = {2, 3, 2, 4, 3, 4};
+        static const std::vector<int> r = [] {
+        std::vector<int> out = {2, 3, 2, 4, 3, 4};
 #if HP_EXTRA_GATES
-        r.push_back(3);
-        r.push_back(3);
+        out.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_POS_GATE
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_SHAPE
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_BRANCH
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_DISP
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_MLEN2
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_ARGMAX
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_SEN_GROUP
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_BREAK
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_WORDPOS
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_HEDGE
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_FWORD
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_UTF8
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_NEST
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_AGREE
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_FCLASS
-        r.push_back(3);
+        out.push_back(3);
 #endif
 #if HP_GATE_WMLEN
-        r.push_back(3);
+        out.push_back(3);
 #endif
+        return out;
+        }();
         return r;
 #else
         return std::vector<int>(static_cast<std::size_t>(kNumGates), base);
@@ -1252,6 +1142,7 @@ class Predictor {
         pool_.end_byte();
         pool_.set_contexts(hist_, hist2_);
 
+        byte_ring_.push(static_cast<std::uint8_t>(byte));
         for (int i = 0; i < kMatchModels; ++i) match_[i].push_byte(byte, hist_);
 #if HP_GATE_BREAK
         {
@@ -1305,6 +1196,7 @@ class Predictor {
         whist[nw++] = streams_.stream(1);
 #endif
         (void)nw;
+        wmatch_ring_.push(static_cast<std::uint8_t>(byte));
         for (int i = 0; i < kWordMatch; ++i)
             wmatch_[i].push_byte(byte, whist[i], at_boundary);
 #endif
@@ -1696,6 +1588,126 @@ class Predictor {
 #endif
     }
 
+    void init_ctx_chain_() {
+        n_ctx_chain_ = 0;
+        ctx_chain_[n_ctx_chain_++] = &o1_;
+        ctx_chain_[n_ctx_chain_++] = &o2_;
+        ctx_chain_[n_ctx_chain_++] = &o3_;
+        ctx_chain_[n_ctx_chain_++] = &o4_;
+        ctx_chain_[n_ctx_chain_++] = &o6_;
+        ctx_chain_[n_ctx_chain_++] = &word_;
+        ctx_chain_[n_ctx_chain_++] = &sp13_;
+        ctx_chain_[n_ctx_chain_++] = &sp24_;
+        ctx_chain_[n_ctx_chain_++] = &col_;
+        ctx_chain_[n_ctx_chain_++] = &tag_;
+        ctx_chain_[n_ctx_chain_++] = &wbi_;
+#if HP_WORD_STREAMS
+        ctx_chain_[n_ctx_chain_++] = &wstr_sp_;
+#endif
+#if HP_BRACKET
+        ctx_chain_[n_ctx_chain_++] = &brk_;
+#endif
+#if HP_LINKWORD
+        ctx_chain_[n_ctx_chain_++] = &link_;
+#endif
+#if HP_NUMERIC
+        ctx_chain_[n_ctx_chain_++] = &num_;
+#endif
+#if HP_PAT_MODEL
+        ctx_chain_[n_ctx_chain_++] = &pat_;
+#endif
+#if HP_PPMD
+        ctx_chain_[n_ctx_chain_++] = &ppm_;
+#endif
+#if HP_STEMMER
+        ctx_chain_[n_ctx_chain_++] = &stem0_;
+#if HP_STEMMER_N >= 2
+        ctx_chain_[n_ctx_chain_++] = &stem1_;
+#endif
+#endif
+#if HP_SENWORD
+        ctx_chain_[n_ctx_chain_++] = &sen_;
+#endif
+#if HP_SENT_STREAM
+        ctx_chain_[n_ctx_chain_++] = &sentst_;
+#endif
+#if HP_SENT_MEM
+        ctx_chain_[n_ctx_chain_++] = &sentmem_cm_;
+#endif
+#if HP_SENGRP_MOD
+        ctx_chain_[n_ctx_chain_++] = &sengrp_;
+#endif
+#if HP_NEST_MOD
+        ctx_chain_[n_ctx_chain_++] = &nestmod_;
+#endif
+#if HP_PARA_MOD
+        ctx_chain_[n_ctx_chain_++] = &paramod_;
+#endif
+#if HP_LINE_MOD
+        ctx_chain_[n_ctx_chain_++] = &linemod_;
+#endif
+#if HP_STATE_MOD
+        ctx_chain_[n_ctx_chain_++] = &statemod_;
+#endif
+#if HP_DOM_MOD
+        ctx_chain_[n_ctx_chain_++] = &dommod_;
+#endif
+#if HP_HDR_MOD
+        ctx_chain_[n_ctx_chain_++] = &hdrmod_;
+#endif
+#if HP_DEPTH_MOD
+        ctx_chain_[n_ctx_chain_++] = &depthmod_;
+#endif
+#if HP_FCCXT_MOD
+        ctx_chain_[n_ctx_chain_++] = &fccxtmod_;
+#endif
+#if HP_TPLNAME_MOD
+        ctx_chain_[n_ctx_chain_++] = &tplmod_;
+#endif
+#if HP_INFOKEY_MOD
+        ctx_chain_[n_ctx_chain_++] = &infokeymod_;
+#endif
+#if HP_BARIDX_MOD
+        ctx_chain_[n_ctx_chain_++] = &baridxmod_;
+#endif
+#if HP_PERIOD_MOD
+        ctx_chain_[n_ctx_chain_++] = &periodmod_;
+#endif
+#if HP_PRONOUN_MOD
+        ctx_chain_[n_ctx_chain_++] = &pronounmod_;
+#endif
+#if HP_HASH2_O6
+        ctx_chain_[n_ctx_chain_++] = &o6b_;
+#endif
+#if HP_LINKPIPE_MOD
+        ctx_chain_[n_ctx_chain_++] = &linkpipemod_;
+#endif
+#if HP_CITE_MOD
+        ctx_chain_[n_ctx_chain_++] = &citemod_;
+#endif
+#if HP_CAT_MOD
+        ctx_chain_[n_ctx_chain_++] = &catmod_;
+#endif
+#if HP_REDIR_MOD
+        ctx_chain_[n_ctx_chain_++] = &redirmod_;
+#endif
+#if HP_HEADING_MOD
+        ctx_chain_[n_ctx_chain_++] = &headingmod_;
+#endif
+#if HP_EXTLINK_MOD
+        ctx_chain_[n_ctx_chain_++] = &extlinkmod_;
+#endif
+#if HP_REFNAME_MOD
+        ctx_chain_[n_ctx_chain_++] = &refnamemod_;
+#endif
+#if HP_QOCXT_MOD
+        ctx_chain_[n_ctx_chain_++] = &qocxtmod_;
+#endif
+#if HP_ENTITY_MOD
+        ctx_chain_[n_ctx_chain_++] = &entitymod_;
+#endif
+    }
+
     static int pronoun_word(const std::uint8_t* w, int n) {
         auto eq = [&](const char* s) {
             int m = 0;
@@ -1712,6 +1724,8 @@ class Predictor {
     }
 
     Config cfg_;
+    ByteRing byte_ring_;
+    ByteRing wmatch_ring_;
     ContextModel o1_, o2_, o3_, o4_, o6_;
 #if HP_HASH2_O6
     ContextModel o6b_;
@@ -1855,7 +1869,7 @@ class Predictor {
     MixerNet mixer_;
     APM apm_c0_, apm_lex_, apm_gria_;
     Hedge hedge_;
-    std::vector<Counter> bias_;
+    std::array<Counter, 256> bias_{};
     GriaGate gria_;
     WikiMachine wiki_;
     WordStreams streams_;
@@ -1888,6 +1902,8 @@ class Predictor {
     std::uint64_t prev_word_ = 0;
     std::uint64_t word_hash_prev_ = 0;
     std::uint64_t word_ring_[4] = {0, 0, 0, 0};
+    ContextModel* ctx_chain_[kCtxModels];
+    int n_ctx_chain_ = 0;
     int c0_ = 1;
     int bitpos_ = 0;
     int pr_final_ = 2048;
