@@ -1,7 +1,6 @@
 #pragma once
 //
-// Integer mixer dots. HP_XSIMD=0 is the scalar mixer.hpp loops.
-// HP_XSIMD=1 uses 4-wide SSE4.1 PMULDQ (int32 x int32 -> int64).
+// Integer mixer dots. HP_XSIMD=0 uses scalar loops; HP_XSIMD=1 (default) uses SSE4.1.
 // int64 add is associative so the vectorized sum matches the scalar
 // sum exactly. axpy_shift_clamp stays scalar (update is less hot).
 
@@ -70,8 +69,34 @@ inline std::int64_t dot_i32(const std::int32_t* a, const std::int32_t* b, int n)
 #endif
 }
 
+inline std::int64_t dot_i32_i16(const std::int32_t* w, const std::int16_t* st, int n) {
+#if HP_XSIMD
+    std::int64_t sum = 0;
+    int i = 0;
+    using batch32_4 = xsimd::batch<std::int32_t, xsimd::sse4_1>;
+    for (; i + 4 <= n; i += 4) {
+        const __m128i ws = batch32_4::load_unaligned(w + i);
+        const __m128i ss =
+            _mm_cvtepi16_epi32(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(st + i)));
+        const __m128i prod = _mm_mullo_epi32(ws, ss);
+        alignas(16) std::int32_t parts[4];
+        _mm_storeu_si128(reinterpret_cast<__m128i*>(parts), prod);
+        sum += static_cast<std::int64_t>(parts[0]) + parts[1] + parts[2] + parts[3];
+    }
+    for (; i < n; ++i) sum += static_cast<std::int64_t>(w[i]) * st[i];
+    return sum;
+#else
+    std::int64_t sum = 0;
+    for (int i = 0; i < n; ++i) sum += static_cast<std::int64_t>(w[i]) * st[i];
+    return sum;
+#endif
+}
+
 inline std::int64_t dot_mixer_wt(const MixerWt* w, const MixerSt* st, int n) {
-#if HP_XSIMD && !HP_MIXER_W16 && !HP_MIXER_ST16
+#if HP_XSIMD && !HP_MIXER_W16 && HP_MIXER_ST16
+    return dot_i32_i16(reinterpret_cast<const std::int32_t*>(w),
+                       reinterpret_cast<const std::int16_t*>(st), n);
+#elif HP_XSIMD && !HP_MIXER_W16 && !HP_MIXER_ST16
     return dot_i32(reinterpret_cast<const std::int32_t*>(w),
                    reinterpret_cast<const std::int32_t*>(st), n);
 #else

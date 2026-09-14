@@ -4,8 +4,9 @@ set -eu
 cd "$(dirname "$0")/.."
 IN=${1:?usage: pattern_cache.sh <file>}
 TMP=$(mktemp -d)
-g++ -std=c++17 -O2 -Iinclude -DHP_PATTERN_CACHE=1 -o "$TMP/on"  src/main.cpp
-g++ -std=c++17 -O2 -Iinclude -DHP_PATTERN_CACHE=0 -o "$TMP/off" src/main.cpp
+XSIMD=(-DHP_XSIMD=1 -msse4.1 -Ithird_party/xsimd/include)
+g++ -std=c++17 -O2 -Iinclude "${XSIMD[@]}" -DHP_PATTERN_CACHE=1 -o "$TMP/on"  src/main.cpp
+g++ -std=c++17 -O2 -Iinclude "${XSIMD[@]}" -DHP_PATTERN_CACHE=0 -o "$TMP/off" src/main.cpp
 "$TMP/on"  c --mem 18 "$IN" "$TMP/on.hp"
 "$TMP/off" c --mem 18 "$IN" "$TMP/off.hp"
 hon=$(sha256sum "$TMP/on.hp"  | cut -d' ' -f1)

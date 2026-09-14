@@ -425,7 +425,13 @@
 #define HP_LINE_MOD 0              // dedicated first-of-line char context model
 #endif
 #ifndef HP_XSIMD
-#define HP_XSIMD 0                 // integer mixer dots via xsimd; default off; bit-identical to scalar
+#define HP_XSIMD 1                 // integer mixer dots via xsimd/SSE4.1; bit-identical to scalar
+#endif
+#ifndef HP_TRACK_EXP_P
+#define HP_TRACK_EXP_P (!HP_HEDGE_L1 || HP_CTW || HP_GATE_DISP || HP_GATE_ARGMAX || HP_GATE_AGREE)
+#endif
+#ifndef HP_PATTERN_CACHE_STATS
+#define HP_PATTERN_CACHE_STATS 0   // lookups/hits/class histogram (diagnostics only)
 #endif
 #ifndef HP_WIKI_AXES
 #define HP_WIKI_AXES 0             // bundle: state + sent_domain + header + depth CMs
@@ -459,9 +465,6 @@
 #endif
 #ifndef HP_BUF_DELTA
 #define HP_BUF_DELTA 3             // buf_bits = table_bits + delta; 3 is byte-identical on proxies
-#endif
-#ifndef HP_LAZY_TABLES
-#define HP_LAZY_TABLES 1           // demand-allocate context/match hash chunks
 #endif
 #ifndef HP_PY_EXPERT
 #define HP_PY_EXPERT 1             // 0 = drop Pitman-Yor mixer input (kOutputs=1)

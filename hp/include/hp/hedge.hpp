@@ -56,23 +56,6 @@
 
 namespace hp {
 
-// 2^(-j/16) in Q16, j = 0..15. Hard-coded constants -- no runtime pow().
-inline const std::uint32_t* pow2_neg16() {
-    static const std::uint32_t t[16] = {
-        65536, 62757, 60097, 57550, 55110, 52774, 50535, 48391,
-        46341, 44373, 42495, 40694, 38969, 37311, 35735, 34221
-    };
-    return t;
-}
-
-// 2^(-k/16) in Q16 for arbitrary k >= 0.
-inline std::uint32_t pow2_neg(int k) {
-    if (k < 0) k = 0;
-    const int shift = k >> 4;
-    if (shift >= 24) return 0;
-    return pow2_neg16()[k & 15] >> shift;
-}
-
 class Hedge {
  public:
     explicit Hedge(int n)
