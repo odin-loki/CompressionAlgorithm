@@ -547,3 +547,62 @@
 #ifndef HP_ENTITY_MOD
 #define HP_ENTITY_MOD 0            // &nbsp; / &lt; HTML-entity name CM
 #endif
+#ifndef HP_INDENT_MOD
+#define HP_INDENT_MOD 0            // leading ':' count (talk / dl) CM
+#endif
+#ifndef HP_LISTLEVEL_MOD
+#define HP_LISTLEVEL_MOD 0         // leading '*' / '#' count CM
+#endif
+#ifndef HP_ISSE_MOD
+#define HP_ISSE_MOD 0              // extra CM of hist + o6 p-bucket
+#endif
+#ifndef HP_MAGIC_MOD
+#define HP_MAGIC_MOD 0             // __TOC__ / __NOTOC__ / __NOEDITSECTION__ CM
+#endif
+#ifndef HP_NOWIKI_MOD
+#define HP_NOWIKI_MOD 0            // <nowiki> / <math> / <pre> / <code> domain CM
+#endif
+#ifndef HP_TITLE_MOD
+#define HP_TITLE_MOD 0             // <title>…</title> page-title hash CM
+#endif
+#ifndef HP_PAGEID_MOD
+#define HP_PAGEID_MOD 0            // first <id> after <page> CM
+#endif
+#ifndef HP_USER_MOD
+#define HP_USER_MOD 0              // <username> contributor hash CM
+#endif
+#ifndef HP_TEXT_MOD
+#define HP_TEXT_MOD 0              // inside <text> dump payload domain CM
+#endif
+#ifndef HP_NS_MOD
+#define HP_NS_MOD 0                // dump <ns> namespace id CM
+#endif
+#ifndef HP_DUMPREDIR_MOD
+#define HP_DUMPREDIR_MOD 0         // dump <redirect …/> tag CM (not #REDIRECT)
+#endif
+#ifndef HP_IP_MOD
+#define HP_IP_MOD 0                // dump <ip> anonymous-editor hash CM
+#endif
+#ifndef HP_REVCOMMENT_MOD
+#define HP_REVCOMMENT_MOD 0        // dump <comment> revision-summary hash CM
+#endif
+#ifndef HP_MINOR_MOD
+#define HP_MINOR_MOD 0             // dump <minor/> edit bit CM
+#endif
+#ifndef HP_WIKIMODEL_MOD
+#define HP_WIKIMODEL_MOD 0         // dump <model> wikitext/javascript CM
+#endif
+#ifndef HP_SECTITLE_MOD
+#define HP_SECTITLE_MOD 0          // heading-body text hash (not '=' count)
+#endif
+#ifndef HP_PARSERFN_MOD
+#define HP_PARSERFN_MOD 0          // {{#if / #switch / #expr parser-function CM
+#endif
+#ifndef HP_TABLECLASS_MOD
+#define HP_TABLECLASS_MOD 0        // {| class=… first-line token CM
+#endif
+#ifndef HP_DUMP_XML
+#define HP_DUMP_XML (HP_TITLE_MOD || HP_PAGEID_MOD || HP_USER_MOD || HP_TEXT_MOD \
+    || HP_NS_MOD || HP_DUMPREDIR_MOD || HP_IP_MOD || HP_REVCOMMENT_MOD \
+    || HP_MINOR_MOD || HP_WIKIMODEL_MOD)
+#endif

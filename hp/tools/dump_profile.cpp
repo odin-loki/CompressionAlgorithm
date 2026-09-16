@@ -137,6 +137,60 @@ static std::vector<std::string> expert_names() {
 #if HP_ENTITY_MOD
     push_cm(&n, "entity");
 #endif
+#if HP_INDENT_MOD
+    push_cm(&n, "indent");
+#endif
+#if HP_LISTLEVEL_MOD
+    push_cm(&n, "listlevel");
+#endif
+#if HP_ISSE_MOD
+    push_cm(&n, "isse");
+#endif
+#if HP_MAGIC_MOD
+    push_cm(&n, "magic");
+#endif
+#if HP_NOWIKI_MOD
+    push_cm(&n, "nowiki");
+#endif
+#if HP_TITLE_MOD
+    push_cm(&n, "title");
+#endif
+#if HP_PAGEID_MOD
+    push_cm(&n, "pageid");
+#endif
+#if HP_USER_MOD
+    push_cm(&n, "user");
+#endif
+#if HP_TEXT_MOD
+    push_cm(&n, "text");
+#endif
+#if HP_NS_MOD
+    push_cm(&n, "ns");
+#endif
+#if HP_DUMPREDIR_MOD
+    push_cm(&n, "dumpredir");
+#endif
+#if HP_IP_MOD
+    push_cm(&n, "ip");
+#endif
+#if HP_REVCOMMENT_MOD
+    push_cm(&n, "revcomment");
+#endif
+#if HP_MINOR_MOD
+    push_cm(&n, "minor");
+#endif
+#if HP_WIKIMODEL_MOD
+    push_cm(&n, "wikimodel");
+#endif
+#if HP_SECTITLE_MOD
+    push_cm(&n, "sectitle");
+#endif
+#if HP_PARSERFN_MOD
+    push_cm(&n, "parserfn");
+#endif
+#if HP_TABLECLASS_MOD
+    push_cm(&n, "tableclass");
+#endif
     n.push_back("m3");
     n.push_back("m4");
     n.push_back("m6");

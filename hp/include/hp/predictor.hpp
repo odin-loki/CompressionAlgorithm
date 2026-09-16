@@ -116,7 +116,25 @@ class Predictor {
         (HP_EXTLINK_MOD ? 1 : 0) +
         (HP_REFNAME_MOD ? 1 : 0) +
         (HP_QOCXT_MOD ? 1 : 0) +
-        (HP_ENTITY_MOD ? 1 : 0);
+        (HP_ENTITY_MOD ? 1 : 0) +
+        (HP_INDENT_MOD ? 1 : 0) +
+        (HP_LISTLEVEL_MOD ? 1 : 0) +
+        (HP_ISSE_MOD ? 1 : 0) +
+        (HP_MAGIC_MOD ? 1 : 0) +
+        (HP_NOWIKI_MOD ? 1 : 0) +
+        (HP_TITLE_MOD ? 1 : 0) +
+        (HP_PAGEID_MOD ? 1 : 0) +
+        (HP_USER_MOD ? 1 : 0) +
+        (HP_TEXT_MOD ? 1 : 0) +
+        (HP_NS_MOD ? 1 : 0) +
+        (HP_DUMPREDIR_MOD ? 1 : 0) +
+        (HP_IP_MOD ? 1 : 0) +
+        (HP_REVCOMMENT_MOD ? 1 : 0) +
+        (HP_MINOR_MOD ? 1 : 0) +
+        (HP_WIKIMODEL_MOD ? 1 : 0) +
+        (HP_SECTITLE_MOD ? 1 : 0) +
+        (HP_PARSERFN_MOD ? 1 : 0) +
+        (HP_TABLECLASS_MOD ? 1 : 0);
     static constexpr int kCtxModels = 11 + kExtraCtx;
     static constexpr int kMatchModels = 5 + (HP_MATCH_18 ? 1 : 0)
         + (HP_MATCH_13 ? 1 : 0) + (HP_MATCH_01 ? 1 : 0)
@@ -395,6 +413,60 @@ class Predictor {
 #endif
 #if HP_ENTITY_MOD
           entitymod_(cfg.table_bits, 255),
+#endif
+#if HP_INDENT_MOD
+          indentmod_(cfg.table_bits, 255),
+#endif
+#if HP_LISTLEVEL_MOD
+          listlevelmod_(cfg.table_bits, 255),
+#endif
+#if HP_ISSE_MOD
+          issemod_(cfg.table_bits, 255),
+#endif
+#if HP_MAGIC_MOD
+          magicmod_(cfg.table_bits, 255),
+#endif
+#if HP_NOWIKI_MOD
+          nowikimod_(cfg.table_bits, 255),
+#endif
+#if HP_TITLE_MOD
+          titlemod_(cfg.table_bits, 255),
+#endif
+#if HP_PAGEID_MOD
+          pageidmod_(cfg.table_bits, 255),
+#endif
+#if HP_USER_MOD
+          usermod_(cfg.table_bits, 255),
+#endif
+#if HP_TEXT_MOD
+          textmod_(cfg.table_bits, 255),
+#endif
+#if HP_NS_MOD
+          nsmod_(cfg.table_bits, 255),
+#endif
+#if HP_DUMPREDIR_MOD
+          dumpredirmod_(cfg.table_bits, 255),
+#endif
+#if HP_IP_MOD
+          ipmod_(cfg.table_bits, 255),
+#endif
+#if HP_REVCOMMENT_MOD
+          revcommentmod_(cfg.table_bits, 255),
+#endif
+#if HP_MINOR_MOD
+          minormod_(cfg.table_bits, 255),
+#endif
+#if HP_WIKIMODEL_MOD
+          wikimodelmod_(cfg.table_bits, 255),
+#endif
+#if HP_SECTITLE_MOD
+          sectitlemod_(cfg.table_bits, 255),
+#endif
+#if HP_PARSERFN_MOD
+          parserfnmod_(cfg.table_bits, 255),
+#endif
+#if HP_TABLECLASS_MOD
+          tableclassmod_(cfg.table_bits, 255),
 #endif
           match_{ {&byte_ring_, match_bits(cfg.match_bits), 3},
                   {&byte_ring_, match_bits(cfg.match_bits), 4},
@@ -866,6 +938,60 @@ class Predictor {
 #endif
 #if HP_ENTITY_MOD
         entitymod_.update(y, ens);
+#endif
+#if HP_INDENT_MOD
+        indentmod_.update(y, ens);
+#endif
+#if HP_LISTLEVEL_MOD
+        listlevelmod_.update(y, ens);
+#endif
+#if HP_ISSE_MOD
+        issemod_.update(y, ens);
+#endif
+#if HP_MAGIC_MOD
+        magicmod_.update(y, ens);
+#endif
+#if HP_NOWIKI_MOD
+        nowikimod_.update(y, ens);
+#endif
+#if HP_TITLE_MOD
+        titlemod_.update(y, ens);
+#endif
+#if HP_PAGEID_MOD
+        pageidmod_.update(y, ens);
+#endif
+#if HP_USER_MOD
+        usermod_.update(y, ens);
+#endif
+#if HP_TEXT_MOD
+        textmod_.update(y, ens);
+#endif
+#if HP_NS_MOD
+        nsmod_.update(y, ens);
+#endif
+#if HP_DUMPREDIR_MOD
+        dumpredirmod_.update(y, ens);
+#endif
+#if HP_IP_MOD
+        ipmod_.update(y, ens);
+#endif
+#if HP_REVCOMMENT_MOD
+        revcommentmod_.update(y, ens);
+#endif
+#if HP_MINOR_MOD
+        minormod_.update(y, ens);
+#endif
+#if HP_WIKIMODEL_MOD
+        wikimodelmod_.update(y, ens);
+#endif
+#if HP_SECTITLE_MOD
+        sectitlemod_.update(y, ens);
+#endif
+#if HP_PARSERFN_MOD
+        parserfnmod_.update(y, ens);
+#endif
+#if HP_TABLECLASS_MOD
+        tableclassmod_.update(y, ens);
 #endif
         for (int i = 0; i < kMatchModels; ++i) match_[i].update(y);
 #if HP_SPARSE_UTF8
@@ -1628,6 +1754,72 @@ class Predictor {
 #if HP_ENTITY_MOD
         entitymod_.set_context(h2(59, wiki_.entity() + ((hist_ & 0xffffffull) << 8)));
 #endif
+#if HP_INDENT_MOD
+        indentmod_.set_context(h2(60, static_cast<std::uint64_t>(wiki_.indent_level()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LISTLEVEL_MOD
+        listlevelmod_.set_context(h2(61, static_cast<std::uint64_t>(wiki_.list_level()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ISSE_MOD
+        issemod_.set_context(h2(62, (hist_ & 0xffull) +
+                                    (static_cast<std::uint64_t>(o6_.last_p() >> 6) * 17ull)));
+#endif
+#if HP_MAGIC_MOD
+        magicmod_.set_context(h2(63, wiki_.magic() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_NOWIKI_MOD
+        nowikimod_.set_context(h2(64, static_cast<std::uint64_t>(wiki_.in_nowiki()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TITLE_MOD
+        titlemod_.set_context(h2(65, wiki_.page_title() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PAGEID_MOD
+        pageidmod_.set_context(h2(66, wiki_.page_id() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_USER_MOD
+        usermod_.set_context(h2(67, wiki_.username() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TEXT_MOD
+        textmod_.set_context(h2(68, static_cast<std::uint64_t>(wiki_.in_text()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_NS_MOD
+        nsmod_.set_context(h2(69, wiki_.ns_id() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DUMPREDIR_MOD
+        dumpredirmod_.set_context(h2(70, static_cast<std::uint64_t>(wiki_.dump_redir()) +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_IP_MOD
+        ipmod_.set_context(h2(71, wiki_.ip_hash() + ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REVCOMMENT_MOD
+        revcommentmod_.set_context(h2(72, wiki_.rev_comment() +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_MINOR_MOD
+        minormod_.set_context(h2(73, static_cast<std::uint64_t>(wiki_.minor_edit()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_WIKIMODEL_MOD
+        wikimodelmod_.set_context(h2(74, wiki_.wiki_model() +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SECTITLE_MOD
+        sectitlemod_.set_context(h2(75, wiki_.sectitle() +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PARSERFN_MOD
+        parserfnmod_.set_context(h2(76, wiki_.parser_fn() +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TABLECLASS_MOD
+        tableclassmod_.set_context(h2(77, wiki_.table_class() +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
     }
 
     void init_ctx_chain_() {
@@ -1747,6 +1939,60 @@ class Predictor {
 #endif
 #if HP_ENTITY_MOD
         ctx_chain_[n_ctx_chain_++] = &entitymod_;
+#endif
+#if HP_INDENT_MOD
+        ctx_chain_[n_ctx_chain_++] = &indentmod_;
+#endif
+#if HP_LISTLEVEL_MOD
+        ctx_chain_[n_ctx_chain_++] = &listlevelmod_;
+#endif
+#if HP_ISSE_MOD
+        ctx_chain_[n_ctx_chain_++] = &issemod_;
+#endif
+#if HP_MAGIC_MOD
+        ctx_chain_[n_ctx_chain_++] = &magicmod_;
+#endif
+#if HP_NOWIKI_MOD
+        ctx_chain_[n_ctx_chain_++] = &nowikimod_;
+#endif
+#if HP_TITLE_MOD
+        ctx_chain_[n_ctx_chain_++] = &titlemod_;
+#endif
+#if HP_PAGEID_MOD
+        ctx_chain_[n_ctx_chain_++] = &pageidmod_;
+#endif
+#if HP_USER_MOD
+        ctx_chain_[n_ctx_chain_++] = &usermod_;
+#endif
+#if HP_TEXT_MOD
+        ctx_chain_[n_ctx_chain_++] = &textmod_;
+#endif
+#if HP_NS_MOD
+        ctx_chain_[n_ctx_chain_++] = &nsmod_;
+#endif
+#if HP_DUMPREDIR_MOD
+        ctx_chain_[n_ctx_chain_++] = &dumpredirmod_;
+#endif
+#if HP_IP_MOD
+        ctx_chain_[n_ctx_chain_++] = &ipmod_;
+#endif
+#if HP_REVCOMMENT_MOD
+        ctx_chain_[n_ctx_chain_++] = &revcommentmod_;
+#endif
+#if HP_MINOR_MOD
+        ctx_chain_[n_ctx_chain_++] = &minormod_;
+#endif
+#if HP_WIKIMODEL_MOD
+        ctx_chain_[n_ctx_chain_++] = &wikimodelmod_;
+#endif
+#if HP_SECTITLE_MOD
+        ctx_chain_[n_ctx_chain_++] = &sectitlemod_;
+#endif
+#if HP_PARSERFN_MOD
+        ctx_chain_[n_ctx_chain_++] = &parserfnmod_;
+#endif
+#if HP_TABLECLASS_MOD
+        ctx_chain_[n_ctx_chain_++] = &tableclassmod_;
 #endif
     }
 
@@ -1875,6 +2121,60 @@ class Predictor {
 #endif
 #if HP_ENTITY_MOD
     ContextModel entitymod_;
+#endif
+#if HP_INDENT_MOD
+    ContextModel indentmod_;
+#endif
+#if HP_LISTLEVEL_MOD
+    ContextModel listlevelmod_;
+#endif
+#if HP_ISSE_MOD
+    ContextModel issemod_;
+#endif
+#if HP_MAGIC_MOD
+    ContextModel magicmod_;
+#endif
+#if HP_NOWIKI_MOD
+    ContextModel nowikimod_;
+#endif
+#if HP_TITLE_MOD
+    ContextModel titlemod_;
+#endif
+#if HP_PAGEID_MOD
+    ContextModel pageidmod_;
+#endif
+#if HP_USER_MOD
+    ContextModel usermod_;
+#endif
+#if HP_TEXT_MOD
+    ContextModel textmod_;
+#endif
+#if HP_NS_MOD
+    ContextModel nsmod_;
+#endif
+#if HP_DUMPREDIR_MOD
+    ContextModel dumpredirmod_;
+#endif
+#if HP_IP_MOD
+    ContextModel ipmod_;
+#endif
+#if HP_REVCOMMENT_MOD
+    ContextModel revcommentmod_;
+#endif
+#if HP_MINOR_MOD
+    ContextModel minormod_;
+#endif
+#if HP_WIKIMODEL_MOD
+    ContextModel wikimodelmod_;
+#endif
+#if HP_SECTITLE_MOD
+    ContextModel sectitlemod_;
+#endif
+#if HP_PARSERFN_MOD
+    ContextModel parserfnmod_;
+#endif
+#if HP_TABLECLASS_MOD
+    ContextModel tableclassmod_;
 #endif
     MatchModel match_[kMatchModels];
 #if HP_SPARSE_UTF8

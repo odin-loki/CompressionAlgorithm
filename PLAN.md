@@ -22,7 +22,7 @@ Never vendor Cypha, CUDA, Qt, or floats into hp. Do not treat Cypha’s
 
 ## Lab truth
 
-Leftover wave **closed** at **v75**. RECORD leads if a later run accepts.
+Leftover wave **closed** at **v78**. RECORD leads if a later run accepts.
 
 | | bytes |
 |---|---:|
@@ -36,18 +36,18 @@ Leftover wave **closed** at **v75**. RECORD leads if a later run accepts.
 
 enwik8 SOTA: cmix v21 ~14.62 MB. hp ~18.53 MB is paq8f-era quality.
 
-**8 MB champ** (`data/enwik8.8mb`, mem 22): **v75** identity
-**1,694,607** (−10,873 vs v62 1,705,480), **1.616 bpc**, RT PASS.
-fx2-manual **1,690,955** (−10,135 vs v62 fx2 1,701,090), RT PASS.
-Stack: v73 + `HP_CAT_MOD` + `HP_HEADING_MOD`.
-v74 CAT **1,694,707** / fx2 **1,691,045**; v73 identity **1,695,141** / fx2 **1,691,386**.
-100 MB mem 26 `SLOT_MAX=31` still **v73** **18,434,740 RT PASS** until v75 100 MB lands.
+**8 MB champ** (`data/enwik8.8mb`, mem 22): **v78** identity
+**1,692,024** (−1,535 vs v77 1,693,559), **1.613 bpc**, RT PASS.
+fx2-manual **1,688,500** (−1,373 vs v77 fx2 1,689,873), RT PASS.
+Stack v77 + `HP_SECTITLE_MOD`. H20 parserfn/tableclass rejected.
 
-**100 MB champ** (`data/enwik8.fx2man`, mem 26, `SLOT_MAX=31`): **v73**
-**18,434,740** (−8,665 vs v70 18,443,405), RT PASS. Write archives to
-`%LOCALAPPDATA%\hp_lab` then copy; OneDrive ate a CYHP header once.
+**100 MB champ** (`data/enwik8.fx2man`, mem 26, `SLOT_MAX=31`): **v77**
+**18,370,971** (−38,737 vs v75 18,409,708), **1.469 bpc**, RT PASS.
+Encode binary `hp_v77_m26.exe` (pulled tree + TITLE). Did not overwrite
+`hp_v75_m26.exe`. Write archives to `%LOCALAPPDATA%\hp_lab` then copy;
+OneDrive ate a CYHP header once.
 
-v57 100 MB 18,527,464 RT PASS; v45 encode-only 18,633,242; v37 18,671,091 RT PASS.
+v75 100 MB 18,409,708 RT PASS; v73 18,434,740; v57 18,527,464 RT PASS; v45 encode-only 18,633,242; v37 18,671,091 RT PASS.
 
 C++ profile v57 8 MB: wall 704 s; model redundancy mixer vs best-expert
 **+1,513,148 B**; PR **3.02** of 77 experts. Mixer is the hole.
@@ -173,7 +173,7 @@ One compile flag per binary. Same binary encodes and decodes. No
 `hp_v63.exe`, `hp_v64.exe`, `hp_v65.exe`, `hp_v66.exe`, `hp_v67.exe`,
 `hp_v68.exe`, `hp_v69.exe`, `hp_v70.exe`, `hp_v70_m26.exe`,
 `hp_v71.exe`, `hp_v72.exe`, `hp_v73.exe`, `hp_v73_m26.exe`,
-`hp_v74.exe`, `hp_v75.exe`, `hp_v75_m26.exe`.
+`hp_v74.exe`, `hp_v75.exe`, `hp_v75_m26.exe`, `hp_v76.exe`.
 
 Name new builds `hp_vNN.exe` or `hp_<flag>.exe`. 100 MB at mem 26 with
 a cap other than the 8 MB default: `hp_vNN_m26.exe` and compile
@@ -215,13 +215,23 @@ remaining leftovers on the new champ.
 | **H13** | Restack paying leftovers on HASH_CHK | TPL −3,179; DMC −110; LZP −283; skip-k −511; infokey −125; HASH2 −23 | **v70 1,695,515** |
 | **H14** | New axes on v70 | skip-3 **−152**; link-pipe **−141**; skip-4 **−81**; cite **REJECT +187**; HASH_P5 **REJECT +423**; DMC_GROW **REJECT +1**; skip-5 **REJECT +8** | **v73 1,695,141** |
 | **H15** | Wiki-domain CMs on v73 | CAT **−434** → v74; HEADING **−100** → v75 **1,694,607** / fx2 **1,690,955**; REDIR **+234**; EXTLINK **+521**; REFNAME **+300**; QOCXT **+363**; ENTITY **+309** | **v75 1,694,607** |
+| **H16** | Indent / list / ISSE / magic / nowiki | vs pulled v75 **1,694,590**: indent **+613**; list **+488**; ISSE **+265**; magic **+480**; nowiki **+292** | all reject |
+| **H17** | Dump XML CMs on v76 | title **v77 1,693,559 / fx2 1,689,873 both RT PASS −1,031/−1,055**; pageid restack **+311**; user **+267**; text **+473** | **v77** |
+| **H18** | More dump XML on v77 | ns **+282**; dumpredir **+281**; ip **+390**; revcomment **+249** | all reject |
+| **H19** | Dump minor / model on v77 | minor **+353**; model **+292** | all reject |
+| **H20** | Wikitext CMs on v77 | sectitle **v78 1,692,024 RT PASS −1,535**; parserfn **+264/+286**; tableclass **+517** | **v78** |
 
 v62 wiki-axis singles closed (only STATE paid). H6 rank-8 **REJECT +702k**. H8 nopy **REJECT +18k**. Mixer width and low-rank W are closed.
 H9: mixer dots are already more precise than they need; wall time is the 77 StateMaps, not Q16.
 H10: clustering experts then mixing cluster opinions loses ~3× vs one linear W. Hard MoE is worse. Phase B dump-with-gates is not promoted. LSTM router stays Track W.
 H11/H13 leftover wave **closed** on v70. H14 new-axis wave **closed** on v73 (skip-3/4 + link-pipe paid; cite / 5-probe / DMC grow / skip-5 rejected). Do not reopen rank-W / cluster-MoE / pairwise / mean-mix / skip40 / fccxt / period / SR / baridx / pronoun / HASH_P5 / skip-5.
 H15 **closed** on v75: Category-namespace **−434** and heading-level **−100** paid; `#REDIRECT` / `[http` / ref-name / quote-CM / entity-name rejected. Do not reopen those five.
-100 MB v73 **18,434,740 RT PASS**. v75 100 MB mem 26 `SLOT_MAX=31` running. Skip-k saturates at 4. LSTM / WRT / `payload_lex` / POS / bitlstm32 / obias are Track W.
+H16 **closed**: indent / list-level / ISSE / magic / nowiki all rejected vs pulled-tree v75 **1,694,590**. Pulled RAM/speed tree is **v76** 8 MB **1,694,590 RT PASS** (−17 vs old v75). Not bit-identical. Do not reopen H16 flags.
+H17 **closed** on v77: `<title>` **−1,031** paid; first-`<id>` isolated −924 but **+311** on title champ; username **+267**; in-`<text>` **+473**. Do not reopen those three. Do not reopen H16.
+H18 **closed**: dump `<ns>` / `<redirect/>` / `<ip>` / `<comment>` all rejected vs v77 **1,693,559**. Do not reopen. Do not reopen H17 pageid/user/text or `#REDIRECT`.
+H19 **closed**: `<minor/>` **+353**; `<model>` **+292**. Dump-XML extras after title all dilute. Do not add more dump-tag CMs.
+H20 **closed** on v78: heading-body text **−1,535** paid; `{{#` parser-fn **+264/+286**; `{| class=` **+517**. Do not reopen parserfn/tableclass. Do not add more dump-tag CMs.
+v75 100 MB **18,409,708 RT PASS** (−25,032 vs v73). v77-100 **18,370,971 RT PASS** (−38,737 vs v75). Skip-k saturates at 4. LSTM / WRT / `payload_lex` / POS / bitlstm32 / obias are Track W. v78-100 mem 26 `SLOT_MAX=31` in flight (8 MB idle).
 
 ---
 

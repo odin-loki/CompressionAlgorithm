@@ -1425,6 +1425,168 @@ Copied `hp_v75.exe`. Did not overwrite `hp_v74.exe`. fx2 + remaining leftovers o
 
 `HP_REDIR_MOD` `#REDIRECT` domain. No RT. Do not restack.
 
-H15 leftover queue empty. 8 MB champ is v75. v75 100 MB mem 26 `SLOT_MAX=31` started
-(`hp_v75_m26.exe` → `%LOCALAPPDATA%\hp_lab\e8_v75_m26.hp`). Did not overwrite `hp_v73_m26.exe`.
+H15 leftover queue empty. 8 MB champ is v75. v75 100 MB mem 26 `SLOT_MAX=31` encoded
+**18,409,708** (−25,032 vs v73 18,434,740). CYHP header. Did not overwrite
+`hp_v73_m26.exe`. Copied `%LOCALAPPDATA%\hp_lab\e8_v75_m26.hp` → `hp/build`.
+
+### v75 100 MB - **18,409,708 / 1.473 bpc, RT PASS −25,032 vs v73**
+
+`hp_v75_m26.exe` `--mem 26` `SLOT_MAX=31` on `data/enwik8.fx2man`: **18,409,708**.
+Decode SHA matches `data/enwik8.fx2man`
+`9FA638182A0384AF0040762CBD3C67DC1613B90085BAE37F6E567350B9336A51`.
+New 100 MB champ. First RT attempt was killed; retry succeeded (~3.15 h).
+
+### H16 leftovers on pulled v75 tree
+
+Pulled-tree v75 8 MB baseline (`hp_g_v75base.exe`, XSIMD + BUF_DELTA=3):
+**1,694,590** (−17 vs old v75 1,694,607). Not bit-identical; leftover deltas vs 1,694,590.
+Indent + list-level encoding.
+
+### v75indent - **1,695,203 / 1.616 bpc, REJECT +613**
+
+`HP_INDENT_MOD` leading `:` count vs pulled baseline 1,694,590. Twin of LINE/HEADING. No RT.
+
+### v75list - **1,695,078 / 1.616 bpc, REJECT +488**
+
+`HP_LISTLEVEL_MOD` leading `*`/`#` count. Twin of LINE. No RT.
+
+### v75isse - **1,694,855 / 1.616 bpc, REJECT +265**
+
+`HP_ISSE_MOD` hist + o6 p-bucket. Dilution. No RT.
+
+### v75magic - **1,695,070 / 1.616 bpc, REJECT +480**
+
+`HP_MAGIC_MOD` `__TOC__` / `__NOTOC__`. Sparse. No RT.
+
+### v75nowiki - **1,694,882 / 1.616 bpc, REJECT +292**
+
+`HP_NOWIKI_MOD` `<nowiki>`/`<math>`/`<pre>`/`<code>`. Tag-domain twin. No RT.
+
+H16 leftover queue empty. All five rejected vs **1,694,590**.
+
+### v76 = pulled v75 tree - **1,694,590 / 1.616 bpc, RT PASS −17 vs v75**
+
+XSIMD + BUF_DELTA=3 + shared rings on the v75 flag set. Decode SHA matches
+`data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v76.exe`. Did not overwrite `hp_v75.exe`. fx2 **1,690,928 RT PASS** (−27 vs v75 fx2).
+
+### H17 leftovers on v76
+
+Flags default off: `HP_TITLE_MOD` (`<title>` hash), `HP_PAGEID_MOD` (first `<id>` after `<page>`), `HP_USER_MOD` (`<username>`), `HP_TEXT_MOD` (in-`<text>` domain). One flag vs v76 **1,694,590**. Two 8 MB at a time.
+
+### v76title - **1,693,559 / 1.615 bpc, RT PASS −1,031 vs v76**
+
+`HP_TITLE_MOD` page-title hash on v76: **1,693,559**. Decode SHA matches
+`data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v77.exe`. Did not overwrite `hp_v76.exe`. fx2 not yet.
+
+### v76pageid - **1,693,666 / 1.615 bpc, −924 vs v76**
+
+### v77pageid - **1,693,870 / 1.615 bpc, REJECT +311 vs v77**
+
+`HP_PAGEID_MOD` on v77 (title on). Isolated −924 vs v76; title already carries dump-page identity. No RT.
+
+### v77user - **1,693,826 / 1.615 bpc, REJECT +267 vs v77**
+
+`HP_USER_MOD` `<username>` hash on v77. Dilution. No RT.
+
+`HP_TEXT_MOD` in-`<text>` + v77 fx2 in flight.
+
+### v77text - **1,694,032 / 1.615 bpc, REJECT +473 vs v77**
+
+`HP_TEXT_MOD` in-`<text>` domain on v77. Tag-domain twin of STATE. No RT.
+
+H17 leftover queue empty. pageid isolated −924 but **+311** on title champ; user **+267**; text **+473**.
+
+### v77 = v76 + TITLE - **1,693,559 / 1.615 bpc, RT PASS −1,031 vs v76**
+
+`HP_TITLE_MOD`. Copied `hp_v77.exe`. Did not overwrite `hp_v76.exe`.
+fx2-manual **1,689,873** (−1,055 vs v76 fx2 1,690,928). Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+### H18 leftovers on v77
+
+Flags default off: `HP_NS_MOD` (dump `<ns>`), `HP_DUMPREDIR_MOD` (`<redirect/>`, not `#REDIRECT`), `HP_IP_MOD` (`<ip>`), `HP_REVCOMMENT_MOD` (`<comment>`). One flag vs v77 **1,693,559**. Two 8 MB at a time.
+
+### v77ns - **1,693,841 / 1.615 bpc, REJECT +282 vs v77**
+
+`HP_NS_MOD` dump `<ns>` id. Sparse vs title. No RT.
+
+### v77dumpredir - **1,693,840 / 1.615 bpc, REJECT +281 vs v77**
+
+`HP_DUMPREDIR_MOD` dump `<redirect/>`. Sparse; not `#REDIRECT`. No RT.
+
+`HP_IP_MOD` + `HP_REVCOMMENT_MOD` in flight.
+
+### v77ip - **1,693,949 / 1.615 bpc, REJECT +390 vs v77**
+
+`HP_IP_MOD` dump `<ip>`. Sparse. No RT.
+
+### v77revcomment - **1,693,808 / 1.615 bpc, REJECT +249 vs v77**
+
+`HP_REVCOMMENT_MOD` dump `<comment>`. No RT.
+
+H18 leftover queue empty. ns **+282**; dumpredir **+281**; ip **+390**; revcomment **+249**. Do not reopen. 8 MB champ stays v77.
+
+### v77-100 mem 26 - **18,370,971 / 1.469 bpc, RT PASS −38,737 vs v75**
+
+`hp_v77_m26.exe` `--mem 26` `SLOT_MAX=31` + `HP_TITLE_MOD` on `data/enwik8.fx2man`: **18,370,971**.
+Decode SHA matches `data/enwik8.fx2man`
+`9FA638182A0384AF0040762CBD3C67DC1613B90085BAE37F6E567350B9336A51`.
+New 100 MB champ. Did not overwrite `hp_v75_m26.exe`. Copied
+`%LOCALAPPDATA%\hp_lab\e8_v77_m26.hp` → `hp/build`.
+
+### H19 leftovers on v77
+
+Flags default off: `HP_MINOR_MOD` (`<minor/>`), `HP_WIKIMODEL_MOD` (`<model>`). One flag vs v77 **1,693,559**. Two 8 MB at a time.
+
+### v77minor - **1,693,912 / 1.615 bpc, REJECT +353 vs v77**
+
+`HP_MINOR_MOD` dump `<minor/>`. Sparse. No RT.
+
+### v77model - **1,693,851 / 1.615 bpc, REJECT +292 vs v77**
+
+`HP_WIKIMODEL_MOD` dump `<model>`. Almost always `wikitext`. No RT.
+
+H19 leftover queue empty. Dump-XML extras after title all dilute. 8 MB champ stays v77. 100 MB champ is v77.
+
+### H20 leftovers on v77
+
+Flags default off: `HP_SECTITLE_MOD` (heading-body text, not `=` count), `HP_PARSERFN_MOD` (`{{#if` / `#switch`), `HP_TABLECLASS_MOD` (`{| class=`). One flag vs v77 **1,693,559**. Two 8 MB at a time.
+
+### v77sectitle - **1,692,024 / 1.613 bpc, RT PASS −1,535 vs v77**
+
+`HP_SECTITLE_MOD` heading-body text hash on v77: **1,692,024**. Decode SHA matches
+`data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v78.exe`. Did not overwrite `hp_v77.exe`.
+
+### v77parserfn - **1,693,823 / 1.615 bpc, REJECT +264 vs v77**
+
+`HP_PARSERFN_MOD` `{{#` name. TPLNAME already covers most templates. Restack on v78. No RT.
+
+### v78parserfn - **1,692,310 / 1.613 bpc, REJECT +286 vs v78**
+
+`HP_PARSERFN_MOD` on v78. Dilution. No RT.
+
+### v78tableclass - **1,692,541 / 1.614 bpc, REJECT +517 vs v78**
+
+`HP_TABLECLASS_MOD` `{| class=` first-line tokens. Twin of table STATE. No RT.
+
+H20 leftover queue empty. parserfn **+264/+286**; tableclass **+517**. 8 MB champ is v78.
+
+### v78 = v77 + SECTITLE - **1,692,024 / 1.613 bpc, RT PASS −1,535 vs v77**
+
+`HP_SECTITLE_MOD`. Copied `hp_v78.exe`. Did not overwrite `hp_v77.exe`.
+fx2-manual **1,688,500** (−1,373 vs v77 fx2 1,689,873). Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+### v78-100 mem 26 (in flight)
+
+`hp_v78_m26.exe` `--mem 26` `SLOT_MAX=31` + TITLE + SECTITLE on `data/enwik8.fx2man` → `%LOCALAPPDATA%\hp_lab\e8_v78_m26.hp`. Did not overwrite `hp_v77_m26.exe`.
+
 

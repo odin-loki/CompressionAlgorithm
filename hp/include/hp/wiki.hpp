@@ -74,6 +74,107 @@ class WikiMachine {
                 entity_ = mix64(entity_ * 31ull + static_cast<std::uint64_t>(c));
         }
 #endif
+#if HP_MAGIC_MOD
+        if (c == '_' && prev1_ == '_') {
+            if (magic_collect_) magic_collect_ = 0;
+            else {
+                magic_collect_ = 1;
+                magic_hash_ = 0;
+            }
+        } else if (magic_collect_) {
+            const int lc = c | 32;
+            if (lc >= 'a' && lc <= 'z')
+                magic_hash_ = mix64(magic_hash_ * 31ull +
+                                    static_cast<std::uint64_t>(lc));
+            else if (c != '_')
+                magic_collect_ = 0;
+        }
+#endif
+#if HP_TITLE_MOD
+        if (in_title_) {
+            if (c == '<') in_title_ = 0;
+            else
+                title_hash_ = mix64(title_hash_ * 31ull +
+                                    static_cast<std::uint64_t>(c));
+        }
+#endif
+#if HP_USER_MOD
+        if (in_user_) {
+            if (c == '<') in_user_ = 0;
+            else
+                user_hash_ = mix64(user_hash_ * 31ull +
+                                   static_cast<std::uint64_t>(c));
+        }
+#endif
+#if HP_PAGEID_MOD
+        if (in_id_) {
+            if (c >= '0' && c <= '9') {
+                if (page_id_ < 100000000ull)
+                    page_id_ = page_id_ * 10ull + static_cast<std::uint64_t>(c - '0');
+            } else {
+                in_id_ = 0;
+                pageid_seen_ = 1;
+            }
+        }
+#endif
+#if HP_NS_MOD
+        if (in_ns_) {
+            if (c >= '0' && c <= '9') {
+                if (ns_id_ < 1000)
+                    ns_id_ = ns_id_ * 10 + (c - '0');
+            } else {
+                in_ns_ = 0;
+            }
+        }
+#endif
+#if HP_IP_MOD
+        if (in_ip_) {
+            if (c == '<') in_ip_ = 0;
+            else
+                ip_hash_ = mix64(ip_hash_ * 31ull +
+                                 static_cast<std::uint64_t>(c));
+        }
+#endif
+#if HP_REVCOMMENT_MOD
+        if (in_comment_) {
+            if (c == '<') in_comment_ = 0;
+            else
+                comment_hash_ = mix64(comment_hash_ * 31ull +
+                                      static_cast<std::uint64_t>(c));
+        }
+#endif
+#if HP_WIKIMODEL_MOD
+        if (in_model_) {
+            if (c == '<') in_model_ = 0;
+            else
+                model_hash_ = mix64(model_hash_ * 31ull +
+                                    static_cast<std::uint64_t>(c));
+        }
+#endif
+#if HP_PARSERFN_MOD
+        if (pfn_wait_) {
+            pfn_wait_ = 0;
+            if (c == '#') pfn_collect_ = 1;
+        } else if (pfn_collect_) {
+            const int lc = c | 32;
+            if (lc >= 'a' && lc <= 'z')
+                pfn_hash_ = mix64(pfn_hash_ * 31ull +
+                                  static_cast<std::uint64_t>(lc));
+            else
+                pfn_collect_ = 0;
+        }
+#endif
+#if HP_TABLECLASS_MOD
+        if (tc_collect_) {
+            if (c == '\n') tc_collect_ = 0;
+            else {
+                const int lc = c | 32;
+                if (lc >= 'a' && lc <= 'z')
+                    tc_hash_ = mix64(tc_hash_ * 31ull +
+                                     static_cast<std::uint64_t>(lc));
+            }
+        }
+#endif
 
         // Close states that have a terminator.
         if (state_ == kWkAmp || state_ == kWkEntity) {
@@ -107,6 +208,17 @@ class WikiMachine {
             refn_win_ = 0;
             refn_skipq_ = 0;
 #endif
+#if HP_NOWIKI_MOD
+            nw_slash_ = 0;
+            nw_n_ = 0;
+            nw_name_ = 0;
+#endif
+#if HP_DUMP_XML
+            xml_slash_ = 0;
+            xml_n_ = 0;
+            xml_name_ = 0;
+            xml_done_ = 0;
+#endif
             return;
         }
         if (c == '>' && in_tag_) {
@@ -117,6 +229,12 @@ class WikiMachine {
 #if HP_REFNAME_MOD
             refn_collect_ = 0;
 #endif
+#if HP_NOWIKI_MOD
+            nowiki_apply_();
+#endif
+#if HP_DUMP_XML
+            dump_apply_();
+#endif
             in_tag_ = 0;
             state_ = kWkText;
             return;
@@ -124,6 +242,12 @@ class WikiMachine {
         if (c == '/' && in_tag_) {
 #if HP_CITE_MOD
             if (cite_buf_ == 0) cite_slash_ = 1;
+#endif
+#if HP_NOWIKI_MOD
+            if (nw_n_ == 0) nw_slash_ = 1;
+#endif
+#if HP_DUMP_XML
+            if (xml_n_ == 0) xml_slash_ = 1;
 #endif
             if (depth_ > 0) --depth_;
             state_ = kWkTagEnd;
@@ -159,6 +283,26 @@ class WikiMachine {
                         refn_skipq_ = 0;
                         refname_ = mix64(refname_ * 31ull + ch);
                     }
+                }
+            }
+#endif
+#if HP_NOWIKI_MOD
+            {
+                const int lc = c | 32;
+                if (lc >= 'a' && lc <= 'z' && nw_n_ < 8) {
+                    nw_name_ = nw_name_ * 31ull + static_cast<std::uint64_t>(lc);
+                    ++nw_n_;
+                }
+            }
+#endif
+#if HP_DUMP_XML
+            if (!xml_done_) {
+                const int lc = c | 32;
+                if (lc >= 'a' && lc <= 'z' && xml_n_ < 12) {
+                    xml_name_ = xml_name_ * 31ull + static_cast<std::uint64_t>(lc);
+                    ++xml_n_;
+                } else {
+                    xml_done_ = 1;
                 }
             }
 #endif
@@ -233,6 +377,11 @@ class WikiMachine {
             key_ = 0;
             key_collect_ = 0;
 #endif
+#if HP_PARSERFN_MOD
+            pfn_wait_ = 1;
+            pfn_collect_ = 0;
+            pfn_hash_ = 0;
+#endif
             return;
         }
         if (prev1_ == '{' && c == '|') {
@@ -240,6 +389,10 @@ class WikiMachine {
             in_table_ = 1;
 #if HP_TABLE_ABOVE || HP_FCCXT_MOD
             table_reset();
+#endif
+#if HP_TABLECLASS_MOD
+            tc_collect_ = 1;
+            tc_hash_ = 0;
 #endif
             return;
         }
@@ -252,6 +405,10 @@ class WikiMachine {
             in_table_ = 0;
 #if HP_TABLE_ABOVE || HP_FCCXT_MOD
             table_reset();
+#endif
+#if HP_TABLECLASS_MOD
+            tc_collect_ = 0;
+            tc_hash_ = 0;
 #endif
             return;
         }
@@ -347,6 +504,19 @@ class WikiMachine {
             heading_ = 0;
             heading_run_ = 0;
 #endif
+#if HP_SECTITLE_MOD
+            st_collect_ = 0;
+            st_skip_ = 0;
+#endif
+#if HP_INDENT_MOD
+            indent_ = 0;
+            indent_run_ = 0;
+#endif
+#if HP_LISTLEVEL_MOD
+            list_level_ = 0;
+            list_run_ = 0;
+            list_kind_ = 0;
+#endif
         } else if (first_of_line_ && c != ' ' && c != '\t') {
             first_of_line_ = 0;
             line_kind_ = c;
@@ -362,6 +532,26 @@ class WikiMachine {
             if (c == '=') {
                 heading_ = 1;
                 heading_run_ = 1;
+            }
+#endif
+#if HP_SECTITLE_MOD
+            if (c == '=') {
+                st_skip_ = 1;
+                st_collect_ = 0;
+                st_hash_ = 0;
+            }
+#endif
+#if HP_INDENT_MOD
+            if (c == ':') {
+                indent_ = 1;
+                indent_run_ = 1;
+            }
+#endif
+#if HP_LISTLEVEL_MOD
+            if (c == '*' || c == '#') {
+                list_level_ = 1;
+                list_run_ = 1;
+                list_kind_ = c;
             }
 #endif
         } else {
@@ -382,6 +572,45 @@ class WikiMachine {
                     if (heading_ < 6) ++heading_;
                 } else {
                     heading_run_ = 0;
+                }
+            }
+#endif
+#if HP_SECTITLE_MOD
+            if (st_skip_) {
+                if (c != '=') {
+                    st_skip_ = 0;
+                    st_collect_ = 1;
+                    const int lc = c | 32;
+                    if (lc >= 'a' && lc <= 'z')
+                        st_hash_ = mix64(st_hash_ * 31ull +
+                                         static_cast<std::uint64_t>(lc));
+                }
+            } else if (st_collect_) {
+                if (c == '=') {
+                    st_collect_ = 0;
+                } else {
+                    const int lc = c | 32;
+                    if (lc >= 'a' && lc <= 'z')
+                        st_hash_ = mix64(st_hash_ * 31ull +
+                                         static_cast<std::uint64_t>(lc));
+                }
+            }
+#endif
+#if HP_INDENT_MOD
+            if (indent_run_) {
+                if (c == ':') {
+                    if (indent_ < 8) ++indent_;
+                } else {
+                    indent_run_ = 0;
+                }
+            }
+#endif
+#if HP_LISTLEVEL_MOD
+            if (list_run_) {
+                if (c == list_kind_) {
+                    if (list_level_ < 8) ++list_level_;
+                } else {
+                    list_run_ = 0;
                 }
             }
 #endif
@@ -560,6 +789,125 @@ class WikiMachine {
         return 0;
 #endif
     }
+    int indent_level() const {
+#if HP_INDENT_MOD
+        return indent_;
+#else
+        return 0;
+#endif
+    }
+    int list_level() const {
+#if HP_LISTLEVEL_MOD
+        return list_level_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t magic() const {
+#if HP_MAGIC_MOD
+        return magic_hash_;
+#else
+        return 0;
+#endif
+    }
+    int in_nowiki() const {
+#if HP_NOWIKI_MOD
+        return nw_bits_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t page_title() const {
+#if HP_TITLE_MOD
+        return title_hash_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t page_id() const {
+#if HP_PAGEID_MOD
+        return page_id_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t username() const {
+#if HP_USER_MOD
+        return user_hash_;
+#else
+        return 0;
+#endif
+    }
+    int in_text() const {
+#if HP_TEXT_MOD
+        return in_text_;
+#else
+        return 0;
+#endif
+    }
+    int ns_id() const {
+#if HP_NS_MOD
+        return ns_id_;
+#else
+        return 0;
+#endif
+    }
+    int dump_redir() const {
+#if HP_DUMPREDIR_MOD
+        return dump_redir_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t ip_hash() const {
+#if HP_IP_MOD
+        return ip_hash_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t rev_comment() const {
+#if HP_REVCOMMENT_MOD
+        return comment_hash_;
+#else
+        return 0;
+#endif
+    }
+    int minor_edit() const {
+#if HP_MINOR_MOD
+        return minor_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t wiki_model() const {
+#if HP_WIKIMODEL_MOD
+        return model_hash_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t sectitle() const {
+#if HP_SECTITLE_MOD
+        return st_hash_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t parser_fn() const {
+#if HP_PARSERFN_MOD
+        return pfn_hash_;
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t table_class() const {
+#if HP_TABLECLASS_MOD
+        return tc_hash_;
+#else
+        return 0;
+#endif
+    }
     int is_temp() const {
 #if HP_WIKI_TEMP
         return is_temp_;
@@ -629,6 +977,170 @@ class WikiMachine {
 #if HP_ENTITY_MOD
     std::uint64_t entity_ = 0;
     int ent_collect_ = 0;
+#endif
+#if HP_INDENT_MOD
+    int indent_ = 0;
+    int indent_run_ = 0;
+#endif
+#if HP_LISTLEVEL_MOD
+    int list_level_ = 0;
+    int list_run_ = 0;
+    int list_kind_ = 0;
+#endif
+#if HP_MAGIC_MOD
+    int magic_collect_ = 0;
+    std::uint64_t magic_hash_ = 0;
+#endif
+#if HP_NOWIKI_MOD
+    void nowiki_apply_() {
+        int bit = 0;
+        auto eq = [&](const char* s) {
+            std::uint64_t w = 0;
+            int m = 0;
+            while (s[m]) {
+                w = w * 31ull + static_cast<std::uint64_t>(
+                                    static_cast<unsigned char>(s[m]));
+                ++m;
+            }
+            return m == nw_n_ && w == nw_name_;
+        };
+        if (eq("nowiki")) bit = 1;
+        else if (eq("math")) bit = 2;
+        else if (eq("pre")) bit = 4;
+        else if (eq("code")) bit = 8;
+        if (bit) {
+            if (nw_slash_) nw_bits_ &= ~bit;
+            else nw_bits_ |= bit;
+        }
+    }
+    int nw_slash_ = 0;
+    int nw_n_ = 0;
+    int nw_bits_ = 0;
+    std::uint64_t nw_name_ = 0;
+#endif
+#if HP_DUMP_XML
+    void dump_apply_() {
+        auto eq = [&](const char* s) {
+            std::uint64_t w = 0;
+            int m = 0;
+            while (s[m]) {
+                w = w * 31ull + static_cast<std::uint64_t>(
+                                    static_cast<unsigned char>(s[m]));
+                ++m;
+            }
+            return m == xml_n_ && w == xml_name_;
+        };
+#if HP_TITLE_MOD
+        if (eq("title")) {
+            in_title_ = xml_slash_ ? 0 : 1;
+            if (in_title_) title_hash_ = 0;
+        }
+#endif
+#if HP_USER_MOD
+        if (eq("username")) {
+            in_user_ = xml_slash_ ? 0 : 1;
+            if (in_user_) user_hash_ = 0;
+        }
+#endif
+#if HP_TEXT_MOD
+        if (eq("text")) in_text_ = xml_slash_ ? 0 : 1;
+#endif
+#if HP_PAGEID_MOD
+        if (eq("page") && !xml_slash_) {
+            pageid_seen_ = 0;
+            page_id_ = 0;
+        }
+        if (eq("id") && !xml_slash_ && !pageid_seen_) in_id_ = 1;
+#endif
+#if HP_NS_MOD
+        if (eq("ns") && !xml_slash_) {
+            in_ns_ = 1;
+            ns_id_ = 0;
+        }
+#endif
+#if HP_DUMPREDIR_MOD
+        if (eq("page") && !xml_slash_) dump_redir_ = 0;
+        if (eq("redirect")) dump_redir_ = 1;
+#endif
+#if HP_IP_MOD
+        if (eq("ip")) {
+            in_ip_ = xml_slash_ ? 0 : 1;
+            if (in_ip_) ip_hash_ = 0;
+        }
+#endif
+#if HP_REVCOMMENT_MOD
+        if (eq("comment")) {
+            in_comment_ = xml_slash_ ? 0 : 1;
+            if (in_comment_) comment_hash_ = 0;
+        }
+#endif
+#if HP_MINOR_MOD
+        if (eq("page") && !xml_slash_) minor_ = 0;
+        if (eq("minor")) minor_ = 1;
+#endif
+#if HP_WIKIMODEL_MOD
+        if (eq("model")) {
+            in_model_ = xml_slash_ ? 0 : 1;
+            if (in_model_) model_hash_ = 0;
+        }
+#endif
+    }
+    int xml_slash_ = 0;
+    int xml_n_ = 0;
+    int xml_done_ = 0;
+    std::uint64_t xml_name_ = 0;
+#endif
+#if HP_TITLE_MOD
+    int in_title_ = 0;
+    std::uint64_t title_hash_ = 0;
+#endif
+#if HP_PAGEID_MOD
+    int in_id_ = 0;
+    int pageid_seen_ = 0;
+    std::uint64_t page_id_ = 0;
+#endif
+#if HP_USER_MOD
+    int in_user_ = 0;
+    std::uint64_t user_hash_ = 0;
+#endif
+#if HP_TEXT_MOD
+    int in_text_ = 0;
+#endif
+#if HP_NS_MOD
+    int in_ns_ = 0;
+    int ns_id_ = 0;
+#endif
+#if HP_DUMPREDIR_MOD
+    int dump_redir_ = 0;
+#endif
+#if HP_IP_MOD
+    int in_ip_ = 0;
+    std::uint64_t ip_hash_ = 0;
+#endif
+#if HP_REVCOMMENT_MOD
+    int in_comment_ = 0;
+    std::uint64_t comment_hash_ = 0;
+#endif
+#if HP_MINOR_MOD
+    int minor_ = 0;
+#endif
+#if HP_WIKIMODEL_MOD
+    int in_model_ = 0;
+    std::uint64_t model_hash_ = 0;
+#endif
+#if HP_SECTITLE_MOD
+    int st_skip_ = 0;
+    int st_collect_ = 0;
+    std::uint64_t st_hash_ = 0;
+#endif
+#if HP_PARSERFN_MOD
+    int pfn_wait_ = 0;
+    int pfn_collect_ = 0;
+    std::uint64_t pfn_hash_ = 0;
+#endif
+#if HP_TABLECLASS_MOD
+    int tc_collect_ = 0;
+    std::uint64_t tc_hash_ = 0;
 #endif
 #if HP_TABLE_ABOVE || HP_FCCXT_MOD
     void table_reset() {
