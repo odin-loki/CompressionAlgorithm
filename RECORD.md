@@ -1589,4 +1589,438 @@ fx2-manual **1,688,500** (−1,373 vs v77 fx2 1,689,873). Decode SHA matches
 
 `hp_v78_m26.exe` `--mem 26` `SLOT_MAX=31` + TITLE + SECTITLE on `data/enwik8.fx2man` → `%LOCALAPPDATA%\hp_lab\e8_v78_m26.hp`. Did not overwrite `hp_v77_m26.exe`.
 
+### H21 leftovers on v78 (queued)
+
+Flags default off: `HP_ANCHOR_MOD` (`[[#section`), `HP_PUBID_MOD` (ISBN/PMID digits), `HP_TEMPPOS_MOD` (first positional `{{tpl|arg`). One at a time, mem 22, RSS cap 30 GB.
+
+### v78anchor - **1,692,485 / 1.614 bpc, REJECT +461 vs v78**
+
+`HP_ANCHOR_MOD` `[[target#section`. Twin of link/CAT. No RT.
+
+### v78pubid - **1,692,415 / 1.614 bpc, REJECT +391 vs v78**
+
+`HP_PUBID_MOD` ISBN/PMID digits. Sparse. No RT.
+
+### v78temppos - **1,692,290 / 1.613 bpc, REJECT +266 vs v78**
+
+`HP_TEMPPOS_MOD` first positional `{{tpl|arg`. Twin of TPLNAME/INFOKEY. No RT.
+
+H21 leftover queue empty. anchor **+461**; pubid **+391**; temppos **+266**. Do not reopen.
+
+### v78wikistack → v79 - **1,690,064 / 1.611 bpc, RT PASS −1,960 vs v78**
+
+`HP_WIKISTACK_MOD` packed first-char stack + bracket nest + cell-above. Decode SHA matches
+`data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v79.exe`. Did not overwrite `hp_v78.exe`.
+fx2-manual **1,686,585** (−1,915 vs v78 fx2 1,688,500). Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+### v79reorder - **1,693,086 / 1.614 bpc, REJECT +3,022 vs v79**
+
+`HP_REORDER` sort `<page>` by title. 1075 pages, perm header 4,333 B. Clustering does not cover the sidecar on 8 MB. No RT. Keep testing fx2-manual as input, not an hp preprocessor.
+
+### v79payloadlex - **1,693,799 / 1.615 bpc, REJECT +3,735 vs v79**
+
+`HP_PAYLOAD_LEX` sort `<page>` by `<text>`. Same sidecar, worse clustering. No RT. Winners' payload_lex is PHDA9-tail after WRT, not raw dump pages.
+
+### v79dict - **1,752,731 / 1.671 bpc, REJECT +62,667 vs v79**
+
+`--dict` on `hp_v79.exe`. 1,280 words, dict 10,877 B, body 82% of raw. Token stream hurts the mixer more than the transform saves. Same B.3 lesson. No RT.
+
+H22 leftover queue empty. wikistack **v79 −1,960**. reorder **+3,022**; payload_lex **+3,735**; dict **+62,667**. Do not reopen those three. Do not run mem 26 (55 GB).
+
+### H23 leftovers on v79 (queued)
+
+Flags default off: `HP_LANG_MOD` (`[[xx:` interwiki), `HP_CATSORT_MOD` (`[[Category:Name|sortkey`), `HP_TBLROW_MOD` (`{|` row/caption/header/cell), `HP_FILEOPT_MOD` (`[[File:` options), `HP_DEFAULTSORT_MOD` (`{{DEFAULTSORT:`), `HP_REDIRTARGET_MOD` (`#REDIRECT [[title]]`), `HP_DAB_MOD` (`{{disambig`), `HP_HATNOTE_MOD` (`{{for|` / `{{about|`). One at a time, mem 22, RSS cap 30 GB.
+
+### v79lang - **1,690,542 / 1.612 bpc, REJECT +478 vs v79**
+
+`HP_LANG_MOD` `[[xx:` interwiki prefix. Twin of CAT. No RT.
+
+### v79catsort - **1,690,498 / 1.612 bpc, REJECT +434 vs v79**
+
+`HP_CATSORT_MOD` `[[Category:Name|sortkey`. Twin of CAT/linkpipe. No RT.
+
+### v79tblrow - **1,690,542 / 1.612 bpc, REJECT +478 vs v79**
+
+`HP_TBLROW_MOD` `{|` row/caption/header/cell kind. Twin of tableclass. No RT.
+
+### v79fileopt - **1,690,572 / 1.612 bpc, REJECT +508 vs v79**
+
+`HP_FILEOPT_MOD` `[[File:` thumb/px/right options. Twin of CAT. No RT.
+
+### v79defaultsort - **1,690,335 / 1.612 bpc, REJECT +271 vs v79**
+
+`HP_DEFAULTSORT_MOD` `{{DEFAULTSORT:` key. Twin of TPLNAME. No RT.
+
+### v79redirtarget - **1,690,354 / 1.612 bpc, REJECT +290 vs v79**
+
+`HP_REDIRTARGET_MOD` `#REDIRECT [[title]]` target hash. Twin of REDIR. No RT.
+
+### v79dab - **1,690,621 / 1.612 bpc, REJECT +557 vs v79**
+
+`HP_DAB_MOD` `{{disambig` / hndis / dab. Twin of TPLNAME. No RT.
+
+### v79hatnote - **1,690,373 / 1.612 bpc, REJECT +309 vs v79**
+
+`HP_HATNOTE_MOD` `{{for|` / `{{about|` / `{{main|`. Twin of TPLNAME. No RT.
+
+H23 leftover queue empty. lang **+478**; catsort **+434**; tblrow **+478**; fileopt **+508**; defaultsort **+271**; redirtarget **+290**; dab **+557**; hatnote **+309**. Do not reopen. 8 MB champ stays v79. Do not run mem 26.
+
+### H24 leftovers on v79 (queued)
+
+Flags default off: `HP_LASTLINK_MOD` (sticky last `[[target]]`), `HP_FWORD_MOD` (sentence first-word), `HP_YEAR_MOD` (last 4-digit year), `HP_CAPMASK_MOD` (word capitalisation mask), `HP_CELLTXT_MOD` (table-cell text), `HP_HTTPHOST_MOD` (URL hostname), `HP_PAREN_MOD` (last `(...)` group), `HP_LISTPOS_MOD` (nth `*`/`#` item). One at a time, mem 22, RSS cap 30 GB. Not dump-tag CMs. Do not reopen H23.
+
+### v79lastlink - **1,690,456 / 1.612 bpc, REJECT +392 vs v79**
+
+`HP_LASTLINK_MOD` sticky last `[[target]]` after `]]`. Twin of link/CAT. No RT.
+
+### v79fword - **1,690,368 / 1.612 bpc, REJECT +304 vs v79**
+
+`HP_FWORD_MOD` sentence first-word (fxcm fword) as own CM. Twin of senword/PARA. No RT.
+
+### v79year - **1,690,232 / 1.611 bpc, REJECT +168 vs v79**
+
+`HP_YEAR_MOD` last 4-digit year 1000–2099. Twin of NUMERIC. No RT.
+
+### v79capmask → v80 - **1,689,846 / 1.611 bpc, RT PASS −218 vs v79**
+
+`HP_CAPMASK_MOD` current-word capitalisation mask. Decode SHA matches
+`data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v80.exe`. Did not overwrite `hp_v79.exe`.
+fx2-manual **1,686,392** (−193 vs v79 fx2 1,686,585). Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+### v80celltxt - **1,690,485 / 1.612 bpc, REJECT +639 vs v80**
+
+`HP_CELLTXT_MOD` table-cell text hash. Twin of wikistack/tableclass. No RT.
+
+### v80httphost - **1,690,400 / 1.612 bpc, REJECT +554 vs v80**
+
+`HP_HTTPHOST_MOD` URL hostname hash. Twin of EXTLINK. No RT.
+
+### v80paren - **1,690,363 / 1.612 bpc, REJECT +517 vs v80**
+
+`HP_PAREN_MOD` sticky last `(...)` group. Twin of NEST. No RT.
+
+### v80listpos - **1,690,435 / 1.612 bpc, REJECT +589 vs v80**
+
+`HP_LISTPOS_MOD` nth `*`/`#` list item. Twin of LISTLEVEL. No RT.
+
+H24 leftover queue empty. capmask **v80 −218**. lastlink **+392**; fword **+304**; year **+168**; celltxt **+639**; httphost **+554**; paren **+517**; listpos **+589**. Do not reopen the seven rejects. 8 MB champ is v80. Do not run mem 26.
+
+### H25 leftovers on v80 (queued)
+
+Flags default off: `HP_SHAPE_MOD` (2-bit-per-char word shape), `HP_SUFFIX_MOD` (last 3 letters), `HP_PREFIX_MOD` (first 3 letters), `HP_CHARCLS_MOD` (rolling byte-class), `HP_VOWEL_MOD` (vowel/consonant ring), `HP_CONTR_MOD` (internal `'`), `HP_HYPHEN_MOD` (hyphenated compound), `HP_TOKENCLS_MOD` (token kind). One at a time, mem 22, RSS cap 30 GB. Do not reopen H24 rejects.
+
+### v80shape - **1,690,501 / 1.612 bpc, REJECT +655 vs v80**
+
+`HP_SHAPE_MOD` 2-bit-per-char word shape sequence. Twin of capmask. No RT.
+
+### v80suffix - **1,690,076 / 1.611 bpc, REJECT +230 vs v80**
+
+`HP_SUFFIX_MOD` last 3 letters of word. Twin of word_/stem. No RT.
+
+### v80prefix - **1,690,557 / 1.612 bpc, REJECT +711 vs v80**
+
+`HP_PREFIX_MOD` first 3 letters of word. Twin of word_/capmask. No RT.
+
+### v80charcls - **1,690,347 / 1.612 bpc, REJECT +501 vs v80**
+
+`HP_CHARCLS_MOD` rolling byte-class stream. Twin of capmask/o1. No RT.
+
+### v80vowel - **1,689,991 / 1.611 bpc, REJECT +145 vs v80**
+
+`HP_VOWEL_MOD` vowel/consonant bit-ring of current word. Twin of capmask. No RT.
+
+### v80contr - **1,690,388 / 1.612 bpc, REJECT +542 vs v80**
+
+`HP_CONTR_MOD` internal-apostrophe contraction. Twin of QOCXT/word. No RT.
+
+### v80hyphen - **1,690,401 / 1.612 bpc, REJECT +555 vs v80**
+
+`HP_HYPHEN_MOD` hyphenated-compound hash. Twin of word_. No RT.
+
+### v80tokencls - **1,690,473 / 1.612 bpc, REJECT +627 vs v80**
+
+`HP_TOKENCLS_MOD` alpha/digit/mixed/punct/xml/wiki token kind. Twin of STATE/capmask. No RT.
+
+H25 leftover queue empty. shape **+655**; suffix **+230**; prefix **+711**; charcls **+501**; vowel **+145**; contr **+542**; hyphen **+555**; tokencls **+627**. Do not reopen. 8 MB champ stays v80. Do not run mem 26.
+
+### H26 leftovers on v80 (queued)
+
+Flags default off: `HP_RUNLEN_MOD` (identical-byte run), `HP_WPOS_MOD` (letter index in word), `HP_BLANK_MOD` (consecutive newlines), `HP_SPRUN_MOD` (space-run), `HP_LINELEN_MOD` (line length), `HP_TAGDIST_MOD` (bytes since `<`), `HP_MARKDIST_MOD` (bytes since `[]{}|=*#<>`), `HP_UPPERGAP_MOD` (bytes since last `A–Z`). One at a time, mem 22, RSS cap 30 GB. Do not reopen H25.
+
+### v80runlen - **1,690,278 / 1.611 bpc, REJECT +432 vs v80**
+
+`HP_RUNLEN_MOD` identical-byte run length. Twin of o1/HEADING. No RT.
+
+### v80wpos - **1,690,312 / 1.612 bpc, REJECT +466 vs v80**
+
+`HP_WPOS_MOD` letter index in word. Twin of GATE_WORDPOS. No RT.
+
+### v80blank - **1,690,181 / 1.612 bpc, REJECT +335 vs v80**
+
+`HP_BLANK_MOD` consecutive newlines. Twin of PARA/LINE. No RT.
+
+### v80sprun - **1,690,260 / 1.611 bpc, REJECT +414 vs v80**
+
+`HP_SPRUN_MOD` space-run length. Twin of o1/SP_GRP. No RT.
+
+### v80linelen - **1,690,123 / 1.611 bpc, REJECT +277 vs v80**
+
+`HP_LINELEN_MOD` current line length. Twin of LINE/HEADING. No RT.
+
+### v80tagdist - **1,690,480 / 1.612 bpc, REJECT +634 vs v80**
+
+`HP_TAGDIST_MOD` bytes since last `<`. Twin of in_tag/STATE. No RT.
+
+### v80markdist - **1,690,079 / 1.611 bpc, REJECT +233 vs v80**
+
+`HP_MARKDIST_MOD` bytes since last `[]{}|=*#<>`. Twin of STATE/WIKISTACK. No RT.
+
+### v80uppergap → v81 - **1,689,247 / 1.610 bpc, RT PASS −599 vs v80**
+
+`HP_UPPERGAP_MOD` bytes since last `A–Z`. Decode SHA matches
+`data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v81.exe`. Did not overwrite `hp_v80.exe`.
+fx2-manual **1,685,768** (−624 vs v80 fx2 1,686,392). Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+H26 leftover queue empty. uppergap **v81 −599**. runlen **+432**; wpos **+466**; blank **+335**; sprun **+414**; linelen **+277**; tagdist **+634**; markdist **+233**. Do not reopen the seven rejects. 8 MB champ is v81. Do not run mem 26.
+
+### H27 leftovers on v81 (queued)
+
+Flags default off: `HP_MONTH_MOD` (last English month name), `HP_GALLERY_MOD` (`<gallery>` domain), `HP_SECKIND_MOD` (classified heading kind), `HP_CITEKIND_MOD` (`{{cite web/journal/book/news`), `HP_TAGNAME_MOD` (HTML/XML tag-name hash), `HP_COLSPAN_MOD` (`colspan=`/`rowspan=`), `HP_STYLE_MOD` (`style=` CSS), `HP_COORD_MOD` (`{{coord`). One at a time, mem 22, RSS cap 30 GB. Do not reopen H26 rejects.
+
+### v81month - **1,689,501 / 1.611 bpc, REJECT +254 vs v81**
+
+`HP_MONTH_MOD` last English month name. Twin of YEAR. No RT.
+
+### v81gallery - **1,689,539 / 1.611 bpc, REJECT +292 vs v81**
+
+`HP_GALLERY_MOD` `<gallery>` domain. Sparse vs NOWIKI/tag. No RT.
+
+### v81seckind - **1,689,523 / 1.611 bpc, REJECT +276 vs v81**
+
+`HP_SECKIND_MOD` classified heading kind. Twin of SECTITLE. No RT.
+
+### v81citekind - **1,689,923 / 1.611 bpc, REJECT +676 vs v81**
+
+`HP_CITEKIND_MOD` `{{cite web/journal/book/news`. Twin of TPLNAME/CITE. No RT.
+
+### v81tagname - **1,689,872 / 1.611 bpc, REJECT +625 vs v81**
+
+`HP_TAGNAME_MOD` HTML/XML tag-name hash. Twin of STATE/dump tags. No RT.
+
+### v81colspan - **1,689,935 / 1.611 bpc, REJECT +688 vs v81**
+
+`HP_COLSPAN_MOD` `colspan=`/`rowspan=` value. Twin of TBLROW. No RT.
+
+### v81style - **1,689,779 / 1.611 bpc, REJECT +532 vs v81**
+
+`HP_STYLE_MOD` `style=` CSS fragment. Twin of TABLECLASS. No RT.
+
+### v81coord - **1,689,518 / 1.611 bpc, REJECT +271 vs v81**
+
+`HP_COORD_MOD` `{{coord` / `{{coordinates`. Twin of TPLNAME. No RT.
+
+H27 leftover queue empty. month **+254**; gallery **+292**; seckind **+276**; citekind **+676**; tagname **+625**; colspan **+688**; style **+532**; coord **+271**. Do not reopen. 8 MB champ stays v81. Do not run mem 26.
+
+### H28 leftovers on v81 (queued)
+
+Flags default off: `HP_DIGITGAP_MOD` (bytes since last digit), `HP_DOTGAP_MOD` (bytes since `.`), `HP_COMMAGAP_MOD` (bytes since `,`), `HP_WORDLEN_MOD` (last completed letter-word length), `HP_SENTLEN_MOD` (bytes since `.?!`), `HP_LOWERGAP_MOD` (bytes since `a–z`), `HP_DIGITPOS_MOD` (index in current digit run), `HP_SLASHGAP_MOD` (bytes since `/`). One at a time, mem 22, RSS cap 30 GB. Do not reopen H27.
+
+### v81digitgap - **1,689,521 / 1.611 bpc, REJECT +274 vs v81**
+
+`HP_DIGITGAP_MOD` bytes since last digit. Twin of UPPERGAP/NUMERIC. No RT.
+
+### v81dotgap - **1,689,396 / 1.611 bpc, REJECT +149 vs v81**
+
+`HP_DOTGAP_MOD` bytes since `.`. Twin of PERIOD/sent. No RT.
+
+### v81commagap - **1,689,503 / 1.611 bpc, REJECT +256 vs v81**
+
+`HP_COMMAGAP_MOD` bytes since `,`. Twin of o1/layout. No RT.
+
+### v81wordlen → v82 - **1,689,157 / 1.610 bpc, RT PASS −90 vs v81**
+
+`HP_WORDLEN_MOD` last completed letter-word length. Decode SHA matches
+`data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v82.exe`. Did not overwrite `hp_v81.exe`.
+fx2-manual **1,685,642** (−126 vs v81 fx2 1,685,768). Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+### v82sentlen - **1,689,344 / 1.611 bpc, REJECT +187 vs v82**
+
+`HP_SENTLEN_MOD` bytes since `.?!`. Twin of DOTGAP/PERIOD. No RT.
+
+### v82lowergap - **1,689,490 / 1.611 bpc, REJECT +333 vs v82**
+
+`HP_LOWERGAP_MOD` bytes since `a–z`. Twin of UPPERGAP. No RT.
+
+### v82digitpos - **1,689,479 / 1.611 bpc, REJECT +322 vs v82**
+
+`HP_DIGITPOS_MOD` index in current digit run. Twin of WPOS/NUMERIC. No RT.
+
+### v82slashgap - **1,689,547 / 1.611 bpc, REJECT +390 vs v82**
+
+`HP_SLASHGAP_MOD` bytes since `/`. Twin of EXTLINK/HTTP. No RT.
+
+H28 leftover queue empty. wordlen **v82 −90**. digitgap **+274**; dotgap **+149**; commagap **+256**; sentlen **+187**; lowergap **+333**; digitpos **+322**; slashgap **+390**. Do not reopen the seven rejects. 8 MB champ is v82. Do not run mem 26.
+
+### H29 leftovers on v82 (queued)
+
+Flags default off: `HP_DIGLEN_MOD` (last completed digit-run length), `HP_PREVLINE_MOD` (last completed line length), `HP_PREVSENT_MOD` (last completed sentence length), `HP_LINKLEN_MOD` (last completed `[[link]]` length), `HP_TPLLEN_MOD` (last completed `{{template}}` length), `HP_PARALEN_MOD` (last completed paragraph length), `HP_ALNUMLEN_MOD` (last completed alnum-token length), `HP_SPLEN_MOD` (last completed space-run length). One at a time, mem 22, RSS cap 30 GB. Do not reopen H28.
+
+### v82diglen - **1,689,481 / 1.611 bpc, REJECT +324 vs v82**
+
+`HP_DIGLEN_MOD` last completed digit-run length. Twin of DIGITPOS/NUMERIC. No RT.
+
+### v82prevline - **1,689,483 / 1.611 bpc, REJECT +326 vs v82**
+
+`HP_PREVLINE_MOD` last completed line length. Twin of LINELEN. No RT.
+
+### v82prevsent - **1,689,599 / 1.611 bpc, REJECT +442 vs v82**
+
+`HP_PREVSENT_MOD` last completed sentence length. Twin of SENTLEN. No RT.
+
+### v82linklen - **1,689,682 / 1.611 bpc, REJECT +525 vs v82**
+
+`HP_LINKLEN_MOD` last completed `[[link]]` length. Twin of LASTLINK/STATE. No RT.
+
+### v82tpllen - **1,689,636 / 1.611 bpc, REJECT +479 vs v82**
+
+`HP_TPLLEN_MOD` last completed `{{template}}` length. Twin of TPLNAME. No RT.
+
+### v82paralen - **1,689,668 / 1.611 bpc, REJECT +511 vs v82**
+
+`HP_PARALEN_MOD` last completed paragraph length. Twin of PARA. No RT.
+
+### v82alnumlen - **1,689,829 / 1.611 bpc, REJECT +672 vs v82**
+
+`HP_ALNUMLEN_MOD` last completed alnum-token length. Twin of WORDLEN. No RT.
+
+### v82splen - **1,689,808 / 1.611 bpc, REJECT +651 vs v82**
+
+`HP_SPLEN_MOD` last completed space-run length. Twin of SPRUN. No RT.
+
+H29 leftover queue empty. diglen **+324**; prevline **+326**; prevsent **+442**; linklen **+525**; tpllen **+479**; paralen **+511**; alnumlen **+672**; splen **+651**. Do not reopen. 8 MB champ stays v82. Do not run mem 26.
+
+### H30 leftovers on v82 (queued)
+
+Flags default off: `HP_TITLEWORD_MOD` (current word hits page-title token), `HP_HEADWORD_MOD` (current word hits last-heading token), `HP_INIT_MOD` (letter-dot initials), `HP_ORDINAL_MOD` (1st/2nd/3rd/4th after digits), `HP_UNIT_MOD` (km/mi/kg after number), `HP_DECIMAL_MOD` (digit.digit), `HP_REPEAT_MOD` (current word repeats previous), `HP_CASEFLIP_MOD` (bytes since lower-to-upper flip). One at a time, mem 22, RSS cap 30 GB. Do not reopen H29.
+
+### v82titleword - **1,689,802 / 1.611 bpc, REJECT +645 vs v82**
+
+`HP_TITLEWORD_MOD` current word hits page-title token. Twin of TITLE hash. No RT.
+
+### v82headword - **1,689,790 / 1.611 bpc, REJECT +633 vs v82**
+
+`HP_HEADWORD_MOD` current word hits last-heading token. Twin of HEADING/SECTITLE. No RT.
+
+### v82init - **1,689,736 / 1.611 bpc, REJECT +579 vs v82**
+
+`HP_INIT_MOD` letter-dot initials. Twin of capmask/word. No RT.
+
+### v82ordinal - **1,689,609 / 1.611 bpc, REJECT +452 vs v82**
+
+`HP_ORDINAL_MOD` 1st/2nd/3rd/4th after digits. Twin of YEAR/NUMERIC. No RT.
+
+### v82unit - **1,689,633 / 1.611 bpc, REJECT +476 vs v82**
+
+`HP_UNIT_MOD` km/mi/kg after number. Twin of NUMERIC. No RT.
+
+### v82decimal - **1,689,497 / 1.611 bpc, REJECT +340 vs v82**
+
+`HP_DECIMAL_MOD` digit.digit. Twin of NUMERIC/DOTGAP. No RT.
+
+### v82repeat - **1,689,841 / 1.611 bpc, REJECT +684 vs v82**
+
+`HP_REPEAT_MOD` current word repeats previous. Twin of WORD. No RT.
+
+### v82caseflip - **1,689,839 / 1.611 bpc, REJECT +682 vs v82**
+
+`HP_CASEFLIP_MOD` bytes since lower-to-upper flip. Twin of UPPERGAP/CAPMASK. No RT.
+
+H30 leftover queue empty. titleword **+645**; headword **+633**; init **+579**; ordinal **+452**; unit **+476**; decimal **+340**; repeat **+684**; caseflip **+682**. Do not reopen. 8 MB champ stays v82. Do not run mem 26.
+
+### H31 leftovers on v82 (queued)
+
+Flags default off: `HP_LEAD_MOD` (before first heading), `HP_INFOVAL_MOD` (template value class), `HP_LINKTRAIL_MOD` (letters after `]]`), `HP_CELLKIND_MOD` (table caption/header/data/rowsep), `HP_TBLCOL_MOD` (column in current table row), `HP_HEADIDX_MOD` (nth heading on the page), `HP_HTMLFMT_MOD` (open inline HTML bitmask), `HP_INFOBOX_MOD` (inside `{{Infobox}}`). One at a time, mem 22, RSS cap 30 GB. Do not reopen H30.
+
+### v82lead - **1,689,681 / 1.611 bpc, REJECT +524 vs v82**
+
+`HP_LEAD_MOD` before first heading. Twin of HEADING/PARA/LINE. No RT.
+
+### v82infoval - **1,689,758 / 1.611 bpc, REJECT +601 vs v82**
+
+`HP_INFOVAL_MOD` template/infobox value class. Twin of INFOKEY/NUMERIC. No RT.
+
+### v82linktrail - **1,689,437 / 1.611 bpc, REJECT +280 vs v82**
+
+`HP_LINKTRAIL_MOD` letters after `]]`. Twin of LINKPIPE/WORD. No RT.
+
+### v82cellkind - **1,689,691 / 1.611 bpc, REJECT +534 vs v82**
+
+`HP_CELLKIND_MOD` table caption/header/data/rowsep. Twin of TBLROW/STATE. No RT.
+
+### v82tblcol - **1,689,637 / 1.611 bpc, REJECT +480 vs v82**
+
+`HP_TBLCOL_MOD` column in current table row. Twin of BARIDX/COL. No RT.
+
+### v82headidx - **1,689,403 / 1.611 bpc, REJECT +246 vs v82**
+
+`HP_HEADIDX_MOD` nth heading on the page. Twin of HEADING/PARA. No RT.
+
+### v82htmlfmt - **1,689,454 / 1.611 bpc, REJECT +297 vs v82**
+
+`HP_HTMLFMT_MOD` open inline HTML bitmask. Twin of TAGNAME/NEST. No RT.
+
+### v82infobox - **1,689,692 / 1.611 bpc, REJECT +535 vs v82**
+
+`HP_INFOBOX_MOD` inside `{{Infobox}}`. Twin of TPLNAME. No RT.
+
+H31 leftover queue empty. lead **+524**; infoval **+601**; linktrail **+280**; cellkind **+534**; tblcol **+480**; headidx **+246**; htmlfmt **+297**; infobox **+535**. Do not reopen. 8 MB champ stays v82. Do not run mem 26.
+
+### H32 leftovers on v82 (queued)
+
+Flags default off: `HP_SECLEVEL_MOD` (sticky heading level of section body), `HP_BRACE3_MOD` (`{{{` param depth), `HP_NAMEDARG_MOD` (named template arg after `=`), `HP_INCLUDE_MOD` (includeonly/noinclude/onlyinclude), `HP_SIG_MOD` (`~~~~` tilde run), `HP_WIKIBOLD_MOD` (wiki `''`/`'''`/`'''''`), `HP_URLPART_MOD` (URL host/path/query/fragment), `HP_REFIDX_MOD` (nth `<ref>`). One at a time, mem 22, RSS cap 30 GB. Do not reopen H31.
+
+### v82seclevel - **1,689,536 / 1.611 bpc, REJECT +379 vs v82**
+
+`HP_SECLEVEL_MOD` sticky heading level of section body. Twin of HEADING/LEAD/HEADIDX. No RT.
+
+### v82brace3 - **1,689,442 / 1.611 bpc, REJECT +285 vs v82**
+
+`HP_BRACE3_MOD` `{{{` param depth. Twin of NEST/TPLNAME. No RT.
+
+### v82namedarg - **1,689,627 / 1.611 bpc, REJECT +470 vs v82**
+
+`HP_NAMEDARG_MOD` named template arg after `=`. Twin of INFOKEY/INFOVAL. No RT.
+
+### v82include - **1,689,440 / 1.611 bpc, REJECT +283 vs v82**
+
+`HP_INCLUDE_MOD` includeonly/noinclude/onlyinclude. Twin of NOWIKI/TAGNAME. No RT.
+
+### v82sig - **1,689,432 / 1.611 bpc, REJECT +275 vs v82**
+
+`HP_SIG_MOD` `~~~~` tilde run. Twin of RUNLEN/MAGIC. No RT.
+
+### v82wikibold → v83 - **1,687,899 / 1.609 bpc, −1,258 vs v82 (RT pending)**
+
+`HP_WIKIBOLD_MOD` wiki `''`/`'''`/`'''''` bold-italic state.
+
+### H22 preprocess / richer stacks on v78
+
+Flags: `HP_WIKISTACK_MOD` (fccxt+bracket+cell-above packed CM), `HP_REORDER` (sort `<page>` by title), `HP_PAYLOAD_LEX` (sort `<page>` by `<text>`), `--dict` on `hp_v78.exe`. One at a time after H21.
+
 

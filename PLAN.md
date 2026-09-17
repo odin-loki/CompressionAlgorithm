@@ -36,10 +36,10 @@ Leftover wave **closed** at **v78**. RECORD leads if a later run accepts.
 
 enwik8 SOTA: cmix v21 ~14.62 MB. hp ~18.53 MB is paq8f-era quality.
 
-**8 MB champ** (`data/enwik8.8mb`, mem 22): **v78** identity
-**1,692,024** (−1,535 vs v77 1,693,559), **1.613 bpc**, RT PASS.
-fx2-manual **1,688,500** (−1,373 vs v77 fx2 1,689,873), RT PASS.
-Stack v77 + `HP_SECTITLE_MOD`. H20 parserfn/tableclass rejected.
+**8 MB champ** (`data/enwik8.8mb`, mem 22): **v82** identity
+**1,689,157** (−90 vs v81 1,689,247), **1.610 bpc**, RT PASS.
+fx2-manual **1,685,642** (−126 vs v81 fx2 1,685,768), RT PASS.
+Stack v81 + `HP_WORDLEN_MOD`.
 
 **100 MB champ** (`data/enwik8.fx2man`, mem 26, `SLOT_MAX=31`): **v77**
 **18,370,971** (−38,737 vs v75 18,409,708), **1.469 bpc**, RT PASS.
@@ -173,7 +173,8 @@ One compile flag per binary. Same binary encodes and decodes. No
 `hp_v63.exe`, `hp_v64.exe`, `hp_v65.exe`, `hp_v66.exe`, `hp_v67.exe`,
 `hp_v68.exe`, `hp_v69.exe`, `hp_v70.exe`, `hp_v70_m26.exe`,
 `hp_v71.exe`, `hp_v72.exe`, `hp_v73.exe`, `hp_v73_m26.exe`,
-`hp_v74.exe`, `hp_v75.exe`, `hp_v75_m26.exe`, `hp_v76.exe`.
+`hp_v74.exe`, `hp_v75.exe`, `hp_v75_m26.exe`, `hp_v76.exe`,
+`hp_v77.exe`, `hp_v78.exe`, `hp_v79.exe`, `hp_v80.exe`, `hp_v81.exe`, `hp_v82.exe`.
 
 Name new builds `hp_vNN.exe` or `hp_<flag>.exe`. 100 MB at mem 26 with
 a cap other than the 8 MB default: `hp_vNN_m26.exe` and compile
@@ -220,6 +221,18 @@ remaining leftovers on the new champ.
 | **H18** | More dump XML on v77 | ns **+282**; dumpredir **+281**; ip **+390**; revcomment **+249** | all reject |
 | **H19** | Dump minor / model on v77 | minor **+353**; model **+292** | all reject |
 | **H20** | Wikitext CMs on v77 | sectitle **v78 1,692,024 RT PASS −1,535**; parserfn **+264/+286**; tableclass **+517** | **v78** |
+| **H21** | Anchor / pub-id / temp-pos on v78 | anchor **+461**; pubid **+391**; temppos **+266** | all reject |
+| **H22** | Richer wiki stacks / reorder / payload_lex / dict on v78 | wikistack **v79 1,690,064 RT PASS −1,960**; reorder **+3,022**; payload_lex **+3,735**; dict **+62,667** | **v79** |
+| **H23** | Wiki-domain CMs on v79 | lang **+478**; catsort **+434**; tblrow **+478**; fileopt **+508**; defaultsort **+271**; redirtarget **+290**; dab **+557**; hatnote **+309** | all reject |
+| **H24** | Sticky/dense wiki CMs on v79 | capmask **v80 1,689,846 RT PASS −218**; lastlink **+392**; fword **+304**; year **+168**; celltxt **+639**; httphost **+554**; paren **+517**; listpos **+589** | **v80** |
+| **H25** | Word-shape CMs on v80 | shape **+655**; suffix **+230**; prefix **+711**; charcls **+501**; vowel **+145**; contr **+542**; hyphen **+555**; tokencls **+627** | all reject |
+| **H26** | Layout/run CMs on v80 | runlen **+432**; wpos **+466**; blank **+335**; sprun **+414**; linelen **+277**; tagdist **+634**; markdist **+233**; uppergap **v81 1,689,247 RT PASS −599** | **v81** |
+| **H27** | Wiki-domain CMs on v81 | month **+254**; gallery **+292**; seckind **+276**; citekind **+676**; tagname **+625**; colspan **+688**; style **+532**; coord **+271** | all reject |
+| **H28** | Recency/length CMs on v81 | digitgap **+274**; dotgap **+149**; commagap **+256**; wordlen **v82 1,689,157 RT PASS −90**; sentlen **+187**; lowergap **+333**; digitpos **+322**; slashgap **+390** | **v82** |
+| **H29** | Sticky last-run lengths on v82 | diglen **+324**; prevline **+326**; prevsent **+442**; linklen **+525**; tpllen **+479**; paralen **+511**; alnumlen **+672**; splen **+651** | all reject |
+| **H30** | Title/heading word hits + initials/ordinal/unit/decimal/repeat/caseflip on v82 | titleword **+645**; headword **+633**; init **+579**; ordinal **+452**; unit **+476**; decimal **+340**; repeat **+684**; caseflip **+682** | all reject |
+| **H31** | Wiki-domain layout on v82 | lead **+524**; infoval **+601**; linktrail **+280**; cellkind **+534**; tblcol **+480**; headidx **+246**; htmlfmt **+297**; infobox **+535** | all reject |
+| **H32** | Wiki markup states on v82 | queued: seclevel / brace3 / namedarg / include / sig / wikibold / urlpart / refidx | leftover |
 
 v62 wiki-axis singles closed (only STATE paid). H6 rank-8 **REJECT +702k**. H8 nopy **REJECT +18k**. Mixer width and low-rank W are closed.
 H9: mixer dots are already more precise than they need; wall time is the 77 StateMaps, not Q16.
@@ -231,6 +244,8 @@ H17 **closed** on v77: `<title>` **−1,031** paid; first-`<id>` isolated −924
 H18 **closed**: dump `<ns>` / `<redirect/>` / `<ip>` / `<comment>` all rejected vs v77 **1,693,559**. Do not reopen. Do not reopen H17 pageid/user/text or `#REDIRECT`.
 H19 **closed**: `<minor/>` **+353**; `<model>` **+292**. Dump-XML extras after title all dilute. Do not add more dump-tag CMs.
 H20 **closed** on v78: heading-body text **−1,535** paid; `{{#` parser-fn **+264/+286**; `{| class=` **+517**. Do not reopen parserfn/tableclass. Do not add more dump-tag CMs.
+H21 leftovers **closed**: anchor/pubid/temppos all reject vs v78. H22 **closed** on v79: wikistack **−1,960**; reorder **+3,022**; payload_lex **+3,735**; dict **+62,667**. Do not reopen those three. H23 **closed**: lang **+478**; catsort **+434**; tblrow **+478**; fileopt **+508**; defaultsort **+271**; redirtarget **+290**; dab **+557**; hatnote **+309**. Do not reopen. H24 **closed** on v80: capmask **−218**; lastlink **+392**; fword **+304**; year **+168**; celltxt **+639**; httphost **+554**; paren **+517**; listpos **+589**. Do not reopen those seven. H25 **closed**: shape **+655**; suffix **+230**; prefix **+711**; charcls **+501**; vowel **+145**; contr **+542**; hyphen **+555**; tokencls **+627**. Do not reopen.
+H26 **closed** on v81: uppergap **−599**; runlen **+432**; wpos **+466**; blank **+335**; sprun **+414**; linelen **+277**; tagdist **+634**; markdist **+233**. Do not reopen those seven. H27 **closed**: month **+254**; gallery **+292**; seckind **+276**; citekind **+676**; tagname **+625**; colspan **+688**; style **+532**; coord **+271**. Do not reopen. H28 **closed** on v82: wordlen **−90**; digitgap **+274**; dotgap **+149**; commagap **+256**; sentlen **+187**; lowergap **+333**; digitpos **+322**; slashgap **+390**. Do not reopen those seven. H29 **closed**: diglen **+324**; prevline **+326**; prevsent **+442**; linklen **+525**; tpllen **+479**; paralen **+511**; alnumlen **+672**; splen **+651**. Do not reopen. H30 **closed**: titleword **+645**; headword **+633**; init **+579**; ordinal **+452**; unit **+476**; decimal **+340**; repeat **+684**; caseflip **+682**. Do not reopen. H31 **closed**: lead **+524**; infoval **+601**; linktrail **+280**; cellkind **+534**; tblcol **+480**; headidx **+246**; htmlfmt **+297**; infobox **+535**. Do not reopen. H32 queued on v82: seclevel / brace3 / namedarg / include / sig / wikibold / urlpart / refidx. No mem 26 (55 GB).
 v75 100 MB **18,409,708 RT PASS** (−25,032 vs v73). v77-100 **18,370,971 RT PASS** (−38,737 vs v75). Skip-k saturates at 4. LSTM / WRT / `payload_lex` / POS / bitlstm32 / obias are Track W. v78-100 mem 26 `SLOT_MAX=31` in flight (8 MB idle).
 
 ---

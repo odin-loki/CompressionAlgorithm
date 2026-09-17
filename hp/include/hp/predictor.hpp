@@ -134,7 +134,91 @@ class Predictor {
         (HP_WIKIMODEL_MOD ? 1 : 0) +
         (HP_SECTITLE_MOD ? 1 : 0) +
         (HP_PARSERFN_MOD ? 1 : 0) +
-        (HP_TABLECLASS_MOD ? 1 : 0);
+        (HP_TABLECLASS_MOD ? 1 : 0) +
+        (HP_ANCHOR_MOD ? 1 : 0) +
+        (HP_PUBID_MOD ? 1 : 0) +
+        (HP_TEMPPOS_MOD ? 1 : 0) +
+        (HP_WIKISTACK_MOD ? 1 : 0) +
+        (HP_LANG_MOD ? 1 : 0) +
+        (HP_CATSORT_MOD ? 1 : 0) +
+        (HP_TBLROW_MOD ? 1 : 0) +
+        (HP_FILEOPT_MOD ? 1 : 0) +
+        (HP_DEFAULTSORT_MOD ? 1 : 0) +
+        (HP_REDIRTARGET_MOD ? 1 : 0) +
+        (HP_DAB_MOD ? 1 : 0) +
+        (HP_HATNOTE_MOD ? 1 : 0) +
+        (HP_LASTLINK_MOD ? 1 : 0) +
+        (HP_FWORD_MOD ? 1 : 0) +
+        (HP_YEAR_MOD ? 1 : 0) +
+        (HP_CAPMASK_MOD ? 1 : 0) +
+        (HP_CELLTXT_MOD ? 1 : 0) +
+        (HP_HTTPHOST_MOD ? 1 : 0) +
+        (HP_PAREN_MOD ? 1 : 0) +
+        (HP_LISTPOS_MOD ? 1 : 0) +
+        (HP_SHAPE_MOD ? 1 : 0) +
+        (HP_SUFFIX_MOD ? 1 : 0) +
+        (HP_PREFIX_MOD ? 1 : 0) +
+        (HP_CHARCLS_MOD ? 1 : 0) +
+        (HP_VOWEL_MOD ? 1 : 0) +
+        (HP_CONTR_MOD ? 1 : 0) +
+        (HP_HYPHEN_MOD ? 1 : 0) +
+        (HP_TOKENCLS_MOD ? 1 : 0) +
+        (HP_RUNLEN_MOD ? 1 : 0) +
+        (HP_WPOS_MOD ? 1 : 0) +
+        (HP_BLANK_MOD ? 1 : 0) +
+        (HP_SPRUN_MOD ? 1 : 0) +
+        (HP_LINELEN_MOD ? 1 : 0) +
+        (HP_TAGDIST_MOD ? 1 : 0) +
+        (HP_MARKDIST_MOD ? 1 : 0) +
+        (HP_UPPERGAP_MOD ? 1 : 0) +
+        (HP_MONTH_MOD ? 1 : 0) +
+        (HP_GALLERY_MOD ? 1 : 0) +
+        (HP_SECKIND_MOD ? 1 : 0) +
+        (HP_CITEKIND_MOD ? 1 : 0) +
+        (HP_TAGNAME_MOD ? 1 : 0) +
+        (HP_COLSPAN_MOD ? 1 : 0) +
+        (HP_STYLE_MOD ? 1 : 0) +
+        (HP_COORD_MOD ? 1 : 0) +
+        (HP_DIGITGAP_MOD ? 1 : 0) +
+        (HP_DOTGAP_MOD ? 1 : 0) +
+        (HP_COMMAGAP_MOD ? 1 : 0) +
+        (HP_WORDLEN_MOD ? 1 : 0) +
+        (HP_SENTLEN_MOD ? 1 : 0) +
+        (HP_LOWERGAP_MOD ? 1 : 0) +
+        (HP_DIGITPOS_MOD ? 1 : 0) +
+        (HP_SLASHGAP_MOD ? 1 : 0) +
+        (HP_DIGLEN_MOD ? 1 : 0) +
+        (HP_PREVLINE_MOD ? 1 : 0) +
+        (HP_PREVSENT_MOD ? 1 : 0) +
+        (HP_LINKLEN_MOD ? 1 : 0) +
+        (HP_TPLLEN_MOD ? 1 : 0) +
+        (HP_PARALEN_MOD ? 1 : 0) +
+        (HP_ALNUMLEN_MOD ? 1 : 0) +
+        (HP_SPLEN_MOD ? 1 : 0) +
+        (HP_TITLEWORD_MOD ? 1 : 0) +
+        (HP_HEADWORD_MOD ? 1 : 0) +
+        (HP_INIT_MOD ? 1 : 0) +
+        (HP_ORDINAL_MOD ? 1 : 0) +
+        (HP_UNIT_MOD ? 1 : 0) +
+        (HP_DECIMAL_MOD ? 1 : 0) +
+        (HP_REPEAT_MOD ? 1 : 0) +
+        (HP_CASEFLIP_MOD ? 1 : 0) +
+        (HP_LEAD_MOD ? 1 : 0) +
+        (HP_INFOVAL_MOD ? 1 : 0) +
+        (HP_LINKTRAIL_MOD ? 1 : 0) +
+        (HP_CELLKIND_MOD ? 1 : 0) +
+        (HP_TBLCOL_MOD ? 1 : 0) +
+        (HP_HEADIDX_MOD ? 1 : 0) +
+        (HP_HTMLFMT_MOD ? 1 : 0) +
+        (HP_INFOBOX_MOD ? 1 : 0) +
+        (HP_SECLEVEL_MOD ? 1 : 0) +
+        (HP_BRACE3_MOD ? 1 : 0) +
+        (HP_NAMEDARG_MOD ? 1 : 0) +
+        (HP_INCLUDE_MOD ? 1 : 0) +
+        (HP_SIG_MOD ? 1 : 0) +
+        (HP_WIKIBOLD_MOD ? 1 : 0) +
+        (HP_URLPART_MOD ? 1 : 0) +
+        (HP_REFIDX_MOD ? 1 : 0);
     static constexpr int kCtxModels = 11 + kExtraCtx;
     static constexpr int kMatchModels = 5 + (HP_MATCH_18 ? 1 : 0)
         + (HP_MATCH_13 ? 1 : 0) + (HP_MATCH_01 ? 1 : 0)
@@ -467,6 +551,258 @@ class Predictor {
 #endif
 #if HP_TABLECLASS_MOD
           tableclassmod_(cfg.table_bits, 255),
+#endif
+#if HP_ANCHOR_MOD
+          anchormod_(cfg.table_bits, 255),
+#endif
+#if HP_PUBID_MOD
+          pubidmod_(cfg.table_bits, 255),
+#endif
+#if HP_TEMPPOS_MOD
+          tempposmod_(cfg.table_bits, 255),
+#endif
+#if HP_WIKISTACK_MOD
+          wikistackmod_(cfg.table_bits, 255),
+#endif
+#if HP_LANG_MOD
+          langmod_(cfg.table_bits, 255),
+#endif
+#if HP_CATSORT_MOD
+          catsortmod_(cfg.table_bits, 255),
+#endif
+#if HP_TBLROW_MOD
+          tblrowmod_(cfg.table_bits, 255),
+#endif
+#if HP_FILEOPT_MOD
+          fileoptmod_(cfg.table_bits, 255),
+#endif
+#if HP_DEFAULTSORT_MOD
+          defaultsortmod_(cfg.table_bits, 255),
+#endif
+#if HP_REDIRTARGET_MOD
+          redirtargetmod_(cfg.table_bits, 255),
+#endif
+#if HP_DAB_MOD
+          dabmod_(cfg.table_bits, 255),
+#endif
+#if HP_HATNOTE_MOD
+          hatnotemod_(cfg.table_bits, 255),
+#endif
+#if HP_LASTLINK_MOD
+          lastlinkmod_(cfg.table_bits, 255),
+#endif
+#if HP_FWORD_MOD
+          fwordmod_(cfg.table_bits, 255),
+#endif
+#if HP_YEAR_MOD
+          yearmod_(cfg.table_bits, 255),
+#endif
+#if HP_CAPMASK_MOD
+          capmaskmod_(cfg.table_bits, 255),
+#endif
+#if HP_CELLTXT_MOD
+          celltxtmod_(cfg.table_bits, 255),
+#endif
+#if HP_HTTPHOST_MOD
+          httphostmod_(cfg.table_bits, 255),
+#endif
+#if HP_PAREN_MOD
+          parenmod_(cfg.table_bits, 255),
+#endif
+#if HP_LISTPOS_MOD
+          listposmod_(cfg.table_bits, 255),
+#endif
+#if HP_SHAPE_MOD
+          shapemod_(cfg.table_bits, 255),
+#endif
+#if HP_SUFFIX_MOD
+          suffixmod_(cfg.table_bits, 255),
+#endif
+#if HP_PREFIX_MOD
+          prefixmod_(cfg.table_bits, 255),
+#endif
+#if HP_CHARCLS_MOD
+          charclsmod_(cfg.table_bits, 255),
+#endif
+#if HP_VOWEL_MOD
+          vowelmod_(cfg.table_bits, 255),
+#endif
+#if HP_CONTR_MOD
+          contrmod_(cfg.table_bits, 255),
+#endif
+#if HP_HYPHEN_MOD
+          hyphenmod_(cfg.table_bits, 255),
+#endif
+#if HP_TOKENCLS_MOD
+          tokenclsmod_(cfg.table_bits, 255),
+#endif
+#if HP_RUNLEN_MOD
+          runlenmod_(cfg.table_bits, 255),
+#endif
+#if HP_WPOS_MOD
+          wposmod_(cfg.table_bits, 255),
+#endif
+#if HP_BLANK_MOD
+          blankmod_(cfg.table_bits, 255),
+#endif
+#if HP_SPRUN_MOD
+          sprunmod_(cfg.table_bits, 255),
+#endif
+#if HP_LINELEN_MOD
+          linelenmod_(cfg.table_bits, 255),
+#endif
+#if HP_TAGDIST_MOD
+          tagdistmod_(cfg.table_bits, 255),
+#endif
+#if HP_MARKDIST_MOD
+          markdistmod_(cfg.table_bits, 255),
+#endif
+#if HP_UPPERGAP_MOD
+          uppergapmod_(cfg.table_bits, 255),
+#endif
+#if HP_MONTH_MOD
+          monthmod_(cfg.table_bits, 255),
+#endif
+#if HP_GALLERY_MOD
+          gallerymod_(cfg.table_bits, 255),
+#endif
+#if HP_SECKIND_MOD
+          seckindmod_(cfg.table_bits, 255),
+#endif
+#if HP_CITEKIND_MOD
+          citekindmod_(cfg.table_bits, 255),
+#endif
+#if HP_TAGNAME_MOD
+          tagnamemod_(cfg.table_bits, 255),
+#endif
+#if HP_COLSPAN_MOD
+          colspanmod_(cfg.table_bits, 255),
+#endif
+#if HP_STYLE_MOD
+          stylemod_(cfg.table_bits, 255),
+#endif
+#if HP_COORD_MOD
+          coordmod_(cfg.table_bits, 255),
+#endif
+#if HP_DIGITGAP_MOD
+          digitgapmod_(cfg.table_bits, 255),
+#endif
+#if HP_DOTGAP_MOD
+          dotgapmod_(cfg.table_bits, 255),
+#endif
+#if HP_COMMAGAP_MOD
+          commagapmod_(cfg.table_bits, 255),
+#endif
+#if HP_WORDLEN_MOD
+          wordlenmod_(cfg.table_bits, 255),
+#endif
+#if HP_SENTLEN_MOD
+          sentlenmod_(cfg.table_bits, 255),
+#endif
+#if HP_LOWERGAP_MOD
+          lowergapmod_(cfg.table_bits, 255),
+#endif
+#if HP_DIGITPOS_MOD
+          digitposmod_(cfg.table_bits, 255),
+#endif
+#if HP_SLASHGAP_MOD
+          slashgapmod_(cfg.table_bits, 255),
+#endif
+#if HP_DIGLEN_MOD
+          diglenmod_(cfg.table_bits, 255),
+#endif
+#if HP_PREVLINE_MOD
+          prevlinemod_(cfg.table_bits, 255),
+#endif
+#if HP_PREVSENT_MOD
+          prevsentmod_(cfg.table_bits, 255),
+#endif
+#if HP_LINKLEN_MOD
+          linklenmod_(cfg.table_bits, 255),
+#endif
+#if HP_TPLLEN_MOD
+          tpllenmod_(cfg.table_bits, 255),
+#endif
+#if HP_PARALEN_MOD
+          paralenmod_(cfg.table_bits, 255),
+#endif
+#if HP_ALNUMLEN_MOD
+          alnumlenmod_(cfg.table_bits, 255),
+#endif
+#if HP_SPLEN_MOD
+          splenmod_(cfg.table_bits, 255),
+#endif
+#if HP_TITLEWORD_MOD
+          titlewordmod_(cfg.table_bits, 255),
+#endif
+#if HP_HEADWORD_MOD
+          headwordmod_(cfg.table_bits, 255),
+#endif
+#if HP_INIT_MOD
+          initmod_(cfg.table_bits, 255),
+#endif
+#if HP_ORDINAL_MOD
+          ordinalmod_(cfg.table_bits, 255),
+#endif
+#if HP_UNIT_MOD
+          unitmod_(cfg.table_bits, 255),
+#endif
+#if HP_DECIMAL_MOD
+          decimalmod_(cfg.table_bits, 255),
+#endif
+#if HP_REPEAT_MOD
+          repeatmod_(cfg.table_bits, 255),
+#endif
+#if HP_CASEFLIP_MOD
+          caseflipmod_(cfg.table_bits, 255),
+#endif
+#if HP_LEAD_MOD
+          leadmod_(cfg.table_bits, 255),
+#endif
+#if HP_INFOVAL_MOD
+          infovalmod_(cfg.table_bits, 255),
+#endif
+#if HP_LINKTRAIL_MOD
+          linktrailmod_(cfg.table_bits, 255),
+#endif
+#if HP_CELLKIND_MOD
+          cellkindmod_(cfg.table_bits, 255),
+#endif
+#if HP_TBLCOL_MOD
+          tblcolmod_(cfg.table_bits, 255),
+#endif
+#if HP_HEADIDX_MOD
+          headidxmod_(cfg.table_bits, 255),
+#endif
+#if HP_HTMLFMT_MOD
+          htmlfmtmod_(cfg.table_bits, 255),
+#endif
+#if HP_INFOBOX_MOD
+          infoboxmod_(cfg.table_bits, 255),
+#endif
+#if HP_SECLEVEL_MOD
+          seclevelmod_(cfg.table_bits, 255),
+#endif
+#if HP_BRACE3_MOD
+          brace3mod_(cfg.table_bits, 255),
+#endif
+#if HP_NAMEDARG_MOD
+          namedargmod_(cfg.table_bits, 255),
+#endif
+#if HP_INCLUDE_MOD
+          includemod_(cfg.table_bits, 255),
+#endif
+#if HP_SIG_MOD
+          sigmod_(cfg.table_bits, 255),
+#endif
+#if HP_WIKIBOLD_MOD
+          wikiboldmod_(cfg.table_bits, 255),
+#endif
+#if HP_URLPART_MOD
+          urlpartmod_(cfg.table_bits, 255),
+#endif
+#if HP_REFIDX_MOD
+          refidxmod_(cfg.table_bits, 255),
 #endif
           match_{ {&byte_ring_, match_bits(cfg.match_bits), 3},
                   {&byte_ring_, match_bits(cfg.match_bits), 4},
@@ -992,6 +1328,258 @@ class Predictor {
 #endif
 #if HP_TABLECLASS_MOD
         tableclassmod_.update(y, ens);
+#endif
+#if HP_ANCHOR_MOD
+        anchormod_.update(y, ens);
+#endif
+#if HP_PUBID_MOD
+        pubidmod_.update(y, ens);
+#endif
+#if HP_TEMPPOS_MOD
+        tempposmod_.update(y, ens);
+#endif
+#if HP_WIKISTACK_MOD
+        wikistackmod_.update(y, ens);
+#endif
+#if HP_LANG_MOD
+        langmod_.update(y, ens);
+#endif
+#if HP_CATSORT_MOD
+        catsortmod_.update(y, ens);
+#endif
+#if HP_TBLROW_MOD
+        tblrowmod_.update(y, ens);
+#endif
+#if HP_FILEOPT_MOD
+        fileoptmod_.update(y, ens);
+#endif
+#if HP_DEFAULTSORT_MOD
+        defaultsortmod_.update(y, ens);
+#endif
+#if HP_REDIRTARGET_MOD
+        redirtargetmod_.update(y, ens);
+#endif
+#if HP_DAB_MOD
+        dabmod_.update(y, ens);
+#endif
+#if HP_HATNOTE_MOD
+        hatnotemod_.update(y, ens);
+#endif
+#if HP_LASTLINK_MOD
+        lastlinkmod_.update(y, ens);
+#endif
+#if HP_FWORD_MOD
+        fwordmod_.update(y, ens);
+#endif
+#if HP_YEAR_MOD
+        yearmod_.update(y, ens);
+#endif
+#if HP_CAPMASK_MOD
+        capmaskmod_.update(y, ens);
+#endif
+#if HP_CELLTXT_MOD
+        celltxtmod_.update(y, ens);
+#endif
+#if HP_HTTPHOST_MOD
+        httphostmod_.update(y, ens);
+#endif
+#if HP_PAREN_MOD
+        parenmod_.update(y, ens);
+#endif
+#if HP_LISTPOS_MOD
+        listposmod_.update(y, ens);
+#endif
+#if HP_SHAPE_MOD
+        shapemod_.update(y, ens);
+#endif
+#if HP_SUFFIX_MOD
+        suffixmod_.update(y, ens);
+#endif
+#if HP_PREFIX_MOD
+        prefixmod_.update(y, ens);
+#endif
+#if HP_CHARCLS_MOD
+        charclsmod_.update(y, ens);
+#endif
+#if HP_VOWEL_MOD
+        vowelmod_.update(y, ens);
+#endif
+#if HP_CONTR_MOD
+        contrmod_.update(y, ens);
+#endif
+#if HP_HYPHEN_MOD
+        hyphenmod_.update(y, ens);
+#endif
+#if HP_TOKENCLS_MOD
+        tokenclsmod_.update(y, ens);
+#endif
+#if HP_RUNLEN_MOD
+        runlenmod_.update(y, ens);
+#endif
+#if HP_WPOS_MOD
+        wposmod_.update(y, ens);
+#endif
+#if HP_BLANK_MOD
+        blankmod_.update(y, ens);
+#endif
+#if HP_SPRUN_MOD
+        sprunmod_.update(y, ens);
+#endif
+#if HP_LINELEN_MOD
+        linelenmod_.update(y, ens);
+#endif
+#if HP_TAGDIST_MOD
+        tagdistmod_.update(y, ens);
+#endif
+#if HP_MARKDIST_MOD
+        markdistmod_.update(y, ens);
+#endif
+#if HP_UPPERGAP_MOD
+        uppergapmod_.update(y, ens);
+#endif
+#if HP_MONTH_MOD
+        monthmod_.update(y, ens);
+#endif
+#if HP_GALLERY_MOD
+        gallerymod_.update(y, ens);
+#endif
+#if HP_SECKIND_MOD
+        seckindmod_.update(y, ens);
+#endif
+#if HP_CITEKIND_MOD
+        citekindmod_.update(y, ens);
+#endif
+#if HP_TAGNAME_MOD
+        tagnamemod_.update(y, ens);
+#endif
+#if HP_COLSPAN_MOD
+        colspanmod_.update(y, ens);
+#endif
+#if HP_STYLE_MOD
+        stylemod_.update(y, ens);
+#endif
+#if HP_COORD_MOD
+        coordmod_.update(y, ens);
+#endif
+#if HP_DIGITGAP_MOD
+        digitgapmod_.update(y, ens);
+#endif
+#if HP_DOTGAP_MOD
+        dotgapmod_.update(y, ens);
+#endif
+#if HP_COMMAGAP_MOD
+        commagapmod_.update(y, ens);
+#endif
+#if HP_WORDLEN_MOD
+        wordlenmod_.update(y, ens);
+#endif
+#if HP_SENTLEN_MOD
+        sentlenmod_.update(y, ens);
+#endif
+#if HP_LOWERGAP_MOD
+        lowergapmod_.update(y, ens);
+#endif
+#if HP_DIGITPOS_MOD
+        digitposmod_.update(y, ens);
+#endif
+#if HP_SLASHGAP_MOD
+        slashgapmod_.update(y, ens);
+#endif
+#if HP_DIGLEN_MOD
+        diglenmod_.update(y, ens);
+#endif
+#if HP_PREVLINE_MOD
+        prevlinemod_.update(y, ens);
+#endif
+#if HP_PREVSENT_MOD
+        prevsentmod_.update(y, ens);
+#endif
+#if HP_LINKLEN_MOD
+        linklenmod_.update(y, ens);
+#endif
+#if HP_TPLLEN_MOD
+        tpllenmod_.update(y, ens);
+#endif
+#if HP_PARALEN_MOD
+        paralenmod_.update(y, ens);
+#endif
+#if HP_ALNUMLEN_MOD
+        alnumlenmod_.update(y, ens);
+#endif
+#if HP_SPLEN_MOD
+        splenmod_.update(y, ens);
+#endif
+#if HP_TITLEWORD_MOD
+        titlewordmod_.update(y, ens);
+#endif
+#if HP_HEADWORD_MOD
+        headwordmod_.update(y, ens);
+#endif
+#if HP_INIT_MOD
+        initmod_.update(y, ens);
+#endif
+#if HP_ORDINAL_MOD
+        ordinalmod_.update(y, ens);
+#endif
+#if HP_UNIT_MOD
+        unitmod_.update(y, ens);
+#endif
+#if HP_DECIMAL_MOD
+        decimalmod_.update(y, ens);
+#endif
+#if HP_REPEAT_MOD
+        repeatmod_.update(y, ens);
+#endif
+#if HP_CASEFLIP_MOD
+        caseflipmod_.update(y, ens);
+#endif
+#if HP_LEAD_MOD
+        leadmod_.update(y, ens);
+#endif
+#if HP_INFOVAL_MOD
+        infovalmod_.update(y, ens);
+#endif
+#if HP_LINKTRAIL_MOD
+        linktrailmod_.update(y, ens);
+#endif
+#if HP_CELLKIND_MOD
+        cellkindmod_.update(y, ens);
+#endif
+#if HP_TBLCOL_MOD
+        tblcolmod_.update(y, ens);
+#endif
+#if HP_HEADIDX_MOD
+        headidxmod_.update(y, ens);
+#endif
+#if HP_HTMLFMT_MOD
+        htmlfmtmod_.update(y, ens);
+#endif
+#if HP_INFOBOX_MOD
+        infoboxmod_.update(y, ens);
+#endif
+#if HP_SECLEVEL_MOD
+        seclevelmod_.update(y, ens);
+#endif
+#if HP_BRACE3_MOD
+        brace3mod_.update(y, ens);
+#endif
+#if HP_NAMEDARG_MOD
+        namedargmod_.update(y, ens);
+#endif
+#if HP_INCLUDE_MOD
+        includemod_.update(y, ens);
+#endif
+#if HP_SIG_MOD
+        sigmod_.update(y, ens);
+#endif
+#if HP_WIKIBOLD_MOD
+        wikiboldmod_.update(y, ens);
+#endif
+#if HP_URLPART_MOD
+        urlpartmod_.update(y, ens);
+#endif
+#if HP_REFIDX_MOD
+        refidxmod_.update(y, ens);
 #endif
         for (int i = 0; i < kMatchModels; ++i) match_[i].update(y);
 #if HP_SPARSE_UTF8
@@ -1820,6 +2408,342 @@ class Predictor {
         tableclassmod_.set_context(h2(77, wiki_.table_class() +
                                           ((hist_ & 0xffffffull) << 8)));
 #endif
+#if HP_ANCHOR_MOD
+        anchormod_.set_context(h2(78, wiki_.anchor() +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PUBID_MOD
+        pubidmod_.set_context(h2(79, wiki_.pub_id() +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TEMPPOS_MOD
+        tempposmod_.set_context(h2(80, wiki_.temp_pos() +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_WIKISTACK_MOD
+        wikistackmod_.set_context(h2(81, wiki_.wiki_stack() +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LANG_MOD
+        langmod_.set_context(h2(82, wiki_.lang_prefix() +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CATSORT_MOD
+        catsortmod_.set_context(h2(83, wiki_.cat_sort() +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TBLROW_MOD
+        tblrowmod_.set_context(h2(84, static_cast<std::uint64_t>(wiki_.tbl_row()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_FILEOPT_MOD
+        fileoptmod_.set_context(h2(85, wiki_.file_opt() +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DEFAULTSORT_MOD
+        defaultsortmod_.set_context(h2(86, wiki_.default_sort() +
+                                           ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REDIRTARGET_MOD
+        redirtargetmod_.set_context(h2(87, wiki_.redir_target() +
+                                           ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DAB_MOD
+        dabmod_.set_context(h2(88, wiki_.dab() +
+                                   ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HATNOTE_MOD
+        hatnotemod_.set_context(h2(89, wiki_.hatnote() +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LASTLINK_MOD
+        lastlinkmod_.set_context(h2(90, wiki_.last_link() +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_FWORD_MOD
+        fwordmod_.set_context(h2(91, wiki_.first_word() +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_YEAR_MOD
+        yearmod_.set_context(h2(92, wiki_.year() +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CAPMASK_MOD
+        capmaskmod_.set_context(h2(93, static_cast<std::uint64_t>(wiki_.cap_mask()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CELLTXT_MOD
+        celltxtmod_.set_context(h2(94, wiki_.cell_text() +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HTTPHOST_MOD
+        httphostmod_.set_context(h2(95, wiki_.http_host() +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PAREN_MOD
+        parenmod_.set_context(h2(96, wiki_.last_paren() +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LISTPOS_MOD
+        listposmod_.set_context(h2(97, static_cast<std::uint64_t>(wiki_.list_pos()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SHAPE_MOD
+        shapemod_.set_context(h2(98, wiki_.word_shape() +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SUFFIX_MOD
+        suffixmod_.set_context(h2(99, wiki_.word_suffix() +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PREFIX_MOD
+        prefixmod_.set_context(h2(100, wiki_.word_prefix() +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CHARCLS_MOD
+        charclsmod_.set_context(h2(101, static_cast<std::uint64_t>(wiki_.char_cls()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_VOWEL_MOD
+        vowelmod_.set_context(h2(102, static_cast<std::uint64_t>(wiki_.vowel_mask()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CONTR_MOD
+        contrmod_.set_context(h2(103, wiki_.contraction() +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HYPHEN_MOD
+        hyphenmod_.set_context(h2(104, wiki_.hyphen_word() +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TOKENCLS_MOD
+        tokenclsmod_.set_context(h2(105, static_cast<std::uint64_t>(wiki_.token_cls()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_RUNLEN_MOD
+        runlenmod_.set_context(h2(106, static_cast<std::uint64_t>(wiki_.run_len()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_WPOS_MOD
+        wposmod_.set_context(h2(107, static_cast<std::uint64_t>(wiki_.word_pos()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_BLANK_MOD
+        blankmod_.set_context(h2(108, static_cast<std::uint64_t>(wiki_.blank_n()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SPRUN_MOD
+        sprunmod_.set_context(h2(109, static_cast<std::uint64_t>(wiki_.space_run()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LINELEN_MOD
+        linelenmod_.set_context(h2(110, static_cast<std::uint64_t>(wiki_.line_len()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TAGDIST_MOD
+        tagdistmod_.set_context(h2(111, static_cast<std::uint64_t>(wiki_.tag_dist()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_MARKDIST_MOD
+        markdistmod_.set_context(h2(112, static_cast<std::uint64_t>(wiki_.mark_dist()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_UPPERGAP_MOD
+        uppergapmod_.set_context(h2(113, static_cast<std::uint64_t>(wiki_.upper_gap()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_MONTH_MOD
+        monthmod_.set_context(h2(114, static_cast<std::uint64_t>(wiki_.month()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_GALLERY_MOD
+        gallerymod_.set_context(h2(115, static_cast<std::uint64_t>(wiki_.in_gallery()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SECKIND_MOD
+        seckindmod_.set_context(h2(116, static_cast<std::uint64_t>(wiki_.sec_kind()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CITEKIND_MOD
+        citekindmod_.set_context(h2(117, static_cast<std::uint64_t>(wiki_.cite_kind()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TAGNAME_MOD
+        tagnamemod_.set_context(h2(118, wiki_.tag_name_cm() +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_COLSPAN_MOD
+        colspanmod_.set_context(h2(119, static_cast<std::uint64_t>(wiki_.col_span()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_STYLE_MOD
+        stylemod_.set_context(h2(120, wiki_.style_hash() +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_COORD_MOD
+        coordmod_.set_context(h2(121, static_cast<std::uint64_t>(wiki_.in_coord()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DIGITGAP_MOD
+        digitgapmod_.set_context(h2(122, static_cast<std::uint64_t>(wiki_.digit_gap()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DOTGAP_MOD
+        dotgapmod_.set_context(h2(123, static_cast<std::uint64_t>(wiki_.dot_gap()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_COMMAGAP_MOD
+        commagapmod_.set_context(h2(124, static_cast<std::uint64_t>(wiki_.comma_gap()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_WORDLEN_MOD
+        wordlenmod_.set_context(h2(125, static_cast<std::uint64_t>(wiki_.word_len()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SENTLEN_MOD
+        sentlenmod_.set_context(h2(126, static_cast<std::uint64_t>(wiki_.sent_len()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LOWERGAP_MOD
+        lowergapmod_.set_context(h2(127, static_cast<std::uint64_t>(wiki_.lower_gap()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DIGITPOS_MOD
+        digitposmod_.set_context(h2(128, static_cast<std::uint64_t>(wiki_.digit_pos()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SLASHGAP_MOD
+        slashgapmod_.set_context(h2(129, static_cast<std::uint64_t>(wiki_.slash_gap()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DIGLEN_MOD
+        diglenmod_.set_context(h2(130, static_cast<std::uint64_t>(wiki_.dig_len()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PREVLINE_MOD
+        prevlinemod_.set_context(h2(131, static_cast<std::uint64_t>(wiki_.prev_line()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PREVSENT_MOD
+        prevsentmod_.set_context(h2(132, static_cast<std::uint64_t>(wiki_.prev_sent()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LINKLEN_MOD
+        linklenmod_.set_context(h2(133, static_cast<std::uint64_t>(wiki_.link_len()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TPLLEN_MOD
+        tpllenmod_.set_context(h2(134, static_cast<std::uint64_t>(wiki_.tpl_len()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PARALEN_MOD
+        paralenmod_.set_context(h2(135, static_cast<std::uint64_t>(wiki_.para_len()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ALNUMLEN_MOD
+        alnumlenmod_.set_context(h2(136, static_cast<std::uint64_t>(wiki_.alnum_len()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SPLEN_MOD
+        splenmod_.set_context(h2(137, static_cast<std::uint64_t>(wiki_.sp_len()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TITLEWORD_MOD
+        titlewordmod_.set_context(h2(138, static_cast<std::uint64_t>(wiki_.title_word()) +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HEADWORD_MOD
+        headwordmod_.set_context(h2(139, static_cast<std::uint64_t>(wiki_.head_word()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_INIT_MOD
+        initmod_.set_context(h2(140, static_cast<std::uint64_t>(wiki_.in_init()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ORDINAL_MOD
+        ordinalmod_.set_context(h2(141, static_cast<std::uint64_t>(wiki_.ordinal()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_UNIT_MOD
+        unitmod_.set_context(h2(142, static_cast<std::uint64_t>(wiki_.unit()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DECIMAL_MOD
+        decimalmod_.set_context(h2(143, static_cast<std::uint64_t>(wiki_.in_decimal()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REPEAT_MOD
+        repeatmod_.set_context(h2(144, static_cast<std::uint64_t>(wiki_.word_repeat()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CASEFLIP_MOD
+        caseflipmod_.set_context(h2(145, static_cast<std::uint64_t>(wiki_.case_flip()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LEAD_MOD
+        leadmod_.set_context(h2(146, static_cast<std::uint64_t>(wiki_.in_lead()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_INFOVAL_MOD
+        infovalmod_.set_context(h2(147, static_cast<std::uint64_t>(wiki_.info_val()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LINKTRAIL_MOD
+        linktrailmod_.set_context(h2(148, static_cast<std::uint64_t>(wiki_.link_trail()) +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CELLKIND_MOD
+        cellkindmod_.set_context(h2(149, static_cast<std::uint64_t>(wiki_.cell_kind()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TBLCOL_MOD
+        tblcolmod_.set_context(h2(150, static_cast<std::uint64_t>(wiki_.tbl_col()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HEADIDX_MOD
+        headidxmod_.set_context(h2(151, static_cast<std::uint64_t>(wiki_.head_idx()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HTMLFMT_MOD
+        htmlfmtmod_.set_context(h2(152, static_cast<std::uint64_t>(wiki_.html_fmt()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_INFOBOX_MOD
+        infoboxmod_.set_context(h2(153, static_cast<std::uint64_t>(wiki_.in_infobox()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SECLEVEL_MOD
+        seclevelmod_.set_context(h2(154, static_cast<std::uint64_t>(wiki_.sec_level()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_BRACE3_MOD
+        brace3mod_.set_context(h2(155, static_cast<std::uint64_t>(wiki_.brace3()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_NAMEDARG_MOD
+        namedargmod_.set_context(h2(156, static_cast<std::uint64_t>(wiki_.named_arg()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_INCLUDE_MOD
+        includemod_.set_context(h2(157, static_cast<std::uint64_t>(wiki_.include_bits()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SIG_MOD
+        sigmod_.set_context(h2(158, static_cast<std::uint64_t>(wiki_.sig_run()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_WIKIBOLD_MOD
+        wikiboldmod_.set_context(h2(159, static_cast<std::uint64_t>(wiki_.wiki_bold()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_URLPART_MOD
+        urlpartmod_.set_context(h2(160, static_cast<std::uint64_t>(wiki_.url_part()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REFIDX_MOD
+        refidxmod_.set_context(h2(161, static_cast<std::uint64_t>(wiki_.ref_idx()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
     }
 
     void init_ctx_chain_() {
@@ -1993,6 +2917,258 @@ class Predictor {
 #endif
 #if HP_TABLECLASS_MOD
         ctx_chain_[n_ctx_chain_++] = &tableclassmod_;
+#endif
+#if HP_ANCHOR_MOD
+        ctx_chain_[n_ctx_chain_++] = &anchormod_;
+#endif
+#if HP_PUBID_MOD
+        ctx_chain_[n_ctx_chain_++] = &pubidmod_;
+#endif
+#if HP_TEMPPOS_MOD
+        ctx_chain_[n_ctx_chain_++] = &tempposmod_;
+#endif
+#if HP_WIKISTACK_MOD
+        ctx_chain_[n_ctx_chain_++] = &wikistackmod_;
+#endif
+#if HP_LANG_MOD
+        ctx_chain_[n_ctx_chain_++] = &langmod_;
+#endif
+#if HP_CATSORT_MOD
+        ctx_chain_[n_ctx_chain_++] = &catsortmod_;
+#endif
+#if HP_TBLROW_MOD
+        ctx_chain_[n_ctx_chain_++] = &tblrowmod_;
+#endif
+#if HP_FILEOPT_MOD
+        ctx_chain_[n_ctx_chain_++] = &fileoptmod_;
+#endif
+#if HP_DEFAULTSORT_MOD
+        ctx_chain_[n_ctx_chain_++] = &defaultsortmod_;
+#endif
+#if HP_REDIRTARGET_MOD
+        ctx_chain_[n_ctx_chain_++] = &redirtargetmod_;
+#endif
+#if HP_DAB_MOD
+        ctx_chain_[n_ctx_chain_++] = &dabmod_;
+#endif
+#if HP_HATNOTE_MOD
+        ctx_chain_[n_ctx_chain_++] = &hatnotemod_;
+#endif
+#if HP_LASTLINK_MOD
+        ctx_chain_[n_ctx_chain_++] = &lastlinkmod_;
+#endif
+#if HP_FWORD_MOD
+        ctx_chain_[n_ctx_chain_++] = &fwordmod_;
+#endif
+#if HP_YEAR_MOD
+        ctx_chain_[n_ctx_chain_++] = &yearmod_;
+#endif
+#if HP_CAPMASK_MOD
+        ctx_chain_[n_ctx_chain_++] = &capmaskmod_;
+#endif
+#if HP_CELLTXT_MOD
+        ctx_chain_[n_ctx_chain_++] = &celltxtmod_;
+#endif
+#if HP_HTTPHOST_MOD
+        ctx_chain_[n_ctx_chain_++] = &httphostmod_;
+#endif
+#if HP_PAREN_MOD
+        ctx_chain_[n_ctx_chain_++] = &parenmod_;
+#endif
+#if HP_LISTPOS_MOD
+        ctx_chain_[n_ctx_chain_++] = &listposmod_;
+#endif
+#if HP_SHAPE_MOD
+        ctx_chain_[n_ctx_chain_++] = &shapemod_;
+#endif
+#if HP_SUFFIX_MOD
+        ctx_chain_[n_ctx_chain_++] = &suffixmod_;
+#endif
+#if HP_PREFIX_MOD
+        ctx_chain_[n_ctx_chain_++] = &prefixmod_;
+#endif
+#if HP_CHARCLS_MOD
+        ctx_chain_[n_ctx_chain_++] = &charclsmod_;
+#endif
+#if HP_VOWEL_MOD
+        ctx_chain_[n_ctx_chain_++] = &vowelmod_;
+#endif
+#if HP_CONTR_MOD
+        ctx_chain_[n_ctx_chain_++] = &contrmod_;
+#endif
+#if HP_HYPHEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &hyphenmod_;
+#endif
+#if HP_TOKENCLS_MOD
+        ctx_chain_[n_ctx_chain_++] = &tokenclsmod_;
+#endif
+#if HP_RUNLEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &runlenmod_;
+#endif
+#if HP_WPOS_MOD
+        ctx_chain_[n_ctx_chain_++] = &wposmod_;
+#endif
+#if HP_BLANK_MOD
+        ctx_chain_[n_ctx_chain_++] = &blankmod_;
+#endif
+#if HP_SPRUN_MOD
+        ctx_chain_[n_ctx_chain_++] = &sprunmod_;
+#endif
+#if HP_LINELEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &linelenmod_;
+#endif
+#if HP_TAGDIST_MOD
+        ctx_chain_[n_ctx_chain_++] = &tagdistmod_;
+#endif
+#if HP_MARKDIST_MOD
+        ctx_chain_[n_ctx_chain_++] = &markdistmod_;
+#endif
+#if HP_UPPERGAP_MOD
+        ctx_chain_[n_ctx_chain_++] = &uppergapmod_;
+#endif
+#if HP_MONTH_MOD
+        ctx_chain_[n_ctx_chain_++] = &monthmod_;
+#endif
+#if HP_GALLERY_MOD
+        ctx_chain_[n_ctx_chain_++] = &gallerymod_;
+#endif
+#if HP_SECKIND_MOD
+        ctx_chain_[n_ctx_chain_++] = &seckindmod_;
+#endif
+#if HP_CITEKIND_MOD
+        ctx_chain_[n_ctx_chain_++] = &citekindmod_;
+#endif
+#if HP_TAGNAME_MOD
+        ctx_chain_[n_ctx_chain_++] = &tagnamemod_;
+#endif
+#if HP_COLSPAN_MOD
+        ctx_chain_[n_ctx_chain_++] = &colspanmod_;
+#endif
+#if HP_STYLE_MOD
+        ctx_chain_[n_ctx_chain_++] = &stylemod_;
+#endif
+#if HP_COORD_MOD
+        ctx_chain_[n_ctx_chain_++] = &coordmod_;
+#endif
+#if HP_DIGITGAP_MOD
+        ctx_chain_[n_ctx_chain_++] = &digitgapmod_;
+#endif
+#if HP_DOTGAP_MOD
+        ctx_chain_[n_ctx_chain_++] = &dotgapmod_;
+#endif
+#if HP_COMMAGAP_MOD
+        ctx_chain_[n_ctx_chain_++] = &commagapmod_;
+#endif
+#if HP_WORDLEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &wordlenmod_;
+#endif
+#if HP_SENTLEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &sentlenmod_;
+#endif
+#if HP_LOWERGAP_MOD
+        ctx_chain_[n_ctx_chain_++] = &lowergapmod_;
+#endif
+#if HP_DIGITPOS_MOD
+        ctx_chain_[n_ctx_chain_++] = &digitposmod_;
+#endif
+#if HP_SLASHGAP_MOD
+        ctx_chain_[n_ctx_chain_++] = &slashgapmod_;
+#endif
+#if HP_DIGLEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &diglenmod_;
+#endif
+#if HP_PREVLINE_MOD
+        ctx_chain_[n_ctx_chain_++] = &prevlinemod_;
+#endif
+#if HP_PREVSENT_MOD
+        ctx_chain_[n_ctx_chain_++] = &prevsentmod_;
+#endif
+#if HP_LINKLEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &linklenmod_;
+#endif
+#if HP_TPLLEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &tpllenmod_;
+#endif
+#if HP_PARALEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &paralenmod_;
+#endif
+#if HP_ALNUMLEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &alnumlenmod_;
+#endif
+#if HP_SPLEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &splenmod_;
+#endif
+#if HP_TITLEWORD_MOD
+        ctx_chain_[n_ctx_chain_++] = &titlewordmod_;
+#endif
+#if HP_HEADWORD_MOD
+        ctx_chain_[n_ctx_chain_++] = &headwordmod_;
+#endif
+#if HP_INIT_MOD
+        ctx_chain_[n_ctx_chain_++] = &initmod_;
+#endif
+#if HP_ORDINAL_MOD
+        ctx_chain_[n_ctx_chain_++] = &ordinalmod_;
+#endif
+#if HP_UNIT_MOD
+        ctx_chain_[n_ctx_chain_++] = &unitmod_;
+#endif
+#if HP_DECIMAL_MOD
+        ctx_chain_[n_ctx_chain_++] = &decimalmod_;
+#endif
+#if HP_REPEAT_MOD
+        ctx_chain_[n_ctx_chain_++] = &repeatmod_;
+#endif
+#if HP_CASEFLIP_MOD
+        ctx_chain_[n_ctx_chain_++] = &caseflipmod_;
+#endif
+#if HP_LEAD_MOD
+        ctx_chain_[n_ctx_chain_++] = &leadmod_;
+#endif
+#if HP_INFOVAL_MOD
+        ctx_chain_[n_ctx_chain_++] = &infovalmod_;
+#endif
+#if HP_LINKTRAIL_MOD
+        ctx_chain_[n_ctx_chain_++] = &linktrailmod_;
+#endif
+#if HP_CELLKIND_MOD
+        ctx_chain_[n_ctx_chain_++] = &cellkindmod_;
+#endif
+#if HP_TBLCOL_MOD
+        ctx_chain_[n_ctx_chain_++] = &tblcolmod_;
+#endif
+#if HP_HEADIDX_MOD
+        ctx_chain_[n_ctx_chain_++] = &headidxmod_;
+#endif
+#if HP_HTMLFMT_MOD
+        ctx_chain_[n_ctx_chain_++] = &htmlfmtmod_;
+#endif
+#if HP_INFOBOX_MOD
+        ctx_chain_[n_ctx_chain_++] = &infoboxmod_;
+#endif
+#if HP_SECLEVEL_MOD
+        ctx_chain_[n_ctx_chain_++] = &seclevelmod_;
+#endif
+#if HP_BRACE3_MOD
+        ctx_chain_[n_ctx_chain_++] = &brace3mod_;
+#endif
+#if HP_NAMEDARG_MOD
+        ctx_chain_[n_ctx_chain_++] = &namedargmod_;
+#endif
+#if HP_INCLUDE_MOD
+        ctx_chain_[n_ctx_chain_++] = &includemod_;
+#endif
+#if HP_SIG_MOD
+        ctx_chain_[n_ctx_chain_++] = &sigmod_;
+#endif
+#if HP_WIKIBOLD_MOD
+        ctx_chain_[n_ctx_chain_++] = &wikiboldmod_;
+#endif
+#if HP_URLPART_MOD
+        ctx_chain_[n_ctx_chain_++] = &urlpartmod_;
+#endif
+#if HP_REFIDX_MOD
+        ctx_chain_[n_ctx_chain_++] = &refidxmod_;
 #endif
     }
 
@@ -2175,6 +3351,258 @@ class Predictor {
 #endif
 #if HP_TABLECLASS_MOD
     ContextModel tableclassmod_;
+#endif
+#if HP_ANCHOR_MOD
+    ContextModel anchormod_;
+#endif
+#if HP_PUBID_MOD
+    ContextModel pubidmod_;
+#endif
+#if HP_TEMPPOS_MOD
+    ContextModel tempposmod_;
+#endif
+#if HP_WIKISTACK_MOD
+    ContextModel wikistackmod_;
+#endif
+#if HP_LANG_MOD
+    ContextModel langmod_;
+#endif
+#if HP_CATSORT_MOD
+    ContextModel catsortmod_;
+#endif
+#if HP_TBLROW_MOD
+    ContextModel tblrowmod_;
+#endif
+#if HP_FILEOPT_MOD
+    ContextModel fileoptmod_;
+#endif
+#if HP_DEFAULTSORT_MOD
+    ContextModel defaultsortmod_;
+#endif
+#if HP_REDIRTARGET_MOD
+    ContextModel redirtargetmod_;
+#endif
+#if HP_DAB_MOD
+    ContextModel dabmod_;
+#endif
+#if HP_HATNOTE_MOD
+    ContextModel hatnotemod_;
+#endif
+#if HP_LASTLINK_MOD
+    ContextModel lastlinkmod_;
+#endif
+#if HP_FWORD_MOD
+    ContextModel fwordmod_;
+#endif
+#if HP_YEAR_MOD
+    ContextModel yearmod_;
+#endif
+#if HP_CAPMASK_MOD
+    ContextModel capmaskmod_;
+#endif
+#if HP_CELLTXT_MOD
+    ContextModel celltxtmod_;
+#endif
+#if HP_HTTPHOST_MOD
+    ContextModel httphostmod_;
+#endif
+#if HP_PAREN_MOD
+    ContextModel parenmod_;
+#endif
+#if HP_LISTPOS_MOD
+    ContextModel listposmod_;
+#endif
+#if HP_SHAPE_MOD
+    ContextModel shapemod_;
+#endif
+#if HP_SUFFIX_MOD
+    ContextModel suffixmod_;
+#endif
+#if HP_PREFIX_MOD
+    ContextModel prefixmod_;
+#endif
+#if HP_CHARCLS_MOD
+    ContextModel charclsmod_;
+#endif
+#if HP_VOWEL_MOD
+    ContextModel vowelmod_;
+#endif
+#if HP_CONTR_MOD
+    ContextModel contrmod_;
+#endif
+#if HP_HYPHEN_MOD
+    ContextModel hyphenmod_;
+#endif
+#if HP_TOKENCLS_MOD
+    ContextModel tokenclsmod_;
+#endif
+#if HP_RUNLEN_MOD
+    ContextModel runlenmod_;
+#endif
+#if HP_WPOS_MOD
+    ContextModel wposmod_;
+#endif
+#if HP_BLANK_MOD
+    ContextModel blankmod_;
+#endif
+#if HP_SPRUN_MOD
+    ContextModel sprunmod_;
+#endif
+#if HP_LINELEN_MOD
+    ContextModel linelenmod_;
+#endif
+#if HP_TAGDIST_MOD
+    ContextModel tagdistmod_;
+#endif
+#if HP_MARKDIST_MOD
+    ContextModel markdistmod_;
+#endif
+#if HP_UPPERGAP_MOD
+    ContextModel uppergapmod_;
+#endif
+#if HP_MONTH_MOD
+    ContextModel monthmod_;
+#endif
+#if HP_GALLERY_MOD
+    ContextModel gallerymod_;
+#endif
+#if HP_SECKIND_MOD
+    ContextModel seckindmod_;
+#endif
+#if HP_CITEKIND_MOD
+    ContextModel citekindmod_;
+#endif
+#if HP_TAGNAME_MOD
+    ContextModel tagnamemod_;
+#endif
+#if HP_COLSPAN_MOD
+    ContextModel colspanmod_;
+#endif
+#if HP_STYLE_MOD
+    ContextModel stylemod_;
+#endif
+#if HP_COORD_MOD
+    ContextModel coordmod_;
+#endif
+#if HP_DIGITGAP_MOD
+    ContextModel digitgapmod_;
+#endif
+#if HP_DOTGAP_MOD
+    ContextModel dotgapmod_;
+#endif
+#if HP_COMMAGAP_MOD
+    ContextModel commagapmod_;
+#endif
+#if HP_WORDLEN_MOD
+    ContextModel wordlenmod_;
+#endif
+#if HP_SENTLEN_MOD
+    ContextModel sentlenmod_;
+#endif
+#if HP_LOWERGAP_MOD
+    ContextModel lowergapmod_;
+#endif
+#if HP_DIGITPOS_MOD
+    ContextModel digitposmod_;
+#endif
+#if HP_SLASHGAP_MOD
+    ContextModel slashgapmod_;
+#endif
+#if HP_DIGLEN_MOD
+    ContextModel diglenmod_;
+#endif
+#if HP_PREVLINE_MOD
+    ContextModel prevlinemod_;
+#endif
+#if HP_PREVSENT_MOD
+    ContextModel prevsentmod_;
+#endif
+#if HP_LINKLEN_MOD
+    ContextModel linklenmod_;
+#endif
+#if HP_TPLLEN_MOD
+    ContextModel tpllenmod_;
+#endif
+#if HP_PARALEN_MOD
+    ContextModel paralenmod_;
+#endif
+#if HP_ALNUMLEN_MOD
+    ContextModel alnumlenmod_;
+#endif
+#if HP_SPLEN_MOD
+    ContextModel splenmod_;
+#endif
+#if HP_TITLEWORD_MOD
+    ContextModel titlewordmod_;
+#endif
+#if HP_HEADWORD_MOD
+    ContextModel headwordmod_;
+#endif
+#if HP_INIT_MOD
+    ContextModel initmod_;
+#endif
+#if HP_ORDINAL_MOD
+    ContextModel ordinalmod_;
+#endif
+#if HP_UNIT_MOD
+    ContextModel unitmod_;
+#endif
+#if HP_DECIMAL_MOD
+    ContextModel decimalmod_;
+#endif
+#if HP_REPEAT_MOD
+    ContextModel repeatmod_;
+#endif
+#if HP_CASEFLIP_MOD
+    ContextModel caseflipmod_;
+#endif
+#if HP_LEAD_MOD
+    ContextModel leadmod_;
+#endif
+#if HP_INFOVAL_MOD
+    ContextModel infovalmod_;
+#endif
+#if HP_LINKTRAIL_MOD
+    ContextModel linktrailmod_;
+#endif
+#if HP_CELLKIND_MOD
+    ContextModel cellkindmod_;
+#endif
+#if HP_TBLCOL_MOD
+    ContextModel tblcolmod_;
+#endif
+#if HP_HEADIDX_MOD
+    ContextModel headidxmod_;
+#endif
+#if HP_HTMLFMT_MOD
+    ContextModel htmlfmtmod_;
+#endif
+#if HP_INFOBOX_MOD
+    ContextModel infoboxmod_;
+#endif
+#if HP_SECLEVEL_MOD
+    ContextModel seclevelmod_;
+#endif
+#if HP_BRACE3_MOD
+    ContextModel brace3mod_;
+#endif
+#if HP_NAMEDARG_MOD
+    ContextModel namedargmod_;
+#endif
+#if HP_INCLUDE_MOD
+    ContextModel includemod_;
+#endif
+#if HP_SIG_MOD
+    ContextModel sigmod_;
+#endif
+#if HP_WIKIBOLD_MOD
+    ContextModel wikiboldmod_;
+#endif
+#if HP_URLPART_MOD
+    ContextModel urlpartmod_;
+#endif
+#if HP_REFIDX_MOD
+    ContextModel refidxmod_;
 #endif
     MatchModel match_[kMatchModels];
 #if HP_SPARSE_UTF8

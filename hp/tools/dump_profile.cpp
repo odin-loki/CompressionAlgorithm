@@ -191,6 +191,258 @@ static std::vector<std::string> expert_names() {
 #if HP_TABLECLASS_MOD
     push_cm(&n, "tableclass");
 #endif
+#if HP_ANCHOR_MOD
+    push_cm(&n, "anchor");
+#endif
+#if HP_PUBID_MOD
+    push_cm(&n, "pubid");
+#endif
+#if HP_TEMPPOS_MOD
+    push_cm(&n, "temppos");
+#endif
+#if HP_WIKISTACK_MOD
+    push_cm(&n, "wikistack");
+#endif
+#if HP_LANG_MOD
+    push_cm(&n, "lang");
+#endif
+#if HP_CATSORT_MOD
+    push_cm(&n, "catsort");
+#endif
+#if HP_TBLROW_MOD
+    push_cm(&n, "tblrow");
+#endif
+#if HP_FILEOPT_MOD
+    push_cm(&n, "fileopt");
+#endif
+#if HP_DEFAULTSORT_MOD
+    push_cm(&n, "defaultsort");
+#endif
+#if HP_REDIRTARGET_MOD
+    push_cm(&n, "redirtarget");
+#endif
+#if HP_DAB_MOD
+    push_cm(&n, "dab");
+#endif
+#if HP_HATNOTE_MOD
+    push_cm(&n, "hatnote");
+#endif
+#if HP_LASTLINK_MOD
+    push_cm(&n, "lastlink");
+#endif
+#if HP_FWORD_MOD
+    push_cm(&n, "fword");
+#endif
+#if HP_YEAR_MOD
+    push_cm(&n, "year");
+#endif
+#if HP_CAPMASK_MOD
+    push_cm(&n, "capmask");
+#endif
+#if HP_CELLTXT_MOD
+    push_cm(&n, "celltxt");
+#endif
+#if HP_HTTPHOST_MOD
+    push_cm(&n, "httphost");
+#endif
+#if HP_PAREN_MOD
+    push_cm(&n, "paren");
+#endif
+#if HP_LISTPOS_MOD
+    push_cm(&n, "listpos");
+#endif
+#if HP_SHAPE_MOD
+    push_cm(&n, "shape");
+#endif
+#if HP_SUFFIX_MOD
+    push_cm(&n, "suffix");
+#endif
+#if HP_PREFIX_MOD
+    push_cm(&n, "prefix");
+#endif
+#if HP_CHARCLS_MOD
+    push_cm(&n, "charcls");
+#endif
+#if HP_VOWEL_MOD
+    push_cm(&n, "vowel");
+#endif
+#if HP_CONTR_MOD
+    push_cm(&n, "contr");
+#endif
+#if HP_HYPHEN_MOD
+    push_cm(&n, "hyphen");
+#endif
+#if HP_TOKENCLS_MOD
+    push_cm(&n, "tokencls");
+#endif
+#if HP_RUNLEN_MOD
+    push_cm(&n, "runlen");
+#endif
+#if HP_WPOS_MOD
+    push_cm(&n, "wpos");
+#endif
+#if HP_BLANK_MOD
+    push_cm(&n, "blank");
+#endif
+#if HP_SPRUN_MOD
+    push_cm(&n, "sprun");
+#endif
+#if HP_LINELEN_MOD
+    push_cm(&n, "linelen");
+#endif
+#if HP_TAGDIST_MOD
+    push_cm(&n, "tagdist");
+#endif
+#if HP_MARKDIST_MOD
+    push_cm(&n, "markdist");
+#endif
+#if HP_UPPERGAP_MOD
+    push_cm(&n, "uppergap");
+#endif
+#if HP_MONTH_MOD
+    push_cm(&n, "month");
+#endif
+#if HP_GALLERY_MOD
+    push_cm(&n, "gallery");
+#endif
+#if HP_SECKIND_MOD
+    push_cm(&n, "seckind");
+#endif
+#if HP_CITEKIND_MOD
+    push_cm(&n, "citekind");
+#endif
+#if HP_TAGNAME_MOD
+    push_cm(&n, "tagname");
+#endif
+#if HP_COLSPAN_MOD
+    push_cm(&n, "colspan");
+#endif
+#if HP_STYLE_MOD
+    push_cm(&n, "style");
+#endif
+#if HP_COORD_MOD
+    push_cm(&n, "coord");
+#endif
+#if HP_DIGITGAP_MOD
+    push_cm(&n, "digitgap");
+#endif
+#if HP_DOTGAP_MOD
+    push_cm(&n, "dotgap");
+#endif
+#if HP_COMMAGAP_MOD
+    push_cm(&n, "commagap");
+#endif
+#if HP_WORDLEN_MOD
+    push_cm(&n, "wordlen");
+#endif
+#if HP_SENTLEN_MOD
+    push_cm(&n, "sentlen");
+#endif
+#if HP_LOWERGAP_MOD
+    push_cm(&n, "lowergap");
+#endif
+#if HP_DIGITPOS_MOD
+    push_cm(&n, "digitpos");
+#endif
+#if HP_SLASHGAP_MOD
+    push_cm(&n, "slashgap");
+#endif
+#if HP_DIGLEN_MOD
+    push_cm(&n, "diglen");
+#endif
+#if HP_PREVLINE_MOD
+    push_cm(&n, "prevline");
+#endif
+#if HP_PREVSENT_MOD
+    push_cm(&n, "prevsent");
+#endif
+#if HP_LINKLEN_MOD
+    push_cm(&n, "linklen");
+#endif
+#if HP_TPLLEN_MOD
+    push_cm(&n, "tpllen");
+#endif
+#if HP_PARALEN_MOD
+    push_cm(&n, "paralen");
+#endif
+#if HP_ALNUMLEN_MOD
+    push_cm(&n, "alnumlen");
+#endif
+#if HP_SPLEN_MOD
+    push_cm(&n, "splen");
+#endif
+#if HP_TITLEWORD_MOD
+    push_cm(&n, "titleword");
+#endif
+#if HP_HEADWORD_MOD
+    push_cm(&n, "headword");
+#endif
+#if HP_INIT_MOD
+    push_cm(&n, "init");
+#endif
+#if HP_ORDINAL_MOD
+    push_cm(&n, "ordinal");
+#endif
+#if HP_UNIT_MOD
+    push_cm(&n, "unit");
+#endif
+#if HP_DECIMAL_MOD
+    push_cm(&n, "decimal");
+#endif
+#if HP_REPEAT_MOD
+    push_cm(&n, "repeat");
+#endif
+#if HP_CASEFLIP_MOD
+    push_cm(&n, "caseflip");
+#endif
+#if HP_LEAD_MOD
+    push_cm(&n, "lead");
+#endif
+#if HP_INFOVAL_MOD
+    push_cm(&n, "infoval");
+#endif
+#if HP_LINKTRAIL_MOD
+    push_cm(&n, "linktrail");
+#endif
+#if HP_CELLKIND_MOD
+    push_cm(&n, "cellkind");
+#endif
+#if HP_TBLCOL_MOD
+    push_cm(&n, "tblcol");
+#endif
+#if HP_HEADIDX_MOD
+    push_cm(&n, "headidx");
+#endif
+#if HP_HTMLFMT_MOD
+    push_cm(&n, "htmlfmt");
+#endif
+#if HP_INFOBOX_MOD
+    push_cm(&n, "infobox");
+#endif
+#if HP_SECLEVEL_MOD
+    push_cm(&n, "seclevel");
+#endif
+#if HP_BRACE3_MOD
+    push_cm(&n, "brace3");
+#endif
+#if HP_NAMEDARG_MOD
+    push_cm(&n, "namedarg");
+#endif
+#if HP_INCLUDE_MOD
+    push_cm(&n, "include");
+#endif
+#if HP_SIG_MOD
+    push_cm(&n, "sig");
+#endif
+#if HP_WIKIBOLD_MOD
+    push_cm(&n, "wikibold");
+#endif
+#if HP_URLPART_MOD
+    push_cm(&n, "urlpart");
+#endif
+#if HP_REFIDX_MOD
+    push_cm(&n, "refidx");
+#endif
     n.push_back("m3");
     n.push_back("m4");
     n.push_back("m6");

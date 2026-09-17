@@ -601,6 +601,264 @@
 #ifndef HP_TABLECLASS_MOD
 #define HP_TABLECLASS_MOD 0        // {| class=… first-line token CM
 #endif
+#ifndef HP_ANCHOR_MOD
+#define HP_ANCHOR_MOD 0            // [[target#section fragment CM
+#endif
+#ifndef HP_PUBID_MOD
+#define HP_PUBID_MOD 0             // ISBN / PMID digit-run CM
+#endif
+#ifndef HP_TEMPPOS_MOD
+#define HP_TEMPPOS_MOD 0           // first positional {{template|arg CM
+#endif
+#ifndef HP_WIKISTACK_MOD
+#define HP_WIKISTACK_MOD 0         // fccxt+brcxt+cell-above packed CM (richer than FCCXT)
+#endif
+#ifndef HP_REORDER
+#define HP_REORDER 0               // sort <page> blocks by <title>
+#endif
+#ifndef HP_PAYLOAD_LEX
+#define HP_PAYLOAD_LEX 0           // sort <page> blocks by <text> payload
+#endif
+#ifndef HP_LANG_MOD
+#define HP_LANG_MOD 0              // [[xx: interwiki / lang prefix CM
+#endif
+#ifndef HP_CATSORT_MOD
+#define HP_CATSORT_MOD 0           // [[Category:Name|sortkey CM
+#endif
+#ifndef HP_TBLROW_MOD
+#define HP_TBLROW_MOD 0            // {| row/caption/header/cell kind CM
+#endif
+#ifndef HP_FILEOPT_MOD
+#define HP_FILEOPT_MOD 0           // [[File: thumb/px/right option CM
+#endif
+#ifndef HP_DEFAULTSORT_MOD
+#define HP_DEFAULTSORT_MOD 0       // {{DEFAULTSORT: key CM
+#endif
+#ifndef HP_REDIRTARGET_MOD
+#define HP_REDIRTARGET_MOD 0       // #REDIRECT [[target]] title hash CM
+#endif
+#ifndef HP_DAB_MOD
+#define HP_DAB_MOD 0               // {{disambig / hndis / dab CM
+#endif
+#ifndef HP_HATNOTE_MOD
+#define HP_HATNOTE_MOD 0           // {{for| / {{about| / {{main| CM
+#endif
+#ifndef HP_LASTLINK_MOD
+#define HP_LASTLINK_MOD 0          // sticky last [[target]] entity CM
+#endif
+#ifndef HP_FWORD_MOD
+#define HP_FWORD_MOD 0             // sentence first-word CM (fxcm fword)
+#endif
+#ifndef HP_YEAR_MOD
+#define HP_YEAR_MOD 0              // last 4-digit year 1000-2099 CM
+#endif
+#ifndef HP_CAPMASK_MOD
+#define HP_CAPMASK_MOD 0           // current-word capitalisation mask CM
+#endif
+#ifndef HP_CELLTXT_MOD
+#define HP_CELLTXT_MOD 0           // current table-cell text hash CM
+#endif
+#ifndef HP_HTTPHOST_MOD
+#define HP_HTTPHOST_MOD 0          // http(s) URL hostname hash CM
+#endif
+#ifndef HP_PAREN_MOD
+#define HP_PAREN_MOD 0             // sticky last (...) group hash CM
+#endif
+#ifndef HP_LISTPOS_MOD
+#define HP_LISTPOS_MOD 0           // nth * / # list item CM
+#endif
+#ifndef HP_SHAPE_MOD
+#define HP_SHAPE_MOD 0             // 2-bit-per-char word shape sequence CM
+#endif
+#ifndef HP_SUFFIX_MOD
+#define HP_SUFFIX_MOD 0            // last-3-letters of word CM
+#endif
+#ifndef HP_PREFIX_MOD
+#define HP_PREFIX_MOD 0            // first-3-letters of word CM
+#endif
+#ifndef HP_CHARCLS_MOD
+#define HP_CHARCLS_MOD 0           // rolling byte-class stream CM
+#endif
+#ifndef HP_VOWEL_MOD
+#define HP_VOWEL_MOD 0             // vowel/consonant bit-ring of word CM
+#endif
+#ifndef HP_CONTR_MOD
+#define HP_CONTR_MOD 0             // internal-apostrophe contraction CM
+#endif
+#ifndef HP_HYPHEN_MOD
+#define HP_HYPHEN_MOD 0            // hyphenated-compound hash CM
+#endif
+#ifndef HP_TOKENCLS_MOD
+#define HP_TOKENCLS_MOD 0          // alpha/digit/mixed/punct/xml/wiki token CM
+#endif
+#ifndef HP_RUNLEN_MOD
+#define HP_RUNLEN_MOD 0            // identical-byte run length CM
+#endif
+#ifndef HP_WPOS_MOD
+#define HP_WPOS_MOD 0              // letter index in current word CM
+#endif
+#ifndef HP_BLANK_MOD
+#define HP_BLANK_MOD 0             // consecutive newline / blank-line CM
+#endif
+#ifndef HP_SPRUN_MOD
+#define HP_SPRUN_MOD 0             // space-run length CM
+#endif
+#ifndef HP_LINELEN_MOD
+#define HP_LINELEN_MOD 0           // current line length CM
+#endif
+#ifndef HP_TAGDIST_MOD
+#define HP_TAGDIST_MOD 0           // bytes since last '<' CM
+#endif
+#ifndef HP_MARKDIST_MOD
+#define HP_MARKDIST_MOD 0          // bytes since last wiki markup char CM
+#endif
+#ifndef HP_UPPERGAP_MOD
+#define HP_UPPERGAP_MOD 0          // bytes since last uppercase CM
+#endif
+#ifndef HP_MONTH_MOD
+#define HP_MONTH_MOD 0             // last English month-name CM
+#endif
+#ifndef HP_GALLERY_MOD
+#define HP_GALLERY_MOD 0           // <gallery> domain CM
+#endif
+#ifndef HP_SECKIND_MOD
+#define HP_SECKIND_MOD 0           // classified heading kind CM
+#endif
+#ifndef HP_CITEKIND_MOD
+#define HP_CITEKIND_MOD 0          // {{cite web/journal/book/news CM
+#endif
+#ifndef HP_TAGNAME_MOD
+#define HP_TAGNAME_MOD 0           // current HTML/XML tag-name hash CM
+#endif
+#ifndef HP_COLSPAN_MOD
+#define HP_COLSPAN_MOD 0           // colspan=/rowspan= value CM
+#endif
+#ifndef HP_STYLE_MOD
+#define HP_STYLE_MOD 0             // style= CSS fragment CM
+#endif
+#ifndef HP_COORD_MOD
+#define HP_COORD_MOD 0             // {{coord / {{Coord CM
+#endif
+#ifndef HP_DIGITGAP_MOD
+#define HP_DIGITGAP_MOD 0          // bytes since last digit CM
+#endif
+#ifndef HP_DOTGAP_MOD
+#define HP_DOTGAP_MOD 0            // bytes since last '.' CM
+#endif
+#ifndef HP_COMMAGAP_MOD
+#define HP_COMMAGAP_MOD 0          // bytes since last ',' CM
+#endif
+#ifndef HP_WORDLEN_MOD
+#define HP_WORDLEN_MOD 0           // last completed letter-word length CM
+#endif
+#ifndef HP_SENTLEN_MOD
+#define HP_SENTLEN_MOD 0           // bytes since last .?! CM
+#endif
+#ifndef HP_LOWERGAP_MOD
+#define HP_LOWERGAP_MOD 0          // bytes since last a-z CM
+#endif
+#ifndef HP_DIGITPOS_MOD
+#define HP_DIGITPOS_MOD 0          // index in current digit run CM
+#endif
+#ifndef HP_SLASHGAP_MOD
+#define HP_SLASHGAP_MOD 0          // bytes since last '/' CM
+#endif
+#ifndef HP_DIGLEN_MOD
+#define HP_DIGLEN_MOD 0            // last completed digit-run length CM
+#endif
+#ifndef HP_PREVLINE_MOD
+#define HP_PREVLINE_MOD 0          // last completed line length CM
+#endif
+#ifndef HP_PREVSENT_MOD
+#define HP_PREVSENT_MOD 0          // last completed sentence length CM
+#endif
+#ifndef HP_LINKLEN_MOD
+#define HP_LINKLEN_MOD 0           // last completed [[link]] length CM
+#endif
+#ifndef HP_TPLLEN_MOD
+#define HP_TPLLEN_MOD 0            // last completed {{template}} length CM
+#endif
+#ifndef HP_PARALEN_MOD
+#define HP_PARALEN_MOD 0           // last completed paragraph length CM
+#endif
+#ifndef HP_ALNUMLEN_MOD
+#define HP_ALNUMLEN_MOD 0          // last completed alnum-token length CM
+#endif
+#ifndef HP_SPLEN_MOD
+#define HP_SPLEN_MOD 0             // last completed space-run length CM
+#endif
+#ifndef HP_TITLEWORD_MOD
+#define HP_TITLEWORD_MOD 0         // current word hits page-title token CM
+#endif
+#ifndef HP_HEADWORD_MOD
+#define HP_HEADWORD_MOD 0          // current word hits last-heading token CM
+#endif
+#ifndef HP_INIT_MOD
+#define HP_INIT_MOD 0              // letter-dot initials (U.S. / J.) CM
+#endif
+#ifndef HP_ORDINAL_MOD
+#define HP_ORDINAL_MOD 0           // 1st/2nd/3rd/4th after digits CM
+#endif
+#ifndef HP_UNIT_MOD
+#define HP_UNIT_MOD 0              // km/mi/kg unit after number CM
+#endif
+#ifndef HP_DECIMAL_MOD
+#define HP_DECIMAL_MOD 0           // digit.digit decimal-number CM
+#endif
+#ifndef HP_REPEAT_MOD
+#define HP_REPEAT_MOD 0            // current word repeats previous CM
+#endif
+#ifndef HP_CASEFLIP_MOD
+#define HP_CASEFLIP_MOD 0          // bytes since lower-to-upper flip CM
+#endif
+#ifndef HP_LEAD_MOD
+#define HP_LEAD_MOD 0              // before first heading (article lead) CM
+#endif
+#ifndef HP_INFOVAL_MOD
+#define HP_INFOVAL_MOD 0           // template/infobox value class after = CM
+#endif
+#ifndef HP_LINKTRAIL_MOD
+#define HP_LINKTRAIL_MOD 0         // letters immediately after ]] CM
+#endif
+#ifndef HP_CELLKIND_MOD
+#define HP_CELLKIND_MOD 0          // wiki table caption/header/data/rowsep CM
+#endif
+#ifndef HP_TBLCOL_MOD
+#define HP_TBLCOL_MOD 0            // column index in current table row CM
+#endif
+#ifndef HP_HEADIDX_MOD
+#define HP_HEADIDX_MOD 0           // nth heading on the page CM
+#endif
+#ifndef HP_HTMLFMT_MOD
+#define HP_HTMLFMT_MOD 0           // open inline HTML formatting bitmask CM
+#endif
+#ifndef HP_INFOBOX_MOD
+#define HP_INFOBOX_MOD 0           // inside {{Infobox...}} region CM
+#endif
+#ifndef HP_SECLEVEL_MOD
+#define HP_SECLEVEL_MOD 0          // sticky heading level of section body CM
+#endif
+#ifndef HP_BRACE3_MOD
+#define HP_BRACE3_MOD 0            // {{{template-param}}} depth CM
+#endif
+#ifndef HP_NAMEDARG_MOD
+#define HP_NAMEDARG_MOD 0          // named template arg body after = CM
+#endif
+#ifndef HP_INCLUDE_MOD
+#define HP_INCLUDE_MOD 0           // includeonly/noinclude/onlyinclude CM
+#endif
+#ifndef HP_SIG_MOD
+#define HP_SIG_MOD 0               // ~~~~ signature tilde-run CM
+#endif
+#ifndef HP_WIKIBOLD_MOD
+#define HP_WIKIBOLD_MOD 0          // wiki '' / ''' / ''''' bold-italic CM
+#endif
+#ifndef HP_URLPART_MOD
+#define HP_URLPART_MOD 0           // URL host/path/query/fragment CM
+#endif
+#ifndef HP_REFIDX_MOD
+#define HP_REFIDX_MOD 0            // nth <ref> on the page CM
+#endif
 #ifndef HP_DUMP_XML
 #define HP_DUMP_XML (HP_TITLE_MOD || HP_PAGEID_MOD || HP_USER_MOD || HP_TEXT_MOD \
     || HP_NS_MOD || HP_DUMPREDIR_MOD || HP_IP_MOD || HP_REVCOMMENT_MOD \
