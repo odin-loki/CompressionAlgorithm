@@ -2044,24 +2044,31 @@ file returns **zero** sweeps in 191 logged trials.
 
 New flag `HP_LR1_SCALE` (percent, 100 = identity, byte-identical at 100).
 
-| `HP_LR1_SCALE` | 8 MiB, mem 22, SLOT_MAX=24 | vs 100 |
-|---:|---:|---:|
-| 100 (current) | 1,690,052 | — |
-| 75 | 1,685,761 | **−4,291** |
-| 60 | **1,683,710** | **−6,342** |
-| 50 | 1,683,710 | −6,342 |
+| `HP_LR1_SCALE` | effective rates | 8 MiB, mem 22, SLOT_MAX=24 | vs 100 |
+|---:|---|---:|---:|
+| 100 (current) | {2,3,2,4,3,4} | 1,690,052 | — |
+| 75 | {2,2,2,3,2,3} | 1,685,761 | −4,291 |
+| 60 | {1,2,1,2,2,2} | 1,683,710 | −6,342 |
+| 50 | {1,2,1,2,2,2} | 1,683,710 | −6,342 |
+| **40** | **{1,1,1,2,1,2}** | **1,683,014** | **−7,038** |
+| 30 | {1,1,1,1,1,1} | 1,683,114 | −6,938 |
 
-50 and 60 are byte-identical: the integer rates round to the same
-`{1,2,1,2,2,2}`. **The layer-1 rates should be halved.**
+Minimum fully bracketed at **scale 40**, rates `{1,1,1,2,1,2}`. 50/60
+collide (same rounding); at scale <=35 everything floors to all-ones and
+gets worse again. **The layer-1 rates should be roughly halved, and the
+optimum is not a uniform scale** — {1,1,1,2,1,2} is not 0.4x{2,3,2,4,3,4}
+elementwise, so a per-rate sweep should do better still.
 
-`HP_LR1_SCALE=60` 8 MiB **round-trip PASS**, SHA256
-`09f6dd72…f292ee8e` on both sides. Stacked with the v83 flag:
+Both `HP_LR1_SCALE=60` and the best stack below **round-trip PASS**
+(SHA256 `09f6dd72…f292ee8e` on both sides).
 
-| cfg (SLOT_MAX=24) | 8 MiB | bpc |
-|---|---:|---:|
-| champ flags, scale 100 | 1,690,052 | 1.6122 |
-| + `HP_LR1_SCALE=60` | 1,683,710 | 1.6062 |
-| + `HP_LR1_SCALE=60` + `HP_WIKIBOLD_MOD` | **1,682,129** | **1.6043** |
+| cfg (SLOT_MAX=24) | 8 MiB | bpc | RT |
+|---|---:|---:|---|
+| champ flags, scale 100 | 1,690,052 | 1.6122 | — |
+| + `HP_LR1_SCALE=60` | 1,683,710 | 1.6062 | PASS |
+| + `HP_LR1_SCALE=40` | 1,683,014 | 1.6055 | — |
+| + `HP_LR1_SCALE=60` + `HP_WIKIBOLD_MOD` | 1,682,129 | 1.6043 | — |
+| + `HP_LR1_SCALE=40` + `HP_WIKIBOLD_MOD` | **1,681,311** | **1.6035** | PASS |
 
 **Mechanism.** The layer-1 update is unnormalised LMS
 (`simd_dot.hpp:110`): `dw_i = (st_i * err * l1) >> 14`, a *fixed* step.

@@ -36,10 +36,10 @@ Leftover wave **closed** at **v78**. RECORD leads if a later run accepts.
 
 enwik8 SOTA: cmix v21 ~14.62 MB. hp ~18.53 MB is paq8f-era quality.
 
-**Mixer rate (H33, 2026-09-18).** `HP_LR1_SCALE=60` halves the hardcoded
-layer-1 per-mixer rates and is worth **−6,342 B** on 8 MiB at matched
-config (1,690,052 → 1,683,710, RT PASS); with `HP_WIKIBOLD_MOD`,
-**1,682,129 / 1.6043 bpc**. Measured at `SLOT_MAX=24`, not the champ's
+**Mixer rate (H33, 2026-09-18).** `HP_LR1_SCALE=40` halves the hardcoded
+layer-1 per-mixer rates to `{1,1,1,2,1,2}` and is worth **−7,038 B** on
+8 MiB at matched config (1,690,052 → 1,683,014); with `HP_WIKIBOLD_MOD`
+stacked, **1,681,311 / 1.6035 bpc**, RT PASS — **−7,846 B vs v82**. Measured at `SLOT_MAX=24`, not the champ's
 35, so it is **not yet a protocol-conformant champ claim** — it needs one
 `SLOT_MAX=35` run on a >=16 GB box to land as v84. It is larger than the
 entire v78→v83 programme (−4,125 B over 85 trials). See RECORD H33.
@@ -220,13 +220,15 @@ Write 100 MB archives to `%LOCALAPPDATA%\hp_lab` then copy into
 correcting it changes every prior verdict. Mean per-feature dilution cost
 fell 87.5 → 22.2 B (−75%) at scale 60. Work this order:
 
-1. Land `HP_LR1_SCALE=60` at `SLOT_MAX=35` on a >=16 GB box → v84, then
+1. Land `HP_LR1_SCALE=40` at `SLOT_MAX=35` on a >=16 GB box → v84, then
    100 MB at mem 26.
 2. Re-screen the 116 historical rejects at the corrected rate (2 MiB
    screen, 92 s each ≈ 3 h for the whole pile). They were all scored
    against an over-adapted mixer.
-3. Sweep the per-mixer rates *individually* (currently one scalar over
-   `{2,3,2,4,3,4}`); the optimum is unlikely to be a uniform scale.
+3. Sweep the per-mixer rates *individually*. The scale-40 optimum
+   `{1,1,1,2,1,2}` is not an elementwise scaling of `{2,3,2,4,3,4}`, so a
+   single scalar is provably not the best parameterisation — 6 rates, a
+   few values each, on the 92 s screen.
 4. Fix the `HP_MIXER_RANK` sign bug (RECORD H33 hygiene #3), then
    re-test rank — the low-rank mixer has never been tested working.
 5. Quantify the dilution tax directly with a null expert (duplicate an
