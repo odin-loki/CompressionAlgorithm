@@ -64,6 +64,11 @@ class MixerNet {
     void set_ctx2(int c) { ctx2_ = c; }
 
     int mix() {
+#if HP_MIXER_NLMS
+        energy_ = 0;
+        for (int i = 0; i < m_; ++i)
+            energy_ += static_cast<std::int64_t>(st_[i]) * st_[i];
+#endif
         for (int j = 0; j < k_; ++j) {
 #if HP_MIXER_RANK
             const int r = HP_MIXER_RANK;
@@ -116,7 +121,15 @@ class MixerNet {
         }
 
         for (int j = 0; j < k_; ++j) {
+#if HP_MIXER_BACKPROP
+            // Gradient of the FINAL loss wrt this layer-1 mixer's output, instead of
+            // training each layer-1 mixer independently against the true bit.
+            const int err = clamp_int(
+                static_cast<int>((static_cast<std::int64_t>(err2) *
+                                  mixer_wt_expand(v[j])) >> 16), -4095, 4095);
+#else
             const int err = t - pr_[j];
+#endif
             const int l1 = lr1_[static_cast<std::size_t>(j)];
 #if HP_MIXER_RANK
             const int r = HP_MIXER_RANK;
@@ -137,7 +150,7 @@ class MixerNet {
             }
 #else
             MixerWt* w = &w_[j][static_cast<std::size_t>(ctx_[j]) * n_];
-            axpy_mixer_wt(w, st_.data(), m_, err, l1);
+            axpy_mixer_wt(w, st_.data(), m_, err, l1, energy_);
 #endif
         }
     }
@@ -160,6 +173,7 @@ class MixerNet {
     std::vector<std::vector<MixerWt>> vfac_;
     std::vector<int> hid_;
 #endif
+    std::int64_t energy_ = 0;
     int m_ = 0;
     int ctx2_ = 0;
     int final_dot_ = 0;

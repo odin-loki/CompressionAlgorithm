@@ -1771,6 +1771,12 @@ class Predictor {
 #if HP_GATE_WMLEN
         out.push_back(3);
 #endif
+        #if HP_LR1_SCALE != 100
+        for (std::size_t q = 0; q < out.size(); ++q) {
+            int v = (out[q] * HP_LR1_SCALE + 50) / 100;
+            out[q] = v < 1 ? 1 : v;
+        }
+#endif
         return out;
         }();
         return r;

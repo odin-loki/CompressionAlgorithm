@@ -36,6 +36,14 @@ Leftover wave **closed** at **v78**. RECORD leads if a later run accepts.
 
 enwik8 SOTA: cmix v21 ~14.62 MB. hp ~18.53 MB is paq8f-era quality.
 
+**Mixer rate (H33, 2026-09-18).** `HP_LR1_SCALE=60` halves the hardcoded
+layer-1 per-mixer rates and is worth **−6,342 B** on 8 MiB at matched
+config (1,690,052 → 1,683,710, RT PASS); with `HP_WIKIBOLD_MOD`,
+**1,682,129 / 1.6043 bpc**. Measured at `SLOT_MAX=24`, not the champ's
+35, so it is **not yet a protocol-conformant champ claim** — it needs one
+`SLOT_MAX=35` run on a >=16 GB box to land as v84. It is larger than the
+entire v78→v83 programme (−4,125 B over 85 trials). See RECORD H33.
+
 **8 MB champ** (`data/enwik8.8mb`, mem 22): **v82** identity
 **1,689,157** (−90 vs v81 1,689,247), **1.610 bpc**, RT PASS.
 fx2-manual **1,685,642** (−126 vs v81 fx2 1,685,768), RT PASS.
@@ -151,10 +159,25 @@ enwik8 transform gain.
 One compile flag per binary. Same binary encodes and decodes. No
 `float` / `double` / `<cmath>` in `hp/include` or `hp/src`.
 
-**Gate (in order):**
+**Build line (the one in README was broken — it omits both -I paths):**
 
+```
+g++ -O3 -std=c++17 -msse4.1 -I hp/include -I hp/third_party/xsimd/include \
+    $(grep -oE '\-DHP_[A-Z0-9_]+=[0-9]+' hp/tools/v78_flags.ps1 | tr '\n' ' ') \
+    hp/src/main.cpp -o hp/build/hp_vNN.exe
+```
+
+A default-flag build is 1,804,979 (v7-era). The champ is the 79-flag set.
+
+**Gate (in order):** — H34 calibrated this against 12 known deltas.
+
+0. **Screen** on `data/enwik8.2mb` at `--mem 22 -DHP_SLOT_MAX=24`
+   (92 s, 1.5 GB). Spearman **+0.84** vs the 8 MiB gate, **13/13**
+   correct accept/reject signs. Kill losers here.
 1. Build a new-named exe (never overwrite a binary a long job is using).
-2. Compress first 8 MB of `data/enwik8` at `--mem 22`.
+2. Compress first 8 MB of `data/enwik8` at `--mem 22`. Use
+   `-DHP_SLOT_MAX=24` (1.6 GB, 8.5 min): Pearson **+0.96** vs
+   `SLOT_MAX=35` and only +895 B on the base, for 8x less RAM.
 3. **Accept if archive bytes drop** vs the current 8 MB champ.
 4. Round-trip SHA of the decompressed file vs the input slice.
 5. If accepted: stack-check on `data/enwik8.8mb.fx2man` (same mem 22).
@@ -192,6 +215,23 @@ Write 100 MB archives to `%LOCALAPPDATA%\hp_lab` then copy into
 ---
 
 ## Next tests
+
+**Priority after H33/H36.** The layer-1 rate is a *shared* parameter, so
+correcting it changes every prior verdict. Mean per-feature dilution cost
+fell 87.5 → 22.2 B (−75%) at scale 60. Work this order:
+
+1. Land `HP_LR1_SCALE=60` at `SLOT_MAX=35` on a >=16 GB box → v84, then
+   100 MB at mem 26.
+2. Re-screen the 116 historical rejects at the corrected rate (2 MiB
+   screen, 92 s each ≈ 3 h for the whole pile). They were all scored
+   against an over-adapted mixer.
+3. Sweep the per-mixer rates *individually* (currently one scalar over
+   `{2,3,2,4,3,4}`); the optimum is unlikely to be a uniform scale.
+4. Fix the `HP_MIXER_RANK` sign bug (RECORD H33 hygiene #3), then
+   re-test rank — the low-rank mixer has never been tested working.
+5. Quantify the dilution tax directly with a null expert (duplicate an
+   existing stretch into the mixer, zero new information) and re-score
+   the reject pile as (measured delta − tax).
 
 One flag. Log every call in `RECORD.md`. After an 8 MB accept, recompile
 remaining leftovers on the new champ.
@@ -329,6 +369,11 @@ Pointer is the RECORD heading unless noted. New evidence only.
 | `HP_SLOT_O34G` / `HP_MATCH_GROW2` | −87 noise |
 | `HP_MATCH_12` | +100 vs v43 |
 | 100 MB at `SLOT_MAX=35` | OOM (this plan, RAM table) |
+| layer-2 `--lr` (mixer_lr) | RECORD H33: default 2 optimal, monotone worse above |
+| `HP_MIXER_CLAMP_BITS` 18/20/22/24 | RECORD H33: byte-identical; clamp not binding |
+| `HP_MIXER_BACKPROP` | RECORD H33: 890,133 vs 441,538 — catastrophic |
+| `HP_MIXER_NLMS` (energy-normalised step) | RECORD H33: worse at every ETYP |
+| pair/group stacking of near-miss rejects | RECORD H35: 0 synergistic pairs, additive or interfering |
 | GPU / nncp / Qt in hp | illegal for Hutter |
 | recursive compression | Hutter FAQ |
 

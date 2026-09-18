@@ -2024,3 +2024,145 @@ Flags default off: `HP_SECLEVEL_MOD` (sticky heading level of section body), `HP
 Flags: `HP_WIKISTACK_MOD` (fccxt+bracket+cell-above packed CM), `HP_REORDER` (sort `<page>` by title), `HP_PAYLOAD_LEX` (sort `<page>` by `<text>`), `--dict` on `hp_v78.exe`. One at a time after H21.
 
 
+
+---
+
+## H33 — mixer layer-1 learning rate (never swept in 191 trials)
+
+Environment: Linux, g++ 13.3, 4 cores / 15 GB. The champ 79-flag set
+(`hp/tools/v78_flags.ps1`) at `SLOT_MAX=35` peaks **13.3 GB RSS** and
+OOMs on this box, so all runs below use `-DHP_SLOT_MAX=24` (1.6 GB).
+That rung is validated against RECORD in H34.
+
+**Finding.** `gate_rates()` (`hp/include/hp/predictor.hpp:1717`) does
+`(void)base;` and returns a hardcoded `{2, 3, 2, 4, 3, 4}` whenever
+`HP_PER_MIXER_LR` is on — which is the default and the champ. So `--lr`
+never reaches layer 1; it only sets the layer-2 rate. The rates that
+actually combine the 77 experts are source constants, unreachable from
+the command line, and `grep -i 'lr|learning rate|mixer_lr'` over this
+file returns **zero** sweeps in 191 logged trials.
+
+New flag `HP_LR1_SCALE` (percent, 100 = identity, byte-identical at 100).
+
+| `HP_LR1_SCALE` | 8 MiB, mem 22, SLOT_MAX=24 | vs 100 |
+|---:|---:|---:|
+| 100 (current) | 1,690,052 | — |
+| 75 | 1,685,761 | **−4,291** |
+| 60 | **1,683,710** | **−6,342** |
+| 50 | 1,683,710 | −6,342 |
+
+50 and 60 are byte-identical: the integer rates round to the same
+`{1,2,1,2,2,2}`. **The layer-1 rates should be halved.**
+
+`HP_LR1_SCALE=60` 8 MiB **round-trip PASS**, SHA256
+`09f6dd72…f292ee8e` on both sides. Stacked with the v83 flag:
+
+| cfg (SLOT_MAX=24) | 8 MiB | bpc |
+|---|---:|---:|
+| champ flags, scale 100 | 1,690,052 | 1.6122 |
+| + `HP_LR1_SCALE=60` | 1,683,710 | 1.6062 |
+| + `HP_LR1_SCALE=60` + `HP_WIKIBOLD_MOD` | **1,682,129** | **1.6043** |
+
+**Mechanism.** The layer-1 update is unnormalised LMS
+(`simd_dot.hpp:110`): `dw_i = (st_i * err * l1) >> 14`, a *fixed* step.
+The gradient scales with input energy `||st||^2`, which grows with the
+number of mixer inputs. hp went from ~28 inputs to 77 without retuning,
+so the effective step size rose ~3x and the mixer has been running
+over-adapted ever since. Greedy single-flag search cannot find this:
+it is not a flag, it is a constant shared by every expert.
+
+## H34 — proxy calibration: what a cheap screen is actually worth
+
+12 flags from H28–H32 with known 8 MiB deltas against the identical v82
+base were re-measured on cheap proxies, plus `HP_WIKIBOLD_MOD` (the one
+known **accept**, −1,258).
+
+| screen | cost / RAM | Spearman vs RECORD | sign accuracy |
+|---|---|---:|---:|
+| 12 x 256 KB spread windows | 190 s / 1.5 GB | +0.50 | 13/13 |
+| 2 MiB contiguous head | 92 s / 1.5 GB | **+0.84** | 13/13 |
+| 8 MiB, SLOT_MAX=24 | 500 s / 1.6 GB | **+0.96** (Pearson) | 4/4 |
+
+- Both cheap screens classify accept-vs-reject **perfectly (13/13)**,
+  including the true accept. They are sound go/no-go gates.
+- Spread 256 KB windows **rank worse** than one contiguous 2 MiB slice,
+  despite better corpus composition: 12 independent cold starts inject
+  warm-up variance that swamps deltas of a few hundred bytes.
+- `SLOT_MAX=24` vs the champ's 35 costs **+895 B (+0.05%)** on the base
+  and reproduces per-flag deltas at ratio 0.94–1.07. **8x the RAM buys
+  0.05% of the bytes at 8 MiB.**
+
+**Revised protocol** (≈10x faster loop, 8x less RAM):
+screen on 2 MiB head @ SLOT_MAX=24 → gate on 8 MiB @ SLOT_MAX=24 →
+champ confirmation only at SLOT_MAX=35.
+
+Corpus note: the 8 MiB gate slice is **43.8% `#REDIRECT` stubs** vs
+33.7% for full enwik8 and 84.1% for the 1 MB slice. The gate is
+over-weighted toward repetitive boilerplate.
+
+## H35 — pairwise interaction: rejects are additive, never synergistic
+
+Six near-miss rejects on six different axes, 2 MiB head, SLOT_MAX=24.
+interaction = d(A+B) − d(A) − d(B).
+
+| pair | interaction |
+|---|---:|
+| HEADIDX + {SIG, LINKTRAIL, BRACE3, HTMLFMT, DECIMAL} | −6 … +1 (**additive**) |
+| SIG + {LINKTRAIL, BRACE3, HTMLFMT, DECIMAL} | +98 … +120 (**interference**) |
+
+**Zero synergistic pairs.** Combining rejected features does not rescue
+them: their costs sum, or worse. Do not reopen pair/group search over
+the reject pile on this axis.
+
+## H36 — the dilution tax is a function of the learning rate
+
+Same six flags, measured as marginal cost on top of two different
+layer-1 rates (2 MiB head):
+
+| flag | cost @ scale 100 | cost @ scale 60 |
+|---|---:|---:|
+| HP_HEADIDX_MOD | +79 | **+2** |
+| HP_BRACE3_MOD | +91 | +19 |
+| HP_LINKTRAIL_MOD | +87 | +22 |
+| HP_SIG_MOD | +88 | +26 |
+| HP_HTMLFMT_MOD | +81 | +28 |
+| HP_DECIMAL_MOD | +99 | +36 |
+| HP_WIKIBOLD_MOD (true accept) | −211 | **−275** |
+
+Mean reject cost **87.5 → 22.2 B, a 75% reduction**, while the genuine
+win got *better*. The flat +145…+700 reject band of H29–H32 was largely
+a **mis-tuned mixer**, not 24 independently bad ideas. The 116 historical
+rejects were scored against an over-adapted mixer and are not safely
+closed; they deserve re-screening at the corrected rate.
+
+## H33–H36 negative results (closed)
+
+- **Layer-2 `--lr`**: default 2 is optimal; monotone worse above
+  (12-window totals: lr1 786,383 / lr2 786,143 / lr3 786,394 /
+  lr10 789,607 / lr32 806,179). Do not retest.
+- **`HP_MIXER_CLAMP_BITS`**: 18/20/22/24 are **byte-identical**
+  (786,145); 14 costs +1,571. Weights never reach ±2^18, so the ±1.0
+  clamp is not binding. Do not retest.
+- **`HP_MIXER_BACKPROP`** (new): train layer-1 on the backpropagated
+  final error instead of its own local error → 890,133 vs 441,538 on
+  2 MiB, catastrophic. Local-error training is correct for this
+  architecture. Do not retest.
+- **`HP_MIXER_NLMS`** (new): normalise the layer-1 step by per-bit input
+  energy. Best `HP_NLMS_ETYP=10^7` → 443,021 vs 441,538 baseline; worse
+  at every setting tried (2.5e6 → 447,733; 8e7 → 471,954). The
+  diagnosis (fixed step, varying energy) is right but this
+  normalisation is not the fix — `HP_LR1_SCALE` is. Flag left in, off.
+
+## Repo hygiene found while reproducing
+
+1. The build command in `README.md` and `PLAN.md` **does not compile**:
+   it omits `-msse4.1` and `-I hp/third_party/xsimd/include`.
+2. A default-flag build is **1,804,979 / 1.721 bpc** on 8 MiB — v7-era.
+   Only 10 of 568 flags are default-ON; the champ is the 79-flag `-D`
+   set recorded *only* in `hp/tools/v78_flags.ps1`. Every accepted
+   feature from v45 to v83 is default-OFF. The documented build does
+   not build the champion.
+3. `HP_MIXER_RANK`'s V-factor update folds `U[f]` into the learning
+   *rate* (`mixer.hpp:131-136`) and then clamps to `[1, 4095]`, which
+   **discards the sign** when `U[f] < 0`; `ufac_` is also initialised
+   exactly at `kMixerClamp`. Unfixed bug — likely why rank never paid.

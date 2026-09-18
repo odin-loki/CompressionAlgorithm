@@ -85,6 +85,26 @@
 #ifndef HP_SECTION_MUTE
 #define HP_SECTION_MUTE 0          // H2.2: mute word models in refs/math
 #endif
+#ifndef HP_MIXER_NLMS
+#define HP_MIXER_NLMS 0            // 1 = normalise layer-1 LMS step by input energy (NLMS)
+#endif
+
+#ifndef HP_NLMS_ETYP
+#define HP_NLMS_ETYP 20000000      // reference input energy; step scales ETYP/||st||^2
+#endif
+
+#ifndef HP_NLMS_EPS
+#define HP_NLMS_EPS 65536          // regulariser, keeps the divisor away from 0
+#endif
+
+#ifndef HP_LR1_SCALE
+#define HP_LR1_SCALE 100           // percent scale on hardcoded layer-1 per-mixer rates (100 = identity)
+#endif
+
+#ifndef HP_MIXER_BACKPROP
+#define HP_MIXER_BACKPROP 0        // 1 = train layer-1 on backpropagated final error, not local error
+#endif
+
 #ifndef HP_MIXER_SKIP
 #define HP_MIXER_SKIP 0            // H3.1: skip mixer update if |err| < this
 #endif

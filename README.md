@@ -28,8 +28,15 @@ v78 8 MB identity + fx2 both RT PASS. v77 100 MB RT PASS. PLAN.md / RECORD.md le
 ## Build
 
 ```
-g++ -O3 -std=c++17 -I hp/include hp/src/main.cpp -o hp/build/hp.exe
+g++ -O3 -std=c++17 -msse4.1 -I hp/include -I hp/third_party/xsimd/include \
+    $(grep -oE '\-DHP_[A-Z0-9_]+=[0-9]+' hp/tools/v78_flags.ps1 | tr '\n' ' ') \
+    hp/src/main.cpp -o hp/build/hp.exe
 ```
+
+Both `-I` paths are required (`HP_XSIMD=1` needs SSE4.1 and xsimd), and
+the `-D` set is required: only 10 of 568 flags are default-ON, so a
+bare build is **1,804,979 / 1.721 bpc** on the 8 MiB slice, not the champ.
+The champ flag set lives in `hp/tools/v78_flags.ps1`.
 
 ## Compress / decompress
 
