@@ -27,7 +27,6 @@ class MixerNet {
         const MixerWt w0p = mixer_wt_pack(w0);
         for (std::size_t j = 0; j < ctx_sizes.size(); ++j) {
 #if HP_MIXER_RANK
-            (void)w0;
             w_[j].clear();
 #else
             w_[j].assign(static_cast<std::size_t>(ctx_sizes[j]) * n_inputs, w0p);
@@ -41,8 +40,7 @@ class MixerNet {
             ufac_.resize(ctx_sizes.size());
             vfac_.resize(ctx_sizes.size());
             for (std::size_t j = 0; j < ctx_sizes.size(); ++j) {
-                ufac_[j].assign(static_cast<std::size_t>(ctx_sizes[j]) * r,
-                                 mixer_wt_pack(1 << 16));
+                ufac_[j].assign(static_cast<std::size_t>(ctx_sizes[j]) * r, w0p);
                 vfac_[j].assign(static_cast<std::size_t>(r) * n_inputs, mixer_wt_pack(0));
                 for (int i = 0; i < n_inputs; ++i) {
                     vfac_[j][static_cast<std::size_t>(i % r) * n_inputs + i] = w0p;
@@ -91,6 +89,13 @@ class MixerNet {
             const std::int64_t sum = dot_mixer_wt(w, st_.data(), m_);
             dot_[j] = clamp_int(static_cast<int>(sum >> 16), -2047, 2047);
 #endif
+#if HP_MIXER_SCALE
+            {
+                const std::int64_t sc =
+                    (static_cast<std::int64_t>(dot_[j]) * HP_MIXER_SCALE) >> 16;
+                dot_[j] = clamp_int(static_cast<int>(sc), -2047, 2047);
+            }
+#endif
             pr_[j] = squash(dot_[j]);
         }
         const MixerWt* v = &v_[static_cast<std::size_t>(ctx2_) * k_];
@@ -130,6 +135,12 @@ class MixerNet {
 #else
             const int err = t - pr_[j];
 #endif
+#if HP_MIXER_SKIP_L1
+            {
+                const int ae1 = err < 0 ? -err : err;
+                if (ae1 < HP_MIXER_SKIP_L1) continue;
+            }
+#endif
             const int l1 = lr1_[static_cast<std::size_t>(j)];
 #if HP_MIXER_RANK
             const int r = HP_MIXER_RANK;
@@ -141,10 +152,12 @@ class MixerNet {
                     (static_cast<std::int64_t>(hid_[static_cast<std::size_t>(j) * r + f]) *
                      err * l1) >> 14);
                 U[f] = mixer_wt_pack(clamp_int(Uk + dU, -kMixerClamp, kMixerClamp));
+                const std::int32_t Uabs = Uk < 0 ? -Uk : Uk;
                 int l1k = static_cast<int>(
-                    (static_cast<std::int64_t>(l1) * (Uk >> 8) + 128) >> 8);
+                    (static_cast<std::int64_t>(l1) * (Uabs >> 8) + 128) >> 8);
                 if (l1k < 1) l1k = 1;
                 if (l1k > 4095) l1k = 4095;
+                if (Uk < 0) l1k = -l1k;
                 axpy_mixer_wt(&vfac_[static_cast<std::size_t>(j)][static_cast<std::size_t>(f) * n_],
                               st_.data(), m_, err, l1k);
             }

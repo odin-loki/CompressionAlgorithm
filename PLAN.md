@@ -37,17 +37,13 @@ Leftover wave **closed** at **v78**. RECORD leads if a later run accepts.
 enwik8 SOTA: cmix v21 ~14.62 MB. hp ~18.53 MB is paq8f-era quality.
 
 **Mixer rate (H33, 2026-09-18).** `HP_LR1_SCALE=40` halves the hardcoded
-layer-1 per-mixer rates to `{1,1,1,2,1,2}` and is worth **−7,038 B** on
-8 MiB at matched config (1,690,052 → 1,683,014); with `HP_WIKIBOLD_MOD`
-stacked, **1,681,311 / 1.6035 bpc**, RT PASS — **−7,846 B vs v82**. Measured at `SLOT_MAX=24`, not the champ's
-35, so it is **not yet a protocol-conformant champ claim** — it needs one
-`SLOT_MAX=35` run on a >=16 GB box to land as v84. It is larger than the
-entire v78→v83 programme (−4,125 B over 85 trials). See RECORD H33.
+layer-1 per-mixer rates to `{1,1,1,2,1,2}`. Landed at `SLOT_MAX=35` as
+**v84**. See RECORD.
 
-**8 MB champ** (`data/enwik8.8mb`, mem 22): **v82** identity
-**1,689,157** (−90 vs v81 1,689,247), **1.610 bpc**, RT PASS.
-fx2-manual **1,685,642** (−126 vs v81 fx2 1,685,768), RT PASS.
-Stack v81 + `HP_WORDLEN_MOD`.
+**8 MB champ** (`data/enwik8.8mb`, mem 22): **v93** identity
+**1,675,993** (−401 vs v92 1,676,394), **1.598 bpc**, RT PASS.
+fx2-manual pending. `HP_MIXER_SKIP_L1=80` ON.
+Stack v92 + sl80. Did not overwrite `hp_v83.exe`–`hp_v92.exe`.
 
 **100 MB champ** (`data/enwik8.fx2man`, mem 26, `SLOT_MAX=31`): **v77**
 **18,370,971** (−38,737 vs v75 18,409,708), **1.469 bpc**, RT PASS.
@@ -197,7 +193,7 @@ A default-flag build is 1,804,979 (v7-era). The champ is the 79-flag set.
 `hp_v68.exe`, `hp_v69.exe`, `hp_v70.exe`, `hp_v70_m26.exe`,
 `hp_v71.exe`, `hp_v72.exe`, `hp_v73.exe`, `hp_v73_m26.exe`,
 `hp_v74.exe`, `hp_v75.exe`, `hp_v75_m26.exe`, `hp_v76.exe`,
-`hp_v77.exe`, `hp_v78.exe`, `hp_v79.exe`, `hp_v80.exe`, `hp_v81.exe`, `hp_v82.exe`.
+`hp_v77.exe`, `hp_v78.exe`, `hp_v79.exe`, `hp_v80.exe`, `hp_v81.exe`, `hp_v82.exe`, `hp_v83.exe`, `hp_v84.exe`.
 
 Name new builds `hp_vNN.exe` or `hp_<flag>.exe`. 100 MB at mem 26 with
 a cap other than the 8 MB default: `hp_vNN_m26.exe` and compile
@@ -220,20 +216,30 @@ Write 100 MB archives to `%LOCALAPPDATA%\hp_lab` then copy into
 correcting it changes every prior verdict. Mean per-feature dilution cost
 fell 87.5 → 22.2 B (−75%) at scale 60. Work this order:
 
-1. Land `HP_LR1_SCALE=40` at `SLOT_MAX=35` on a >=16 GB box → v84, then
-   100 MB at mem 26.
+1. **Done.** `HP_LR1_SCALE=40` at `SLOT_MAX=35` → **v84** 1,680,397 / fx2 1,677,124 both RT PASS. 100 MB mem 26 not run.
 2. Re-screen the 116 historical rejects at the corrected rate (2 MiB
    screen, 92 s each ≈ 3 h for the whole pile). They were all scored
    against an over-adapted mixer.
-3. Sweep the per-mixer rates *individually*. The scale-40 optimum
-   `{1,1,1,2,1,2}` is not an elementwise scaling of `{2,3,2,4,3,4}`, so a
-   single scalar is provably not the best parameterisation — 6 rates, a
-   few values each, on the 92 s screen.
-4. Fix the `HP_MIXER_RANK` sign bug (RECORD H33 hygiene #3), then
-   re-test rank — the low-rank mixer has never been tested working.
-5. Quantify the dilution tax directly with a null expert (duplicate an
-   existing stretch into the mixer, zero new information) and re-score
-   the reject pile as (measured delta − tax).
+3. **Done (cheap protocol).** Per-mixer `HP_LR1_Ri` vs scale-40
+   `{1,1,1,2,1,2}` at `SLOT_MAX=24`. 2 MiB base **439,496**. Paid:
+   R0=2 **−123**, R0=3 **−35**, R5=1 **−22**. R3=4 **+219** (1/2/3 all
+   worse; R5=4 skipped). 8 MiB s24 vs **1,681,094**: R0=2 **−27**,
+   R0=3 **+566** (2 MiB false positive), R5=1 **−152**, sibling combo
+   R0=2+R5=1 **−204**. None bytes-down vs v85-35 **1,680,191**; no
+   `SLOT_MAX=35`. v89 retest: 2 MiB **439,146 (−107 vs 439,253)**;
+   8 MiB s24 **1,679,749 (−13 vs 1,679,762)**; **no 35-cap**. Do not
+   land `{2,1,1,2,1,1}`. See RECORD H40 / v89 combo.
+4. **Sign-fix retest REJECT on 2 MiB.** `HP_MIXER_RANK=8` after the
+   `l1k` sign clamp + `ufac_` init-to-w0 fix: **599,778 vs s_base
+   439,496 (+160,282)** at `SLOT_MAX=24` / mem 22. Worse than +20 k;
+   8 MB not run. Rank stays default-off. Do not claim champ accept
+   (no `SLOT_MAX=35` bytes-down vs **1,680,191**). Do not sweep 4/16.
+5. **Done (cheap protocol).** Null expert `HP_NULL_EXPERT` (default 0)
+   duplicates always-on o1 `h2(1, hist_ & 0xffull)` as a second mixer
+   input (separate StateMap, zero new information). 2 MiB s24
+   **439,319 vs 439,253 (+66)**. Mixer dilution tax **+66 B**. Reject-pile
+   re-score as (measured delta − 66) is a paper adjustment, not a
+   reopen of H11–H43. Not in `v78_flags.ps1`. No 8 MiB. See RECORD.
 
 One flag. Log every call in `RECORD.md`. After an 8 MB accept, recompile
 remaining leftovers on the new champ.
@@ -243,7 +249,7 @@ remaining leftovers on the new champ.
 | **H1** | v58 leftover wave | nest / para / line / skip32 | **closed** — all accepted as v58–v61 |
 | **H2** | Skip `HP_SENGRP_C0` | `#elif` after `HP_SENGRP_WORD` (already on) | no-op |
 | **H3** | 100 MB off OneDrive, `MAX=31` | v61 **18,490,445** RT PASS | **closed** — new 100 MB champ |
-| **H6** | Integer low-rank mixer | `HP_MIXER_RANK=8` **REJECT +702,383** (2,407,863) | no — do not sweep 4/16 |
+| **H6** | Integer low-rank mixer | unfixed `SLOT_MAX=35` **REJECT +702,383** (2,407,863). Sign-fix 2 MiB s24 **REJECT +160,282** (599,778 vs 439,496); 8 MB not run | no — do not sweep 4/16 |
 | **H7** | Wiki-axis 4-CM bundle | `HP_WIKI_AXES` **REJECT +432** (1,706,371) | split into singles |
 | **H7a** | `HP_DOM_MOD` | sent_domain CM **REJECT +276** (1,706,215) | no |
 | **H7b** | `HP_STATE_MOD` | wiki.state **1,705,480 / fx2 1,701,090 both RT PASS** | new 8 MB champ |
@@ -274,7 +280,27 @@ remaining leftovers on the new champ.
 | **H29** | Sticky last-run lengths on v82 | diglen **+324**; prevline **+326**; prevsent **+442**; linklen **+525**; tpllen **+479**; paralen **+511**; alnumlen **+672**; splen **+651** | all reject |
 | **H30** | Title/heading word hits + initials/ordinal/unit/decimal/repeat/caseflip on v82 | titleword **+645**; headword **+633**; init **+579**; ordinal **+452**; unit **+476**; decimal **+340**; repeat **+684**; caseflip **+682** | all reject |
 | **H31** | Wiki-domain layout on v82 | lead **+524**; infoval **+601**; linktrail **+280**; cellkind **+534**; tblcol **+480**; headidx **+246**; htmlfmt **+297**; infobox **+535** | all reject |
-| **H32** | Wiki markup states on v82 | queued: seclevel / brace3 / namedarg / include / sig / wikibold / urlpart / refidx | leftover |
+| **H32** | Wiki markup states on v82 | seclevel **+379**; brace3 **+285**; namedarg **+470**; include **+283**; sig **+275**; wikibold **v83 1,687,899 RT PASS −1,258**; urlpart **+286**; refidx **+145** | **v83** |
+| **H33** | Wiki layout/markup on v83 | prespace **+612**; extdisp **+581**; pxsize **+478**; entnum **+149**; wikihr **+168**; fontcol **+554**; tbldepth **+503**; utf8st **+126** | all reject |
+| **H34** | Wiki splits/punctuation on v83 | dlterm **+264**; headclose **+330**; wikitime **+152**; linkcomma **+456**; catblock **+467**; br **+161**; ampnbsp **+139**; mdash **+140** | all reject |
+| **H35** | Wiki-domain / layout on v83 | math **+129**; listmix **+467**; protocol **+462**; hexrun **+457**; sqdepth **+220**; piperole **+615**; afterref **+134**; sentpos **+32** | all reject |
+| **H36** | Punctuation/number FSMs on v83 | abbrev **+641**; thousand **+193**; refpunct **+155**; qperiod **+616**; ellipsis **+141**; numrange **+262**; deg **+151**; percent **+142** | all reject |
+| **H37** | Wiki-domain / layout on v83 | statetrans flipped at scale 40 → **v88 1,679,112**; colring **+486**; listpara **+593**; secfrag **+249**; wikivar **+118**; subpage **+186**; linkns **+597**; fccur **+242** (fccur later 2 MiB −43 / s24 −187, no 35) | **v88** |
+| **H38** | Paying-axis joints on v83/v84 | parast **+299**; boldst **+178**; headbold **+252**; boldline **+222**; cappara **+109**; nestpara **+51**; catpipe **+98**; headpara **+107** | all reject |
+| **H39** | Wiki-domain leftovers on v84 | expectcl **+102**; refgroup **v85 1,680,191 RT PASS −206**; reflist / sister / convert / cn / block / pipetrick all 2 MiB kill | **v85** |
+| **H40** | Wiki-domain leftovers on v85 | notes / langtpl / frac / listen / birth / hlist / mainart / chem | **closed** — all 2 MiB kill |
+| **H41** | Wiki-domain leftovers on v87 | sfn / geotemp / epigraph / tracklist / succession / colstart / toc / refbegin | **closed** — all 2 MiB kill |
+| **H42** | Wiki-domain leftovers on v88 | shortdesc **+64**; seealso **+62**; portal **+61**; authctl **+63**; usedate **+61**; ipa **+60**; goodart **+69**; caption **+59** | **closed** — all 2 MiB kill |
+| **H43** | Wiki-domain leftovers on v89 | navbox **+59**; efoot **+61**; rshort **+56**; asof **+62**; clarify **+60**; currency **+56**; displaytitle **+52**; nowrap **+62** | **closed** — all 2 MiB kill |
+| **H44** | Wiki-domain leftovers on v89 | stub **+64**; persondata **+54**; flag **+56**; quotebox **+65**; clear **+58**; imdb **+61**; rp **+60**; fn **+59** | **closed** — all 2 MiB kill |
+| **H45** | Wiki-domain leftovers on v89 | small **+63**; supsub **+58**; precode **+64**; taxobox **+74**; nihongo **+57**; deadlink **+58**; wayback **+62**; rowspan **+62** | **closed** — all 2 MiB kill |
+| **H46** | Wiki-domain leftovers on v89 | unref **+66**; cleanup **+55**; npov **+59**; rfrom **+56**; doi **+56**; pmid **+60**; isbnmod **+72**; medal **+58** | **closed** — all 2 MiB kill |
+| **H47** | Wiki-domain leftovers on v89 | thumb **+62**; further **+64**; death **+57**; harv **+60**; issn **+64**; oclc **+59**; alignmod **+62**; syntax **+60** | **closed** — all 2 MiB kill |
+| **H49** | Mixer/APM knobs on v89 | skip56 **v90** 1,678,417; skip24 **+172**; skip32 **+69**; skip48 s24 **−308**; lr30/35 **−39** (v89); lr45 **0**; lr50 **+374**; w0one **+50,270**; wb4 **+139,363** | **v90** |
+| **H50** | Mixer knobs on v90 | msc75 **v91** 1,676,677; lr30 35-cap **−356**; skipl1 s24 **−327**; skip64/72/80 / apm6/8 / msc112 reject | **v91** |
+| **H51** | Mixer-scale neighbors + lr30/skipl1 on v91 | msc* all reject; lr30 −4 reject; skipl1 **v92** 1,676,394 | **v92** |
+| **H52** | SKIP_L1 neighbors + lr30/skip48 on v92 | sl80 **v93** 1,675,993; sl16/24/32/48 reject; sl56/64/72 s24 only | **v93** |
+| **H53** | SKIP_L1 neighbors of 80 on v93 | sl88/96/104/112/120/128/144/160; maybe sl72 confirm | 2 MiB |
 
 v62 wiki-axis singles closed (only STATE paid). H6 rank-8 **REJECT +702k**. H8 nopy **REJECT +18k**. Mixer width and low-rank W are closed.
 H9: mixer dots are already more precise than they need; wall time is the 77 StateMaps, not Q16.
@@ -287,7 +313,14 @@ H18 **closed**: dump `<ns>` / `<redirect/>` / `<ip>` / `<comment>` all rejected 
 H19 **closed**: `<minor/>` **+353**; `<model>` **+292**. Dump-XML extras after title all dilute. Do not add more dump-tag CMs.
 H20 **closed** on v78: heading-body text **−1,535** paid; `{{#` parser-fn **+264/+286**; `{| class=` **+517**. Do not reopen parserfn/tableclass. Do not add more dump-tag CMs.
 H21 leftovers **closed**: anchor/pubid/temppos all reject vs v78. H22 **closed** on v79: wikistack **−1,960**; reorder **+3,022**; payload_lex **+3,735**; dict **+62,667**. Do not reopen those three. H23 **closed**: lang **+478**; catsort **+434**; tblrow **+478**; fileopt **+508**; defaultsort **+271**; redirtarget **+290**; dab **+557**; hatnote **+309**. Do not reopen. H24 **closed** on v80: capmask **−218**; lastlink **+392**; fword **+304**; year **+168**; celltxt **+639**; httphost **+554**; paren **+517**; listpos **+589**. Do not reopen those seven. H25 **closed**: shape **+655**; suffix **+230**; prefix **+711**; charcls **+501**; vowel **+145**; contr **+542**; hyphen **+555**; tokencls **+627**. Do not reopen.
-H26 **closed** on v81: uppergap **−599**; runlen **+432**; wpos **+466**; blank **+335**; sprun **+414**; linelen **+277**; tagdist **+634**; markdist **+233**. Do not reopen those seven. H27 **closed**: month **+254**; gallery **+292**; seckind **+276**; citekind **+676**; tagname **+625**; colspan **+688**; style **+532**; coord **+271**. Do not reopen. H28 **closed** on v82: wordlen **−90**; digitgap **+274**; dotgap **+149**; commagap **+256**; sentlen **+187**; lowergap **+333**; digitpos **+322**; slashgap **+390**. Do not reopen those seven. H29 **closed**: diglen **+324**; prevline **+326**; prevsent **+442**; linklen **+525**; tpllen **+479**; paralen **+511**; alnumlen **+672**; splen **+651**. Do not reopen. H30 **closed**: titleword **+645**; headword **+633**; init **+579**; ordinal **+452**; unit **+476**; decimal **+340**; repeat **+684**; caseflip **+682**. Do not reopen. H31 **closed**: lead **+524**; infoval **+601**; linktrail **+280**; cellkind **+534**; tblcol **+480**; headidx **+246**; htmlfmt **+297**; infobox **+535**. Do not reopen. H32 queued on v82: seclevel / brace3 / namedarg / include / sig / wikibold / urlpart / refidx. No mem 26 (55 GB).
+H26 **closed** on v81: uppergap **−599**; runlen **+432**; wpos **+466**; blank **+335**; sprun **+414**; linelen **+277**; tagdist **+634**; markdist **+233**. Do not reopen those seven. H27 **closed**: month **+254**; gallery **+292**; seckind **+276**; citekind **+676**; tagname **+625**; colspan **+688**; style **+532**; coord **+271**. Do not reopen. H28 **closed** on v82: wordlen **−90**; digitgap **+274**; dotgap **+149**; commagap **+256**; sentlen **+187**; lowergap **+333**; digitpos **+322**; slashgap **+390**. Do not reopen those seven. H29 **closed**: diglen **+324**; prevline **+326**; prevsent **+442**; linklen **+525**; tpllen **+479**; paralen **+511**; alnumlen **+672**; splen **+651**. Do not reopen. H30 **closed**: titleword **+645**; headword **+633**; init **+579**; ordinal **+452**; unit **+476**; decimal **+340**; repeat **+684**; caseflip **+682**. Do not reopen. H31 **closed**: lead **+524**; infoval **+601**; linktrail **+280**; cellkind **+534**; tblcol **+480**; headidx **+246**; htmlfmt **+297**; infobox **+535**. Do not reopen. H32 **closed** on v83: wikibold **−1,258**; seclevel **+379**; brace3 **+285**; namedarg **+470**; include **+283**; sig **+275**; urlpart **+286**; refidx **+145**. Do not reopen those seven. H33 **closed**: prespace **+612**; extdisp **+581**; pxsize **+478**; entnum **+149**; wikihr **+168**; fontcol **+554**; tbldepth **+503**; utf8st **+126**. Do not reopen. H34 **closed**: dlterm **+264**; headclose **+330**; wikitime **+152**; linkcomma **+456**; catblock **+467**; br **+161**; ampnbsp **+139**; mdash **+140**. Do not reopen. H35 **closed**: math **+129**; listmix **+467**; protocol **+462**; hexrun **+457**; sqdepth **+220**; piperole **+615**; afterref **+134**; sentpos **+32**. Do not reopen. H36 **closed**: abbrev **+641**; thousand **+193**; refpunct **+155**; qperiod **+616**; ellipsis **+141**; numrange **+262**; deg **+151**; percent **+142**. Do not reopen. H37 **closed** then **reopened at scale 40**: statetrans **v88 1,679,112**; colring **+486**; listpara **+593**; secfrag **+249**; wikivar **+118**; subpage **+186**; linkns **+597**; fccur **+242** (later 2 MiB −43). Do not reopen the seven rejects. H38 **closed**: parast **+299**; boldst **+178**; headbold **+252**; boldline **+222**; cappara **+109**; nestpara **+51**; catpipe **+98**; headpara **+107**. Do not reopen joints of paying leftover CMs. No mem 26 (55 GB).
+H39 **closed** on v85: expectcl **+102**; refgroup **v85 1,680,191 RT PASS −206**; reflist / sister / convert / cn / block / pipetrick all 2 MiB kill. Do not reopen. H40 leftover CMs **closed** on v86 2 MiB: notes **+56**; langtpl **+61**; frac **+57**; listen **+68**; birth **+59**; hlist **+51**; mainart **+60**; chem **+52**. No 8 MiB gate. Do not reopen. H40 per-mixer rates **closed** on cheap protocol: combo R0=2+R5=1 8 MiB s24 **1,680,890 (−204 / still +699 vs v85-35)**. No mem 26. No SLOT_MAX=35 until RAM is free for that encode. H41 leftover CMs **closed** on v87 2 MiB: sfn **+63**; geotemp **+58**; epigraph **+58**; tracklist **+52**; succession **+54**; colstart **+49**; toc **+72**; refbegin **+57**. No 8 MiB gate. Do not reopen. Not CITE / COORD / BLOCK / TABLECLASS / ANCHOR / MAGIC / REFLIST twins. Do not reopen H11–H41. H42 leftover CMs **closed** on v89 2 MiB: shortdesc **+64**; seealso **+62**; portal **+61**; authctl **+63**; usedate **+61**; ipa **+60**; goodart **+69**; caption **+59**. No 8 MiB gate. Do not reopen. H43 leftover CMs **closed** on v89 2 MiB: navbox **+59**; efoot **+61**; rshort **+56**; asof **+62**; clarify **+60**; currency **+56**; displaytitle **+52**; nowrap **+62**. No 8 MiB gate. Do not reopen. H44 leftover CMs **closed** on v89 2 MiB: stub **+64**; persondata **+54**; flag **+56**; quotebox **+65**; clear **+58**; imdb **+61**; rp **+60**; fn **+59**. No 8 MiB gate. Do not reopen. H45 leftover CMs **closed** on v89 2 MiB: small **+63**; supsub **+58**; precode **+64**; taxobox **+74**; nihongo **+57**; deadlink **+58**; wayback **+62**; rowspan **+62**. No 8 MiB gate. Do not reopen. H46 leftover CMs **closed** on v89 2 MiB: unref **+66**; cleanup **+55**; npov **+59**; rfrom **+56**; doi **+56**; pmid **+60**; isbnmod **+72**; medal **+58**. No 8 MiB gate. Do not reopen. Not twins of CN / DEADLINK / HATNOTE / UNREF / REDIR / DUMPREDIR / CITEKIND / PUBID / SUCCESSION / GEOTEMP. Do not reopen H11–H46.
+H47 leftover CMs **closed** on v89 2 MiB: thumb **+62**; further **+64**; death **+57**; harv **+60**; issn **+64**; oclc **+59**; alignmod **+62**; syntax **+60**. No 8 MiB gate. Do not reopen. Not twins of FILEOPT / EXTDISP / PXSIZE / GALLERY / SEEALSO / MAINART / HATNOTE / BIRTH / MONTH / SFN / CITE / CITEKIND / ISBN / PUBID / DOI / STYLE / COLSPAN / CELLKIND / ROWSPAN / PRECODE / NOWIKI / MATH. Do not reopen H11–H47.
+H49 mixer/APM knobs: skip56 **v90** 1,678,417 (−455); `HP_MIXER_SKIP=56` ON. skip24 **+172**; skip32 **+69**; skip48 s24 **−308** (no land). lr45 **0**; lr50 **+374**; w0one **+50,270**; wb4 **+139,363**. Did not overwrite `hp_v83.exe`–`hp_v89.exe`.
+H50 mixer knobs: msc75 **v91** 1,676,677 (−1,740); `HP_MIXER_SCALE=49152` ON. lr30 35-cap **1,678,061 (−356)** (superseded). skipl1 s24 **−327** (no 35; re-screen on v91). skip64 **+3**; skip72 **+29**; skip80 **+51**; apm6 **+782**; apm8 **+6**; msc112 **+266**. Did not overwrite `hp_v83.exe`–`hp_v90.exe`.
+H51 mixer knobs: skipl1 **v92** 1,676,394 (−283); `HP_MIXER_SKIP_L1=40` ON. msc50 **+12,033**; msc62 **+197**; msc69 **+29**; msc72 **+8**; msc78 **+9**; msc81 **+24**; msc88 **+89**; msc94 **+200**; lr30 **−4**. Did not overwrite `hp_v83.exe`–`hp_v91.exe`.
+H52 mixer knobs: sl80 **v93** 1,675,993 (−401); `HP_MIXER_SKIP_L1=80` ON. sl16 **+41**; sl24 **+25**; sl32 **+15**; sl48 **−11**; lr30 **−15**; skip48 **+1**; sl56 s24 **−169**; sl64 s24 **−269**; sl72 s24 **−354**. Did not overwrite `hp_v83.exe`–`hp_v92.exe`.
+H53 mixer knobs **open** on v93 2 MiB vs **438,789**: SKIP_L1 neighbors of 80 (sl88/96/104/112/120/128/144/160) plus maybe sl72 confirm. Ten 2 MiB at a time. No mem 26. Do not reopen skip>56 / APM rate 6/8 / msc* / W0 / WB4.
 v75 100 MB **18,409,708 RT PASS** (−25,032 vs v73). v77-100 **18,370,971 RT PASS** (−38,737 vs v75). Skip-k saturates at 4. LSTM / WRT / `payload_lex` / POS / bitlstm32 / obias are Track W. v78-100 mem 26 `SLOT_MAX=31` in flight (8 MB idle).
 
 ---

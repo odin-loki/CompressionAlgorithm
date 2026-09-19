@@ -100,6 +100,24 @@
 #ifndef HP_LR1_SCALE
 #define HP_LR1_SCALE 100           // percent scale on hardcoded layer-1 per-mixer rates (100 = identity)
 #endif
+#ifndef HP_LR1_R0
+#define HP_LR1_R0 0                // 1..8 replaces scaled out[0]; 0 = keep
+#endif
+#ifndef HP_LR1_R1
+#define HP_LR1_R1 0
+#endif
+#ifndef HP_LR1_R2
+#define HP_LR1_R2 0
+#endif
+#ifndef HP_LR1_R3
+#define HP_LR1_R3 0
+#endif
+#ifndef HP_LR1_R4
+#define HP_LR1_R4 0
+#endif
+#ifndef HP_LR1_R5
+#define HP_LR1_R5 0
+#endif
 
 #ifndef HP_MIXER_BACKPROP
 #define HP_MIXER_BACKPROP 0        // 1 = train layer-1 on backpropagated final error, not local error
@@ -107,6 +125,15 @@
 
 #ifndef HP_MIXER_SKIP
 #define HP_MIXER_SKIP 0            // H3.1: skip mixer update if |err| < this
+#endif
+#ifndef HP_MIXER_SKIP_L1
+#define HP_MIXER_SKIP_L1 0         // skip layer-1 axpy if |local err| < this; layer-2 still trains
+#endif
+#ifndef HP_MIXER_SCALE
+#define HP_MIXER_SCALE 0           // 0 = off; else Q16 multiplier on layer-1 dots (65536 = 1.0)
+#endif
+#ifndef HP_APM_RATE
+#define HP_APM_RATE 7              // APM adaptation shift; champ default 7
 #endif
 #ifndef HP_SPARSE_UTF8
 #define HP_SPARSE_UTF8 0           // H2.3: gap-1 match for escaped UTF-8
@@ -878,6 +905,369 @@
 #endif
 #ifndef HP_REFIDX_MOD
 #define HP_REFIDX_MOD 0            // nth <ref> on the page CM
+#endif
+#ifndef HP_PRESPACE_MOD
+#define HP_PRESPACE_MOD 0          // leading-space preformatted line CM
+#endif
+#ifndef HP_EXTDISP_MOD
+#define HP_EXTDISP_MOD 0           // [http url display] display-text CM
+#endif
+#ifndef HP_PXSIZE_MOD
+#define HP_PXSIZE_MOD 0            // NNpx file/image size bucket CM
+#endif
+#ifndef HP_ENTNUM_MOD
+#define HP_ENTNUM_MOD 0            // &#NNN; / &#xHH; numeric-entity CM
+#endif
+#ifndef HP_WIKIHR_MOD
+#define HP_WIKIHR_MOD 0            // ---- horizontal-rule at line start CM
+#endif
+#ifndef HP_FONTCOL_MOD
+#define HP_FONTCOL_MOD 0           // <font color= / size= value region CM
+#endif
+#ifndef HP_TBLDEPTH_MOD
+#define HP_TBLDEPTH_MOD 0          // nested {| table depth CM
+#endif
+#ifndef HP_UTF8ST_MOD
+#define HP_UTF8ST_MOD 0            // UTF-8 lead/continuation state CM
+#endif
+#ifndef HP_DLTERM_MOD
+#define HP_DLTERM_MOD 0            // ;term : definition split CM
+#endif
+#ifndef HP_HEADCLOSE_MOD
+#define HP_HEADCLOSE_MOD 0         // trailing heading = run CM
+#endif
+#ifndef HP_WIKITIME_MOD
+#define HP_WIKITIME_MOD 0          // HH:MM clock-time CM
+#endif
+#ifndef HP_LINKCOMMA_MOD
+#define HP_LINKCOMMA_MOD 0         // comma inside [[target]] CM
+#endif
+#ifndef HP_CATBLOCK_MOD
+#define HP_CATBLOCK_MOD 0          // consecutive [[Category: burst CM
+#endif
+#ifndef HP_BR_MOD
+#define HP_BR_MOD 0                // <br / <br/> line-break tag CM
+#endif
+#ifndef HP_AMPNBSP_MOD
+#define HP_AMPNBSP_MOD 0           // &nbsp; glue entity CM
+#endif
+#ifndef HP_MDASH_MOD
+#define HP_MDASH_MOD 0             // UTF-8 en/em dash CM
+#endif
+#ifndef HP_MATH_MOD
+#define HP_MATH_MOD 0              // <math> TeX region CM
+#endif
+#ifndef HP_LISTMIX_MOD
+#define HP_LISTMIX_MOD 0           // mixed *#:; line-prefix bitmask CM
+#endif
+#ifndef HP_PROTOCOL_MOD
+#define HP_PROTOCOL_MOD 0          // URL scheme http/https/ftp/mailto CM
+#endif
+#ifndef HP_HEXRUN_MOD
+#define HP_HEXRUN_MOD 0            // #hex color/fragment run CM
+#endif
+#ifndef HP_SQDEPTH_MOD
+#define HP_SQDEPTH_MOD 0           // nested [[ depth CM
+#endif
+#ifndef HP_PIPEROLE_MOD
+#define HP_PIPEROLE_MOD 0          // | role table/template/link CM
+#endif
+#ifndef HP_AFTERREF_MOD
+#define HP_AFTERREF_MOD 0          // just-closed </ref> CM
+#endif
+#ifndef HP_SENTPOS_MOD
+#define HP_SENTPOS_MOD 0           // nth word in current sentence CM
+#endif
+#ifndef HP_ABBREV_MOD
+#define HP_ABBREV_MOD 0            // abbrev vs sentence-end after . CM
+#endif
+#ifndef HP_THOUSAND_MOD
+#define HP_THOUSAND_MOD 0          // 1,234 thousands-grouping CM
+#endif
+#ifndef HP_REFPUNCT_MOD
+#define HP_REFPUNCT_MOD 0          // . glued to <ref> CM
+#endif
+#ifndef HP_QPERIOD_MOD
+#define HP_QPERIOD_MOD 0           // ." vs ". quote-period order CM
+#endif
+#ifndef HP_ELLIPSIS_MOD
+#define HP_ELLIPSIS_MOD 0          // ... ellipsis vs period CM
+#endif
+#ifndef HP_NUMRANGE_MOD
+#define HP_NUMRANGE_MOD 0          // digit-dash-digit range CM
+#endif
+#ifndef HP_DEG_MOD
+#define HP_DEG_MOD 0               // degree after number CM
+#endif
+#ifndef HP_PERCENT_MOD
+#define HP_PERCENT_MOD 0           // digits then % CM
+#endif
+#ifndef HP_STATETRANS_MOD
+#define HP_STATETRANS_MOD 0        // prev wiki.state × current state CM
+#endif
+#ifndef HP_COLRING_MOD
+#define HP_COLRING_MOD 0           // ColumnContext 4-row cell ring CM
+#endif
+#ifndef HP_LISTPARA_MOD
+#define HP_LISTPARA_MOD 0          // list/quote-to-paragraph first-char CM
+#endif
+#ifndef HP_SECFRAG_MOD
+#define HP_SECFRAG_MOD 0           // [[page#section]] fragment CM
+#endif
+#ifndef HP_WIKIVAR_MOD
+#define HP_WIKIVAR_MOD 0           // {{PAGENAME}} / {{CURRENTYEAR}} magic-var CM
+#endif
+#ifndef HP_SUBPAGE_MOD
+#define HP_SUBPAGE_MOD 0           // [[Foo/Bar]] subpage slash CM
+#endif
+#ifndef HP_LINKNS_MOD
+#define HP_LINKNS_MOD 0            // [[Namespace: target class CM
+#endif
+#ifndef HP_FCCUR_MOD
+#define HP_FCCUR_MOD 0             // mid-line fccxt current first-char CM
+#endif
+#ifndef HP_PARAST_MOD
+#define HP_PARAST_MOD 0            // is_paragraph × wiki.state CM
+#endif
+#ifndef HP_BOLDST_MOD
+#define HP_BOLDST_MOD 0            // wikibold × wiki.state CM
+#endif
+#ifndef HP_HEADBOLD_MOD
+#define HP_HEADBOLD_MOD 0          // heading-level × wikibold CM
+#endif
+#ifndef HP_BOLDLINE_MOD
+#define HP_BOLDLINE_MOD 0          // wikibold × line_kind CM
+#endif
+#ifndef HP_CAPPARA_MOD
+#define HP_CAPPARA_MOD 0           // capmask × is_paragraph CM
+#endif
+#ifndef HP_NESTPARA_MOD
+#define HP_NESTPARA_MOD 0          // nest_markup × is_paragraph CM
+#endif
+#ifndef HP_CATPIPE_MOD
+#define HP_CATPIPE_MOD 0           // in-[[Category:]] × after-pipe CM
+#endif
+#ifndef HP_HEADPARA_MOD
+#define HP_HEADPARA_MOD 0          // heading-level × is_paragraph CM
+#endif
+#ifndef HP_EXPECTCL_MOD
+#define HP_EXPECTCL_MOD 0          // dedicated expected-closer CM (not BRK_CLOSE fold)
+#endif
+#ifndef HP_REFGROUP_MOD
+#define HP_REFGROUP_MOD 0          // <ref> anonymous / name= / group= class CM
+#endif
+#ifndef HP_REFLIST_MOD
+#define HP_REFLIST_MOD 0           // {{reflist}} / <references> block CM
+#endif
+#ifndef HP_SISTER_MOD
+#define HP_SISTER_MOD 0            // sister-project [[wikt: / n: / s: … prefix CM
+#endif
+#ifndef HP_CONVERT_MOD
+#define HP_CONVERT_MOD 0           // {{convert| region CM
+#endif
+#ifndef HP_CN_MOD
+#define HP_CN_MOD 0                // {{cn}} / {{citation needed}} / {{fact}} / {{clarify}} CM
+#endif
+#ifndef HP_BLOCK_MOD
+#define HP_BLOCK_MOD 0             // <blockquote> / <center> / <div> / <span> kind CM
+#endif
+#ifndef HP_PIPETRICK_MOD
+#define HP_PIPETRICK_MOD 0         // [[target|]] empty-display pipe-trick CM
+#endif
+#ifndef HP_NOTES_MOD
+#define HP_NOTES_MOD 0             // {{notelist}} / {{notes}} / {{notefoot}} region CM
+#endif
+#ifndef HP_LANGTPL_MOD
+#define HP_LANGTPL_MOD 0           // {{lang| / {{lang-xx| template CM (not LANG link prefix)
+#endif
+#ifndef HP_FRAC_MOD
+#define HP_FRAC_MOD 0              // {{frac| / {{sfrac| region CM
+#endif
+#ifndef HP_LISTEN_MOD
+#define HP_LISTEN_MOD 0            // {{listen| / {{audio| / [[File:… .ogg/.oga/.mp3]] CM
+#endif
+#ifndef HP_BIRTH_MOD
+#define HP_BIRTH_MOD 0             // {{birth date / {{death date / {{birth-date / {{death-date CM
+#endif
+#ifndef HP_HLIST_MOD
+#define HP_HLIST_MOD 0             // {{hlist / {{plainlist / {{unbulleted list CM
+#endif
+#ifndef HP_MAINART_MOD
+#define HP_MAINART_MOD 0           // {{main| / {{see also| / {{further| after a heading CM
+#endif
+#ifndef HP_CHEM_MOD
+#define HP_CHEM_MOD 0              // <chem> region CM (not MATH <math>)
+#endif
+#ifndef HP_SFN_MOD
+#define HP_SFN_MOD 0               // {{sfn| / {{harvnb| / {{harv| short footnote CM
+#endif
+#ifndef HP_GEOTEMP_MOD
+#define HP_GEOTEMP_MOD 0           // {{coord| IN-template region CM (not COORD lat/lon)
+#endif
+#ifndef HP_EPIGRAPH_MOD
+#define HP_EPIGRAPH_MOD 0          // {{quote box / {{quotebox / {{cquote / {{blockquote CM
+#endif
+#ifndef HP_TRACKLIST_MOD
+#define HP_TRACKLIST_MOD 0         // {{tracklist / {{Track listing CM
+#endif
+#ifndef HP_SUCCESSION_MOD
+#define HP_SUCCESSION_MOD 0        // {{s-start / {{succession box / {{s-bef / {{s-ttl CM
+#endif
+#ifndef HP_COLSTART_MOD
+#define HP_COLSTART_MOD 0          // {{col-begin / {{div col / {{columns-list CM
+#endif
+#ifndef HP_TOC_MOD
+#define HP_TOC_MOD 0               // __TOC__ / __NOTOC__ / __FORCETOC__ 2-bit sticky
+#endif
+#ifndef HP_REFBEGIN_MOD
+#define HP_REFBEGIN_MOD 0          // {{refbegin / {{refend}} list-defined refs block
+#endif
+#ifndef HP_SHORTDESC_MOD
+#define HP_SHORTDESC_MOD 0         // {{short description / {{shortdesc region CM
+#endif
+#ifndef HP_SEEALSO_MOD
+#define HP_SEEALSO_MOD 0           // {{see also / {{further (not MAINART {{Main}})
+#endif
+#ifndef HP_PORTAL_MOD
+#define HP_PORTAL_MOD 0            // {{portal / {{portal bar region CM
+#endif
+#ifndef HP_AUTHCTL_MOD
+#define HP_AUTHCTL_MOD 0           // {{authority control region CM
+#endif
+#ifndef HP_USEDATE_MOD
+#define HP_USEDATE_MOD 0           // {{use dmy / {{use mdy / {{use ymd date-order sticky
+#endif
+#ifndef HP_IPA_MOD
+#define HP_IPA_MOD 0               // {{IPA / {{IPAc-en / {{pron-en pronunciation TEMPLATES
+#endif
+#ifndef HP_GOODART_MOD
+#define HP_GOODART_MOD 0           // {{good article / {{GA / {{featured article page class
+#endif
+#ifndef HP_CAPTION_MOD
+#define HP_CAPTION_MOD 0           // sticky in-template after |caption= / |image_caption=
+#endif
+#ifndef HP_NAVBOX_MOD
+#define HP_NAVBOX_MOD 0            // {{navbox / {{sidebar (not INFOBOX)
+#endif
+#ifndef HP_EFOOT_MOD
+#define HP_EFOOT_MOD 0             // {{efn / {{notelist / {{notefoot (not NOTES {{notes}})
+#endif
+#ifndef HP_RSHORT_MOD
+#define HP_RSHORT_MOD 0            // {{r| / {{r}} short-ref (not SFN, not CITE)
+#endif
+#ifndef HP_ASOF_MOD
+#define HP_ASOF_MOD 0              // {{as of / {{As of
+#endif
+#ifndef HP_CLARIFY_MOD
+#define HP_CLARIFY_MOD 0           // {{clarify / {{who / {{which / {{when (not CN)
+#endif
+#ifndef HP_CURRENCY_MOD
+#define HP_CURRENCY_MOD 0          // {{USD / {{GBP / {{EUR / {{currency
+#endif
+#ifndef HP_DISPLAYTITLE_MOD
+#define HP_DISPLAYTITLE_MOD 0      // {{DISPLAYTITLE / {{italic title / {{lowercase page class
+#endif
+#ifndef HP_NOWRAP_MOD
+#define HP_NOWRAP_MOD 0            // {{nowrap / {{nobold / {{noitalic
+#endif
+#ifndef HP_STUB_MOD
+#define HP_STUB_MOD 0              // {{stub}} or name ending stub (not MAINART/HATNOTE/SHORTDESC)
+#endif
+#ifndef HP_PERSONDATA_MOD
+#define HP_PERSONDATA_MOD 0        // {{persondata (2006 infobox-adjacent; not INFOBOX)
+#endif
+#ifndef HP_FLAG_MOD
+#define HP_FLAG_MOD 0              // {{flag / {{flagicon / {{flagu / {{flagcountry (not GEOTEMP/COORD/SISTER)
+#endif
+#ifndef HP_QUOTEBOX_MOD
+#define HP_QUOTEBOX_MOD 0          // {{quote / {{cquote / {{quotation / {{quotebox (not BLOCK <blockquote>)
+#endif
+#ifndef HP_CLEAR_MOD
+#define HP_CLEAR_MOD 0             // {{clear}} / {{clr}} / {{-}} layout break (not BR/COLSTART/WIKIHR)
+#endif
+#ifndef HP_IMDB_MOD
+#define HP_IMDB_MOD 0              // {{imdb / {{IMDb folded (not CITE/EXTLINK/HTTPHOST)
+#endif
+#ifndef HP_RP_MOD
+#define HP_RP_MOD 0                // {{rp| / {{rp}} page-in-ref (not SFN/RSHORT/CITE)
+#endif
+#ifndef HP_FN_MOD
+#define HP_FN_MOD 0                // {{fn}} / {{fnb}} / {{reflabel}} / {{notelabel}} (not EFOOT/NOTES/REFBEGIN)
+#endif
+#ifndef HP_SMALL_MOD
+#define HP_SMALL_MOD 0             // <small> region (not HTMLFMT bitmask, not FONTCOL)
+#endif
+#ifndef HP_SUPSUB_MOD
+#define HP_SUPSUB_MOD 0            // <sup> / <sub> kind (not SMALL, not MATH)
+#endif
+#ifndef HP_PRECODE_MOD
+#define HP_PRECODE_MOD 0           // <pre> / <code> / <tt> region (not PRESPACE, not NOWIKI)
+#endif
+#ifndef HP_TAXOBOX_MOD
+#define HP_TAXOBOX_MOD 0           // {{taxobox (not INFOBOX generic, not PERSONDATA)
+#endif
+#ifndef HP_NIHONGO_MOD
+#define HP_NIHONGO_MOD 0           // {{nihongo / {{korean / {{chinese (not LANGTPL, not LANG)
+#endif
+#ifndef HP_DEADLINK_MOD
+#define HP_DEADLINK_MOD 0          // {{dead link}} / {{deadlink}} / {{broken link}} (not EXTLINK, not CN)
+#endif
+#ifndef HP_WAYBACK_MOD
+#define HP_WAYBACK_MOD 0           // {{wayback / {{webarchive / {{dmoz (not EXTLINK, not IMDB, not SISTER)
+#endif
+#ifndef HP_ROWSPAN_MOD
+#define HP_ROWSPAN_MOD 0           // sticky |rowspan= / !rowspan= in tables (not COLSPAN, not TBLROW)
+#endif
+#ifndef HP_UNREF_MOD
+#define HP_UNREF_MOD 0             // {{unreferenced / {{unref}} / {{refimprove (not CN, not DEADLINK)
+#endif
+#ifndef HP_CLEANUP_MOD
+#define HP_CLEANUP_MOD 0           // {{cleanup / {{wikify / {{orphan (not UNREF, not HATNOTE)
+#endif
+#ifndef HP_NPOV_MOD
+#define HP_NPOV_MOD 0              // {{npov / {{pov / {{coi}} / {{advert (not CLEANUP)
+#endif
+#ifndef HP_RFROM_MOD
+#define HP_RFROM_MOD 0             // {{R from / {{R to / {{soft redirect (not REDIR, not DUMPREDIR)
+#endif
+#ifndef HP_DOI_MOD
+#define HP_DOI_MOD 0               // sticky |doi= / {{doi}} / {{cite doi (not CITEKIND, not PUBID)
+#endif
+#ifndef HP_PMID_MOD
+#define HP_PMID_MOD 0              // sticky |pmid= / |pmc= / {{pmid}} / {{pmc}} (not DOI, not PUBID)
+#endif
+#ifndef HP_ISBN_MOD
+#define HP_ISBN_MOD 0              // ISBN token / |isbn= (not PUBID numeric id, not DOI)
+#endif
+#ifndef HP_MEDAL_MOD
+#define HP_MEDAL_MOD 0             // {{medal / {{gold / {{silver / {{bronze sports (not SUCCESSION, not GEOTEMP)
+#endif
+#ifndef HP_THUMB_MOD
+#define HP_THUMB_MOD 0             // sticky |thumb / |right / |left / |upright / |frameless (not FILEOPT, not EXTDISP)
+#endif
+#ifndef HP_FURTHER_MOD
+#define HP_FURTHER_MOD 0           // {{further / {{details / {{more}} (not SEEALSO, not MAINART, not HATNOTE)
+#endif
+#ifndef HP_DEATH_MOD
+#define HP_DEATH_MOD 0             // {{death date / {{death year / {{dda}} / {{death-date (not BIRTH, not MONTH)
+#endif
+#ifndef HP_HARV_MOD
+#define HP_HARV_MOD 0              // {{harv / {{harvnb / {{harvtxt / {{harvp (not SFN, not CITE, not CITEKIND)
+#endif
+#ifndef HP_ISSN_MOD
+#define HP_ISSN_MOD 0              // ISSN token / |issn= (not ISBN, not PUBID, not DOI)
+#endif
+#ifndef HP_OCLC_MOD
+#define HP_OCLC_MOD 0              // OCLC token / |oclc= (not ISSN, not PUBID, not ISBN)
+#endif
+#ifndef HP_ALIGN_MOD
+#define HP_ALIGN_MOD 0             // sticky |align= / |valign= / align=" in tables (not STYLE, not COLSPAN)
+#endif
+#ifndef HP_SYNTAX_MOD
+#define HP_SYNTAX_MOD 0            // <syntaxhighlight / <source / <syntax region (not PRECODE, not NOWIKI, not MATH)
+#endif
+#ifndef HP_NULL_EXPERT
+#define HP_NULL_EXPERT 0           // duplicate o1 stretch; mixer dilution tax
 #endif
 #ifndef HP_DUMP_XML
 #define HP_DUMP_XML (HP_TITLE_MOD || HP_PAGEID_MOD || HP_USER_MOD || HP_TEXT_MOD \

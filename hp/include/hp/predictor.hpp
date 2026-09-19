@@ -218,7 +218,128 @@ class Predictor {
         (HP_SIG_MOD ? 1 : 0) +
         (HP_WIKIBOLD_MOD ? 1 : 0) +
         (HP_URLPART_MOD ? 1 : 0) +
-        (HP_REFIDX_MOD ? 1 : 0);
+        (HP_REFIDX_MOD ? 1 : 0) +
+        (HP_PRESPACE_MOD ? 1 : 0) +
+        (HP_EXTDISP_MOD ? 1 : 0) +
+        (HP_PXSIZE_MOD ? 1 : 0) +
+        (HP_ENTNUM_MOD ? 1 : 0) +
+        (HP_WIKIHR_MOD ? 1 : 0) +
+        (HP_FONTCOL_MOD ? 1 : 0) +
+        (HP_TBLDEPTH_MOD ? 1 : 0) +
+        (HP_UTF8ST_MOD ? 1 : 0) +
+        (HP_DLTERM_MOD ? 1 : 0) +
+        (HP_HEADCLOSE_MOD ? 1 : 0) +
+        (HP_WIKITIME_MOD ? 1 : 0) +
+        (HP_LINKCOMMA_MOD ? 1 : 0) +
+        (HP_CATBLOCK_MOD ? 1 : 0) +
+        (HP_BR_MOD ? 1 : 0) +
+        (HP_AMPNBSP_MOD ? 1 : 0) +
+        (HP_MDASH_MOD ? 1 : 0) +
+        (HP_MATH_MOD ? 1 : 0) +
+        (HP_LISTMIX_MOD ? 1 : 0) +
+        (HP_PROTOCOL_MOD ? 1 : 0) +
+        (HP_HEXRUN_MOD ? 1 : 0) +
+        (HP_SQDEPTH_MOD ? 1 : 0) +
+        (HP_PIPEROLE_MOD ? 1 : 0) +
+        (HP_AFTERREF_MOD ? 1 : 0) +
+        (HP_SENTPOS_MOD ? 1 : 0) +
+        (HP_ABBREV_MOD ? 1 : 0) +
+        (HP_THOUSAND_MOD ? 1 : 0) +
+        (HP_REFPUNCT_MOD ? 1 : 0) +
+        (HP_QPERIOD_MOD ? 1 : 0) +
+        (HP_ELLIPSIS_MOD ? 1 : 0) +
+        (HP_NUMRANGE_MOD ? 1 : 0) +
+        (HP_DEG_MOD ? 1 : 0) +
+        (HP_PERCENT_MOD ? 1 : 0) +
+        (HP_STATETRANS_MOD ? 1 : 0) +
+        (HP_COLRING_MOD ? 1 : 0) +
+        (HP_LISTPARA_MOD ? 1 : 0) +
+        (HP_SECFRAG_MOD ? 1 : 0) +
+        (HP_WIKIVAR_MOD ? 1 : 0) +
+        (HP_SUBPAGE_MOD ? 1 : 0) +
+        (HP_LINKNS_MOD ? 1 : 0) +
+        (HP_FCCUR_MOD ? 1 : 0) +
+        (HP_PARAST_MOD ? 1 : 0) +
+        (HP_BOLDST_MOD ? 1 : 0) +
+        (HP_HEADBOLD_MOD ? 1 : 0) +
+        (HP_BOLDLINE_MOD ? 1 : 0) +
+        (HP_CAPPARA_MOD ? 1 : 0) +
+        (HP_NESTPARA_MOD ? 1 : 0) +
+        (HP_CATPIPE_MOD ? 1 : 0) +
+        (HP_HEADPARA_MOD ? 1 : 0) +
+        (HP_EXPECTCL_MOD ? 1 : 0) +
+        (HP_REFGROUP_MOD ? 1 : 0) +
+        (HP_REFLIST_MOD ? 1 : 0) +
+        (HP_SISTER_MOD ? 1 : 0) +
+        (HP_CONVERT_MOD ? 1 : 0) +
+        (HP_CN_MOD ? 1 : 0) +
+        (HP_BLOCK_MOD ? 1 : 0) +
+        (HP_PIPETRICK_MOD ? 1 : 0) +
+        (HP_NOTES_MOD ? 1 : 0) +
+        (HP_LANGTPL_MOD ? 1 : 0) +
+        (HP_FRAC_MOD ? 1 : 0) +
+        (HP_LISTEN_MOD ? 1 : 0) +
+        (HP_BIRTH_MOD ? 1 : 0) +
+        (HP_HLIST_MOD ? 1 : 0) +
+        (HP_MAINART_MOD ? 1 : 0) +
+        (HP_CHEM_MOD ? 1 : 0) +
+        (HP_SFN_MOD ? 1 : 0) +
+        (HP_GEOTEMP_MOD ? 1 : 0) +
+        (HP_EPIGRAPH_MOD ? 1 : 0) +
+        (HP_TRACKLIST_MOD ? 1 : 0) +
+        (HP_SUCCESSION_MOD ? 1 : 0) +
+        (HP_COLSTART_MOD ? 1 : 0) +
+        (HP_TOC_MOD ? 1 : 0) +
+        (HP_REFBEGIN_MOD ? 1 : 0) +
+        (HP_SHORTDESC_MOD ? 1 : 0) +
+        (HP_SEEALSO_MOD ? 1 : 0) +
+        (HP_PORTAL_MOD ? 1 : 0) +
+        (HP_AUTHCTL_MOD ? 1 : 0) +
+        (HP_USEDATE_MOD ? 1 : 0) +
+        (HP_IPA_MOD ? 1 : 0) +
+        (HP_GOODART_MOD ? 1 : 0) +
+        (HP_CAPTION_MOD ? 1 : 0) +
+        (HP_NAVBOX_MOD ? 1 : 0) +
+        (HP_EFOOT_MOD ? 1 : 0) +
+        (HP_RSHORT_MOD ? 1 : 0) +
+        (HP_ASOF_MOD ? 1 : 0) +
+        (HP_CLARIFY_MOD ? 1 : 0) +
+        (HP_CURRENCY_MOD ? 1 : 0) +
+        (HP_DISPLAYTITLE_MOD ? 1 : 0) +
+        (HP_NOWRAP_MOD ? 1 : 0) +
+        (HP_STUB_MOD ? 1 : 0) +
+        (HP_PERSONDATA_MOD ? 1 : 0) +
+        (HP_FLAG_MOD ? 1 : 0) +
+        (HP_QUOTEBOX_MOD ? 1 : 0) +
+        (HP_CLEAR_MOD ? 1 : 0) +
+        (HP_IMDB_MOD ? 1 : 0) +
+        (HP_RP_MOD ? 1 : 0) +
+        (HP_FN_MOD ? 1 : 0) +
+        (HP_SMALL_MOD ? 1 : 0) +
+        (HP_SUPSUB_MOD ? 1 : 0) +
+        (HP_PRECODE_MOD ? 1 : 0) +
+        (HP_TAXOBOX_MOD ? 1 : 0) +
+        (HP_NIHONGO_MOD ? 1 : 0) +
+        (HP_DEADLINK_MOD ? 1 : 0) +
+        (HP_WAYBACK_MOD ? 1 : 0) +
+        (HP_ROWSPAN_MOD ? 1 : 0) +
+        (HP_UNREF_MOD ? 1 : 0) +
+        (HP_CLEANUP_MOD ? 1 : 0) +
+        (HP_NPOV_MOD ? 1 : 0) +
+        (HP_RFROM_MOD ? 1 : 0) +
+        (HP_DOI_MOD ? 1 : 0) +
+        (HP_PMID_MOD ? 1 : 0) +
+        (HP_ISBN_MOD ? 1 : 0) +
+        (HP_MEDAL_MOD ? 1 : 0) +
+        (HP_THUMB_MOD ? 1 : 0) +
+        (HP_FURTHER_MOD ? 1 : 0) +
+        (HP_DEATH_MOD ? 1 : 0) +
+        (HP_HARV_MOD ? 1 : 0) +
+        (HP_ISSN_MOD ? 1 : 0) +
+        (HP_OCLC_MOD ? 1 : 0) +
+        (HP_ALIGN_MOD ? 1 : 0) +
+        (HP_SYNTAX_MOD ? 1 : 0) +
+        (HP_NULL_EXPERT ? 1 : 0);
     static constexpr int kCtxModels = 11 + kExtraCtx;
     static constexpr int kMatchModels = 5 + (HP_MATCH_18 ? 1 : 0)
         + (HP_MATCH_13 ? 1 : 0) + (HP_MATCH_01 ? 1 : 0)
@@ -804,6 +925,369 @@ class Predictor {
 #if HP_REFIDX_MOD
           refidxmod_(cfg.table_bits, 255),
 #endif
+#if HP_PRESPACE_MOD
+          prespacemod_(cfg.table_bits, 255),
+#endif
+#if HP_EXTDISP_MOD
+          extdispmod_(cfg.table_bits, 255),
+#endif
+#if HP_PXSIZE_MOD
+          pxsizemod_(cfg.table_bits, 255),
+#endif
+#if HP_ENTNUM_MOD
+          entnummod_(cfg.table_bits, 255),
+#endif
+#if HP_WIKIHR_MOD
+          wikihrmod_(cfg.table_bits, 255),
+#endif
+#if HP_FONTCOL_MOD
+          fontcolmod_(cfg.table_bits, 255),
+#endif
+#if HP_TBLDEPTH_MOD
+          tbldepthmod_(cfg.table_bits, 255),
+#endif
+#if HP_UTF8ST_MOD
+          utf8stmod_(cfg.table_bits, 255),
+#endif
+#if HP_DLTERM_MOD
+          dltermmod_(cfg.table_bits, 255),
+#endif
+#if HP_HEADCLOSE_MOD
+          headclosemod_(cfg.table_bits, 255),
+#endif
+#if HP_WIKITIME_MOD
+          wikitimemod_(cfg.table_bits, 255),
+#endif
+#if HP_LINKCOMMA_MOD
+          linkcommamod_(cfg.table_bits, 255),
+#endif
+#if HP_CATBLOCK_MOD
+          catblockmod_(cfg.table_bits, 255),
+#endif
+#if HP_BR_MOD
+          brmod_(cfg.table_bits, 255),
+#endif
+#if HP_AMPNBSP_MOD
+          ampnbspmod_(cfg.table_bits, 255),
+#endif
+#if HP_MDASH_MOD
+          mdashmod_(cfg.table_bits, 255),
+#endif
+#if HP_MATH_MOD
+          mathmod_(cfg.table_bits, 255),
+#endif
+#if HP_LISTMIX_MOD
+          listmixmod_(cfg.table_bits, 255),
+#endif
+#if HP_PROTOCOL_MOD
+          protocolmod_(cfg.table_bits, 255),
+#endif
+#if HP_HEXRUN_MOD
+          hexrunmod_(cfg.table_bits, 255),
+#endif
+#if HP_SQDEPTH_MOD
+          sqdepthmod_(cfg.table_bits, 255),
+#endif
+#if HP_PIPEROLE_MOD
+          piperolemod_(cfg.table_bits, 255),
+#endif
+#if HP_AFTERREF_MOD
+          afterrefmod_(cfg.table_bits, 255),
+#endif
+#if HP_SENTPOS_MOD
+          sentposmod_(cfg.table_bits, 255),
+#endif
+#if HP_ABBREV_MOD
+          abbrevmod_(cfg.table_bits, 255),
+#endif
+#if HP_THOUSAND_MOD
+          thousandmod_(cfg.table_bits, 255),
+#endif
+#if HP_REFPUNCT_MOD
+          refpunctmod_(cfg.table_bits, 255),
+#endif
+#if HP_QPERIOD_MOD
+          qperiodmod_(cfg.table_bits, 255),
+#endif
+#if HP_ELLIPSIS_MOD
+          ellipsismod_(cfg.table_bits, 255),
+#endif
+#if HP_NUMRANGE_MOD
+          numrangemod_(cfg.table_bits, 255),
+#endif
+#if HP_DEG_MOD
+          degmod_(cfg.table_bits, 255),
+#endif
+#if HP_PERCENT_MOD
+          percentmod_(cfg.table_bits, 255),
+#endif
+#if HP_STATETRANS_MOD
+          statetransmod_(cfg.table_bits, 255),
+#endif
+#if HP_COLRING_MOD
+          colringmod_(cfg.table_bits, 255),
+#endif
+#if HP_LISTPARA_MOD
+          listparamod_(cfg.table_bits, 255),
+#endif
+#if HP_SECFRAG_MOD
+          secfragmod_(cfg.table_bits, 255),
+#endif
+#if HP_WIKIVAR_MOD
+          wikivarmod_(cfg.table_bits, 255),
+#endif
+#if HP_SUBPAGE_MOD
+          subpagemod_(cfg.table_bits, 255),
+#endif
+#if HP_LINKNS_MOD
+          linknsmod_(cfg.table_bits, 255),
+#endif
+#if HP_FCCUR_MOD
+          fccurmod_(cfg.table_bits, 255),
+#endif
+#if HP_PARAST_MOD
+          parastmod_(cfg.table_bits, 255),
+#endif
+#if HP_BOLDST_MOD
+          boldstmod_(cfg.table_bits, 255),
+#endif
+#if HP_HEADBOLD_MOD
+          headboldmod_(cfg.table_bits, 255),
+#endif
+#if HP_BOLDLINE_MOD
+          boldlinemod_(cfg.table_bits, 255),
+#endif
+#if HP_CAPPARA_MOD
+          capparamod_(cfg.table_bits, 255),
+#endif
+#if HP_NESTPARA_MOD
+          nestparamod_(cfg.table_bits, 255),
+#endif
+#if HP_CATPIPE_MOD
+          catpipemod_(cfg.table_bits, 255),
+#endif
+#if HP_HEADPARA_MOD
+          headparamod_(cfg.table_bits, 255),
+#endif
+#if HP_EXPECTCL_MOD
+          expectclmod_(cfg.table_bits, 255),
+#endif
+#if HP_REFGROUP_MOD
+          refgroupmod_(cfg.table_bits, 255),
+#endif
+#if HP_REFLIST_MOD
+          reflistmod_(cfg.table_bits, 255),
+#endif
+#if HP_SISTER_MOD
+          sistermod_(cfg.table_bits, 255),
+#endif
+#if HP_CONVERT_MOD
+          convertmod_(cfg.table_bits, 255),
+#endif
+#if HP_CN_MOD
+          cnmod_(cfg.table_bits, 255),
+#endif
+#if HP_BLOCK_MOD
+          blockmod_(cfg.table_bits, 255),
+#endif
+#if HP_PIPETRICK_MOD
+          pipetrickmod_(cfg.table_bits, 255),
+#endif
+#if HP_NOTES_MOD
+          notesmod_(cfg.table_bits, 255),
+#endif
+#if HP_LANGTPL_MOD
+          langtplmod_(cfg.table_bits, 255),
+#endif
+#if HP_FRAC_MOD
+          fracmod_(cfg.table_bits, 255),
+#endif
+#if HP_LISTEN_MOD
+          listenmod_(cfg.table_bits, 255),
+#endif
+#if HP_BIRTH_MOD
+          birthmod_(cfg.table_bits, 255),
+#endif
+#if HP_HLIST_MOD
+          hlistmod_(cfg.table_bits, 255),
+#endif
+#if HP_MAINART_MOD
+          mainartmod_(cfg.table_bits, 255),
+#endif
+#if HP_CHEM_MOD
+          chemmod_(cfg.table_bits, 255),
+#endif
+#if HP_SFN_MOD
+          sfnmod_(cfg.table_bits, 255),
+#endif
+#if HP_GEOTEMP_MOD
+          geotempmod_(cfg.table_bits, 255),
+#endif
+#if HP_EPIGRAPH_MOD
+          epigraphmod_(cfg.table_bits, 255),
+#endif
+#if HP_TRACKLIST_MOD
+          tracklistmod_(cfg.table_bits, 255),
+#endif
+#if HP_SUCCESSION_MOD
+          successionmod_(cfg.table_bits, 255),
+#endif
+#if HP_COLSTART_MOD
+          colstartmod_(cfg.table_bits, 255),
+#endif
+#if HP_TOC_MOD
+          tocmod_(cfg.table_bits, 255),
+#endif
+#if HP_REFBEGIN_MOD
+          refbeginmod_(cfg.table_bits, 255),
+#endif
+#if HP_SHORTDESC_MOD
+          shortdescmod_(cfg.table_bits, 255),
+#endif
+#if HP_SEEALSO_MOD
+          seealsomod_(cfg.table_bits, 255),
+#endif
+#if HP_PORTAL_MOD
+          portalmod_(cfg.table_bits, 255),
+#endif
+#if HP_AUTHCTL_MOD
+          authctlmod_(cfg.table_bits, 255),
+#endif
+#if HP_USEDATE_MOD
+          usedatemod_(cfg.table_bits, 255),
+#endif
+#if HP_IPA_MOD
+          ipamod_(cfg.table_bits, 255),
+#endif
+#if HP_GOODART_MOD
+          goodartmod_(cfg.table_bits, 255),
+#endif
+#if HP_CAPTION_MOD
+          captionmod_(cfg.table_bits, 255),
+#endif
+#if HP_NAVBOX_MOD
+          navboxmod_(cfg.table_bits, 255),
+#endif
+#if HP_EFOOT_MOD
+          efootmod_(cfg.table_bits, 255),
+#endif
+#if HP_RSHORT_MOD
+          rshortmod_(cfg.table_bits, 255),
+#endif
+#if HP_ASOF_MOD
+          asofmod_(cfg.table_bits, 255),
+#endif
+#if HP_CLARIFY_MOD
+          clarifymod_(cfg.table_bits, 255),
+#endif
+#if HP_CURRENCY_MOD
+          currencymod_(cfg.table_bits, 255),
+#endif
+#if HP_DISPLAYTITLE_MOD
+          displaytitlemod_(cfg.table_bits, 255),
+#endif
+#if HP_NOWRAP_MOD
+          nowrapmod_(cfg.table_bits, 255),
+#endif
+#if HP_STUB_MOD
+          stubmod_(cfg.table_bits, 255),
+#endif
+#if HP_PERSONDATA_MOD
+          persondatamod_(cfg.table_bits, 255),
+#endif
+#if HP_FLAG_MOD
+          flagmod_(cfg.table_bits, 255),
+#endif
+#if HP_QUOTEBOX_MOD
+          quoteboxmod_(cfg.table_bits, 255),
+#endif
+#if HP_CLEAR_MOD
+          clearmod_(cfg.table_bits, 255),
+#endif
+#if HP_IMDB_MOD
+          imdbmod_(cfg.table_bits, 255),
+#endif
+#if HP_RP_MOD
+          rpmod_(cfg.table_bits, 255),
+#endif
+#if HP_FN_MOD
+          fnmod_(cfg.table_bits, 255),
+#endif
+#if HP_SMALL_MOD
+          smallmod_(cfg.table_bits, 255),
+#endif
+#if HP_SUPSUB_MOD
+          supsubmod_(cfg.table_bits, 255),
+#endif
+#if HP_PRECODE_MOD
+          precodemod_(cfg.table_bits, 255),
+#endif
+#if HP_TAXOBOX_MOD
+          taxoboxmod_(cfg.table_bits, 255),
+#endif
+#if HP_NIHONGO_MOD
+          nihongomod_(cfg.table_bits, 255),
+#endif
+#if HP_DEADLINK_MOD
+          deadlinkmod_(cfg.table_bits, 255),
+#endif
+#if HP_WAYBACK_MOD
+          waybackmod_(cfg.table_bits, 255),
+#endif
+#if HP_ROWSPAN_MOD
+          rowspanmod_(cfg.table_bits, 255),
+#endif
+#if HP_UNREF_MOD
+          unrefmod_(cfg.table_bits, 255),
+#endif
+#if HP_CLEANUP_MOD
+          cleanupmod_(cfg.table_bits, 255),
+#endif
+#if HP_NPOV_MOD
+          npovmod_(cfg.table_bits, 255),
+#endif
+#if HP_RFROM_MOD
+          rfrommod_(cfg.table_bits, 255),
+#endif
+#if HP_DOI_MOD
+          doimod_(cfg.table_bits, 255),
+#endif
+#if HP_PMID_MOD
+          pmidmod_(cfg.table_bits, 255),
+#endif
+#if HP_ISBN_MOD
+          isbnmod_(cfg.table_bits, 255),
+#endif
+#if HP_MEDAL_MOD
+          medalmod_(cfg.table_bits, 255),
+#endif
+#if HP_THUMB_MOD
+          thumbmod_(cfg.table_bits, 255),
+#endif
+#if HP_FURTHER_MOD
+          furthermod_(cfg.table_bits, 255),
+#endif
+#if HP_DEATH_MOD
+          deathmod_(cfg.table_bits, 255),
+#endif
+#if HP_HARV_MOD
+          harvmod_(cfg.table_bits, 255),
+#endif
+#if HP_ISSN_MOD
+          issnmod_(cfg.table_bits, 255),
+#endif
+#if HP_OCLC_MOD
+          oclcmod_(cfg.table_bits, 255),
+#endif
+#if HP_ALIGN_MOD
+          alignmod_(cfg.table_bits, 255),
+#endif
+#if HP_SYNTAX_MOD
+          syntaxmod_(cfg.table_bits, 255),
+#endif
+#if HP_NULL_EXPERT
+          nullexpert_(cfg.table_bits, 255),
+#endif
           match_{ {&byte_ring_, match_bits(cfg.match_bits), 3},
                   {&byte_ring_, match_bits(cfg.match_bits), 4},
                   {&byte_ring_, match_bits(cfg.match_bits), 6},
@@ -1160,9 +1644,9 @@ class Predictor {
 
         mixer_.update(y);
         hedge_.update(y, gria_.switch_rate_q16());
-        apm_c0_.update(y);
-        apm_lex_.update(y);
-        apm_gria_.update(y);
+        apm_c0_.update(y, HP_APM_RATE);
+        apm_lex_.update(y, HP_APM_RATE);
+        apm_gria_.update(y, HP_APM_RATE);
 
         counter_update(bias_[c0_], y, 1023);
         const int ens = pr_final_;
@@ -1581,6 +2065,369 @@ class Predictor {
 #if HP_REFIDX_MOD
         refidxmod_.update(y, ens);
 #endif
+#if HP_PRESPACE_MOD
+        prespacemod_.update(y, ens);
+#endif
+#if HP_EXTDISP_MOD
+        extdispmod_.update(y, ens);
+#endif
+#if HP_PXSIZE_MOD
+        pxsizemod_.update(y, ens);
+#endif
+#if HP_ENTNUM_MOD
+        entnummod_.update(y, ens);
+#endif
+#if HP_WIKIHR_MOD
+        wikihrmod_.update(y, ens);
+#endif
+#if HP_FONTCOL_MOD
+        fontcolmod_.update(y, ens);
+#endif
+#if HP_TBLDEPTH_MOD
+        tbldepthmod_.update(y, ens);
+#endif
+#if HP_UTF8ST_MOD
+        utf8stmod_.update(y, ens);
+#endif
+#if HP_DLTERM_MOD
+        dltermmod_.update(y, ens);
+#endif
+#if HP_HEADCLOSE_MOD
+        headclosemod_.update(y, ens);
+#endif
+#if HP_WIKITIME_MOD
+        wikitimemod_.update(y, ens);
+#endif
+#if HP_LINKCOMMA_MOD
+        linkcommamod_.update(y, ens);
+#endif
+#if HP_CATBLOCK_MOD
+        catblockmod_.update(y, ens);
+#endif
+#if HP_BR_MOD
+        brmod_.update(y, ens);
+#endif
+#if HP_AMPNBSP_MOD
+        ampnbspmod_.update(y, ens);
+#endif
+#if HP_MDASH_MOD
+        mdashmod_.update(y, ens);
+#endif
+#if HP_MATH_MOD
+        mathmod_.update(y, ens);
+#endif
+#if HP_LISTMIX_MOD
+        listmixmod_.update(y, ens);
+#endif
+#if HP_PROTOCOL_MOD
+        protocolmod_.update(y, ens);
+#endif
+#if HP_HEXRUN_MOD
+        hexrunmod_.update(y, ens);
+#endif
+#if HP_SQDEPTH_MOD
+        sqdepthmod_.update(y, ens);
+#endif
+#if HP_PIPEROLE_MOD
+        piperolemod_.update(y, ens);
+#endif
+#if HP_AFTERREF_MOD
+        afterrefmod_.update(y, ens);
+#endif
+#if HP_SENTPOS_MOD
+        sentposmod_.update(y, ens);
+#endif
+#if HP_ABBREV_MOD
+        abbrevmod_.update(y, ens);
+#endif
+#if HP_THOUSAND_MOD
+        thousandmod_.update(y, ens);
+#endif
+#if HP_REFPUNCT_MOD
+        refpunctmod_.update(y, ens);
+#endif
+#if HP_QPERIOD_MOD
+        qperiodmod_.update(y, ens);
+#endif
+#if HP_ELLIPSIS_MOD
+        ellipsismod_.update(y, ens);
+#endif
+#if HP_NUMRANGE_MOD
+        numrangemod_.update(y, ens);
+#endif
+#if HP_DEG_MOD
+        degmod_.update(y, ens);
+#endif
+#if HP_PERCENT_MOD
+        percentmod_.update(y, ens);
+#endif
+#if HP_STATETRANS_MOD
+        statetransmod_.update(y, ens);
+#endif
+#if HP_COLRING_MOD
+        colringmod_.update(y, ens);
+#endif
+#if HP_LISTPARA_MOD
+        listparamod_.update(y, ens);
+#endif
+#if HP_SECFRAG_MOD
+        secfragmod_.update(y, ens);
+#endif
+#if HP_WIKIVAR_MOD
+        wikivarmod_.update(y, ens);
+#endif
+#if HP_SUBPAGE_MOD
+        subpagemod_.update(y, ens);
+#endif
+#if HP_LINKNS_MOD
+        linknsmod_.update(y, ens);
+#endif
+#if HP_FCCUR_MOD
+        fccurmod_.update(y, ens);
+#endif
+#if HP_PARAST_MOD
+        parastmod_.update(y, ens);
+#endif
+#if HP_BOLDST_MOD
+        boldstmod_.update(y, ens);
+#endif
+#if HP_HEADBOLD_MOD
+        headboldmod_.update(y, ens);
+#endif
+#if HP_BOLDLINE_MOD
+        boldlinemod_.update(y, ens);
+#endif
+#if HP_CAPPARA_MOD
+        capparamod_.update(y, ens);
+#endif
+#if HP_NESTPARA_MOD
+        nestparamod_.update(y, ens);
+#endif
+#if HP_CATPIPE_MOD
+        catpipemod_.update(y, ens);
+#endif
+#if HP_HEADPARA_MOD
+        headparamod_.update(y, ens);
+#endif
+#if HP_EXPECTCL_MOD
+        expectclmod_.update(y, ens);
+#endif
+#if HP_REFGROUP_MOD
+        refgroupmod_.update(y, ens);
+#endif
+#if HP_REFLIST_MOD
+        reflistmod_.update(y, ens);
+#endif
+#if HP_SISTER_MOD
+        sistermod_.update(y, ens);
+#endif
+#if HP_CONVERT_MOD
+        convertmod_.update(y, ens);
+#endif
+#if HP_CN_MOD
+        cnmod_.update(y, ens);
+#endif
+#if HP_BLOCK_MOD
+        blockmod_.update(y, ens);
+#endif
+#if HP_PIPETRICK_MOD
+        pipetrickmod_.update(y, ens);
+#endif
+#if HP_NOTES_MOD
+        notesmod_.update(y, ens);
+#endif
+#if HP_LANGTPL_MOD
+        langtplmod_.update(y, ens);
+#endif
+#if HP_FRAC_MOD
+        fracmod_.update(y, ens);
+#endif
+#if HP_LISTEN_MOD
+        listenmod_.update(y, ens);
+#endif
+#if HP_BIRTH_MOD
+        birthmod_.update(y, ens);
+#endif
+#if HP_HLIST_MOD
+        hlistmod_.update(y, ens);
+#endif
+#if HP_MAINART_MOD
+        mainartmod_.update(y, ens);
+#endif
+#if HP_CHEM_MOD
+        chemmod_.update(y, ens);
+#endif
+#if HP_SFN_MOD
+        sfnmod_.update(y, ens);
+#endif
+#if HP_GEOTEMP_MOD
+        geotempmod_.update(y, ens);
+#endif
+#if HP_EPIGRAPH_MOD
+        epigraphmod_.update(y, ens);
+#endif
+#if HP_TRACKLIST_MOD
+        tracklistmod_.update(y, ens);
+#endif
+#if HP_SUCCESSION_MOD
+        successionmod_.update(y, ens);
+#endif
+#if HP_COLSTART_MOD
+        colstartmod_.update(y, ens);
+#endif
+#if HP_TOC_MOD
+        tocmod_.update(y, ens);
+#endif
+#if HP_REFBEGIN_MOD
+        refbeginmod_.update(y, ens);
+#endif
+#if HP_SHORTDESC_MOD
+        shortdescmod_.update(y, ens);
+#endif
+#if HP_SEEALSO_MOD
+        seealsomod_.update(y, ens);
+#endif
+#if HP_PORTAL_MOD
+        portalmod_.update(y, ens);
+#endif
+#if HP_AUTHCTL_MOD
+        authctlmod_.update(y, ens);
+#endif
+#if HP_USEDATE_MOD
+        usedatemod_.update(y, ens);
+#endif
+#if HP_IPA_MOD
+        ipamod_.update(y, ens);
+#endif
+#if HP_GOODART_MOD
+        goodartmod_.update(y, ens);
+#endif
+#if HP_CAPTION_MOD
+        captionmod_.update(y, ens);
+#endif
+#if HP_NAVBOX_MOD
+        navboxmod_.update(y, ens);
+#endif
+#if HP_EFOOT_MOD
+        efootmod_.update(y, ens);
+#endif
+#if HP_RSHORT_MOD
+        rshortmod_.update(y, ens);
+#endif
+#if HP_ASOF_MOD
+        asofmod_.update(y, ens);
+#endif
+#if HP_CLARIFY_MOD
+        clarifymod_.update(y, ens);
+#endif
+#if HP_CURRENCY_MOD
+        currencymod_.update(y, ens);
+#endif
+#if HP_DISPLAYTITLE_MOD
+        displaytitlemod_.update(y, ens);
+#endif
+#if HP_NOWRAP_MOD
+        nowrapmod_.update(y, ens);
+#endif
+#if HP_STUB_MOD
+        stubmod_.update(y, ens);
+#endif
+#if HP_PERSONDATA_MOD
+        persondatamod_.update(y, ens);
+#endif
+#if HP_FLAG_MOD
+        flagmod_.update(y, ens);
+#endif
+#if HP_QUOTEBOX_MOD
+        quoteboxmod_.update(y, ens);
+#endif
+#if HP_CLEAR_MOD
+        clearmod_.update(y, ens);
+#endif
+#if HP_IMDB_MOD
+        imdbmod_.update(y, ens);
+#endif
+#if HP_RP_MOD
+        rpmod_.update(y, ens);
+#endif
+#if HP_FN_MOD
+        fnmod_.update(y, ens);
+#endif
+#if HP_SMALL_MOD
+        smallmod_.update(y, ens);
+#endif
+#if HP_SUPSUB_MOD
+        supsubmod_.update(y, ens);
+#endif
+#if HP_PRECODE_MOD
+        precodemod_.update(y, ens);
+#endif
+#if HP_TAXOBOX_MOD
+        taxoboxmod_.update(y, ens);
+#endif
+#if HP_NIHONGO_MOD
+        nihongomod_.update(y, ens);
+#endif
+#if HP_DEADLINK_MOD
+        deadlinkmod_.update(y, ens);
+#endif
+#if HP_WAYBACK_MOD
+        waybackmod_.update(y, ens);
+#endif
+#if HP_ROWSPAN_MOD
+        rowspanmod_.update(y, ens);
+#endif
+#if HP_UNREF_MOD
+        unrefmod_.update(y, ens);
+#endif
+#if HP_CLEANUP_MOD
+        cleanupmod_.update(y, ens);
+#endif
+#if HP_NPOV_MOD
+        npovmod_.update(y, ens);
+#endif
+#if HP_RFROM_MOD
+        rfrommod_.update(y, ens);
+#endif
+#if HP_DOI_MOD
+        doimod_.update(y, ens);
+#endif
+#if HP_PMID_MOD
+        pmidmod_.update(y, ens);
+#endif
+#if HP_ISBN_MOD
+        isbnmod_.update(y, ens);
+#endif
+#if HP_MEDAL_MOD
+        medalmod_.update(y, ens);
+#endif
+#if HP_THUMB_MOD
+        thumbmod_.update(y, ens);
+#endif
+#if HP_FURTHER_MOD
+        furthermod_.update(y, ens);
+#endif
+#if HP_DEATH_MOD
+        deathmod_.update(y, ens);
+#endif
+#if HP_HARV_MOD
+        harvmod_.update(y, ens);
+#endif
+#if HP_ISSN_MOD
+        issnmod_.update(y, ens);
+#endif
+#if HP_OCLC_MOD
+        oclcmod_.update(y, ens);
+#endif
+#if HP_ALIGN_MOD
+        alignmod_.update(y, ens);
+#endif
+#if HP_SYNTAX_MOD
+        syntaxmod_.update(y, ens);
+#endif
+#if HP_NULL_EXPERT
+        nullexpert_.update(y, ens);
+#endif
         for (int i = 0; i < kMatchModels; ++i) match_[i].update(y);
 #if HP_SPARSE_UTF8
         smatch_.update(y);
@@ -1776,6 +2623,24 @@ class Predictor {
             int v = (out[q] * HP_LR1_SCALE + 50) / 100;
             out[q] = v < 1 ? 1 : v;
         }
+#endif
+#if HP_LR1_R0 >= 1 && HP_LR1_R0 <= 8
+        out[0] = HP_LR1_R0;
+#endif
+#if HP_LR1_R1 >= 1 && HP_LR1_R1 <= 8
+        out[1] = HP_LR1_R1;
+#endif
+#if HP_LR1_R2 >= 1 && HP_LR1_R2 <= 8
+        out[2] = HP_LR1_R2;
+#endif
+#if HP_LR1_R3 >= 1 && HP_LR1_R3 <= 8
+        out[3] = HP_LR1_R3;
+#endif
+#if HP_LR1_R4 >= 1 && HP_LR1_R4 <= 8
+        out[4] = HP_LR1_R4;
+#endif
+#if HP_LR1_R5 >= 1 && HP_LR1_R5 <= 8
+        out[5] = HP_LR1_R5;
 #endif
         return out;
         }();
@@ -2021,6 +2886,9 @@ class Predictor {
 #endif
 
         o1_.set_context(h2(1, hist_ & 0xffull));
+#if HP_NULL_EXPERT
+        nullexpert_.set_context(h2(1, hist_ & 0xffull));
+#endif
         o2_.set_context(h2(2, hist_ & 0xffffull));
         o3_.set_context(h2(3, hist_ & 0xffffffull));
         o4_.set_context(h2(4, hist_ & 0xffffffffull));
@@ -2750,6 +3618,494 @@ class Predictor {
         refidxmod_.set_context(h2(161, static_cast<std::uint64_t>(wiki_.ref_idx()) +
                                        ((hist_ & 0xffffffull) << 8)));
 #endif
+#if HP_PRESPACE_MOD
+        prespacemod_.set_context(h2(162, static_cast<std::uint64_t>(wiki_.prespace()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_EXTDISP_MOD
+        extdispmod_.set_context(h2(163, static_cast<std::uint64_t>(wiki_.ext_disp()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PXSIZE_MOD
+        pxsizemod_.set_context(h2(164, static_cast<std::uint64_t>(wiki_.px_size()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ENTNUM_MOD
+        entnummod_.set_context(h2(165, static_cast<std::uint64_t>(wiki_.ent_num()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_WIKIHR_MOD
+        wikihrmod_.set_context(h2(166, static_cast<std::uint64_t>(wiki_.wiki_hr()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_FONTCOL_MOD
+        fontcolmod_.set_context(h2(167, static_cast<std::uint64_t>(wiki_.font_col()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TBLDEPTH_MOD
+        tbldepthmod_.set_context(h2(168, static_cast<std::uint64_t>(wiki_.tbl_depth()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_UTF8ST_MOD
+        utf8stmod_.set_context(h2(169, static_cast<std::uint64_t>(wiki_.utf8_st()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DLTERM_MOD
+        dltermmod_.set_context(h2(170, static_cast<std::uint64_t>(wiki_.dl_term()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HEADCLOSE_MOD
+        headclosemod_.set_context(h2(171, static_cast<std::uint64_t>(wiki_.head_close()) +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_WIKITIME_MOD
+        wikitimemod_.set_context(h2(172, static_cast<std::uint64_t>(wiki_.wiki_time()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LINKCOMMA_MOD
+        linkcommamod_.set_context(h2(173, static_cast<std::uint64_t>(wiki_.link_comma()) +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CATBLOCK_MOD
+        catblockmod_.set_context(h2(174, static_cast<std::uint64_t>(wiki_.cat_block()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_BR_MOD
+        brmod_.set_context(h2(175, static_cast<std::uint64_t>(wiki_.br_tag()) +
+                                   ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_AMPNBSP_MOD
+        ampnbspmod_.set_context(h2(176, static_cast<std::uint64_t>(wiki_.amp_nbsp()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_MDASH_MOD
+        mdashmod_.set_context(h2(177, static_cast<std::uint64_t>(wiki_.mdash()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_MATH_MOD
+        mathmod_.set_context(h2(178, static_cast<std::uint64_t>(wiki_.in_math()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LISTMIX_MOD
+        listmixmod_.set_context(h2(179, static_cast<std::uint64_t>(wiki_.list_mix()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PROTOCOL_MOD
+        protocolmod_.set_context(h2(180, static_cast<std::uint64_t>(wiki_.protocol()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HEXRUN_MOD
+        hexrunmod_.set_context(h2(181, static_cast<std::uint64_t>(wiki_.hex_run()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SQDEPTH_MOD
+        sqdepthmod_.set_context(h2(182, static_cast<std::uint64_t>(wiki_.sq_depth()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PIPEROLE_MOD
+        piperolemod_.set_context(h2(183, static_cast<std::uint64_t>(wiki_.pipe_role()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_AFTERREF_MOD
+        afterrefmod_.set_context(h2(184, static_cast<std::uint64_t>(wiki_.after_ref()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SENTPOS_MOD
+        sentposmod_.set_context(h2(185, static_cast<std::uint64_t>(wiki_.sent_pos()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ABBREV_MOD
+        abbrevmod_.set_context(h2(186, static_cast<std::uint64_t>(wiki_.abbrev()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_THOUSAND_MOD
+        thousandmod_.set_context(h2(187, static_cast<std::uint64_t>(wiki_.thousand()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REFPUNCT_MOD
+        refpunctmod_.set_context(h2(188, static_cast<std::uint64_t>(wiki_.ref_punct()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_QPERIOD_MOD
+        qperiodmod_.set_context(h2(189, static_cast<std::uint64_t>(wiki_.q_period()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ELLIPSIS_MOD
+        ellipsismod_.set_context(h2(190, static_cast<std::uint64_t>(wiki_.ellipsis()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_NUMRANGE_MOD
+        numrangemod_.set_context(h2(191, static_cast<std::uint64_t>(wiki_.num_range()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DEG_MOD
+        degmod_.set_context(h2(192, static_cast<std::uint64_t>(wiki_.deg()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PERCENT_MOD
+        percentmod_.set_context(h2(193, static_cast<std::uint64_t>(wiki_.percent()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_STATETRANS_MOD
+        statetransmod_.set_context(h2(194, static_cast<std::uint64_t>(wiki_.state_trans()) +
+                                           ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_COLRING_MOD
+        colringmod_.set_context(h2(195, wiki_.col_ring() +
+                                        ((hist_ & 0xffffffull) << 40)));
+#endif
+#if HP_LISTPARA_MOD
+        listparamod_.set_context(h2(196, static_cast<std::uint64_t>(wiki_.list_para()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SECFRAG_MOD
+        secfragmod_.set_context(h2(197, static_cast<std::uint64_t>(wiki_.sec_frag()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_WIKIVAR_MOD
+        wikivarmod_.set_context(h2(198, static_cast<std::uint64_t>(wiki_.wiki_var()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SUBPAGE_MOD
+        subpagemod_.set_context(h2(199, static_cast<std::uint64_t>(wiki_.sub_page()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LINKNS_MOD
+        linknsmod_.set_context(h2(200, static_cast<std::uint64_t>(wiki_.link_ns()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_FCCUR_MOD
+        fccurmod_.set_context(h2(201, static_cast<std::uint64_t>(wiki_.fc_cur()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PARAST_MOD
+        parastmod_.set_context(h2(202, static_cast<std::uint64_t>(wiki_.is_paragraph()) +
+                                       (static_cast<std::uint64_t>(wiki_.state()) << 1) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_BOLDST_MOD
+        boldstmod_.set_context(h2(203, static_cast<std::uint64_t>(wiki_.wiki_bold()) +
+                                       (static_cast<std::uint64_t>(wiki_.state()) << 3) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HEADBOLD_MOD
+        headboldmod_.set_context(h2(204, static_cast<std::uint64_t>(wiki_.wiki_bold()) +
+                                         (static_cast<std::uint64_t>(wiki_.heading_level()) << 3) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_BOLDLINE_MOD
+        boldlinemod_.set_context(h2(205, static_cast<std::uint64_t>(wiki_.wiki_bold()) +
+                                         (static_cast<std::uint64_t>(wiki_.line_kind() & 255) << 3) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CAPPARA_MOD
+        capparamod_.set_context(h2(206, static_cast<std::uint64_t>(wiki_.cap_mask()) +
+                                        (static_cast<std::uint64_t>(wiki_.is_paragraph()) << 8) +
+                                        ((hist_ & 0xffffffull) << 16)));
+#endif
+#if HP_NESTPARA_MOD
+        nestparamod_.set_context(h2(207, static_cast<std::uint64_t>(wiki_.nest_markup()) +
+                                         (static_cast<std::uint64_t>(wiki_.is_paragraph()) << 1) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CATPIPE_MOD
+        catpipemod_.set_context(h2(208, (wiki_.cat_ns() != 0 ? 1ull : 0ull) +
+                                        (static_cast<std::uint64_t>(wiki_.after_pipe()) << 1) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HEADPARA_MOD
+        headparamod_.set_context(h2(209, static_cast<std::uint64_t>(wiki_.heading_level()) +
+                                         (static_cast<std::uint64_t>(wiki_.is_paragraph()) << 4) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_EXPECTCL_MOD
+        expectclmod_.set_context(h2(210, static_cast<std::uint64_t>(brackets_.closer()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REFGROUP_MOD
+        refgroupmod_.set_context(h2(211, static_cast<std::uint64_t>(wiki_.ref_group()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REFLIST_MOD
+        reflistmod_.set_context(h2(212, static_cast<std::uint64_t>(wiki_.in_reflist()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SISTER_MOD
+        sistermod_.set_context(h2(213, static_cast<std::uint64_t>(wiki_.sister()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CONVERT_MOD
+        convertmod_.set_context(h2(214, static_cast<std::uint64_t>(wiki_.in_convert()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CN_MOD
+        cnmod_.set_context(h2(215, static_cast<std::uint64_t>(wiki_.cn_kind()) +
+                                   ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_BLOCK_MOD
+        blockmod_.set_context(h2(216, static_cast<std::uint64_t>(wiki_.block_kind()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PIPETRICK_MOD
+        pipetrickmod_.set_context(h2(217, static_cast<std::uint64_t>(wiki_.pipe_trick()) +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_NOTES_MOD
+        notesmod_.set_context(h2(218, static_cast<std::uint64_t>(wiki_.notes_kind()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LANGTPL_MOD
+        langtplmod_.set_context(h2(219, static_cast<std::uint64_t>(wiki_.lang_tpl()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_FRAC_MOD
+        fracmod_.set_context(h2(220, static_cast<std::uint64_t>(wiki_.frac_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LISTEN_MOD
+        listenmod_.set_context(h2(221, static_cast<std::uint64_t>(wiki_.listen_kind()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_BIRTH_MOD
+        birthmod_.set_context(h2(222, static_cast<std::uint64_t>(wiki_.birth_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HLIST_MOD
+        hlistmod_.set_context(h2(223, static_cast<std::uint64_t>(wiki_.hlist_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_MAINART_MOD
+        mainartmod_.set_context(h2(224, static_cast<std::uint64_t>(wiki_.mainart_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CHEM_MOD
+        chemmod_.set_context(h2(225, static_cast<std::uint64_t>(wiki_.in_chem()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SFN_MOD
+        sfnmod_.set_context(h2(226, static_cast<std::uint64_t>(wiki_.sfn_kind()) +
+                                   ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_GEOTEMP_MOD
+        geotempmod_.set_context(h2(227, static_cast<std::uint64_t>(wiki_.in_geotemp()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_EPIGRAPH_MOD
+        epigraphmod_.set_context(h2(228, static_cast<std::uint64_t>(wiki_.epigraph_kind()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TRACKLIST_MOD
+        tracklistmod_.set_context(h2(229, static_cast<std::uint64_t>(wiki_.tracklist_kind()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SUCCESSION_MOD
+        successionmod_.set_context(h2(230, static_cast<std::uint64_t>(wiki_.succession_kind()) +
+                                          ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_COLSTART_MOD
+        colstartmod_.set_context(h2(231, static_cast<std::uint64_t>(wiki_.colstart_kind()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TOC_MOD
+        tocmod_.set_context(h2(232, static_cast<std::uint64_t>(wiki_.toc_mode()) +
+                                   ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_REFBEGIN_MOD
+        refbeginmod_.set_context(h2(233, static_cast<std::uint64_t>(wiki_.in_refbegin()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SHORTDESC_MOD
+        shortdescmod_.set_context(h2(234, static_cast<std::uint64_t>(wiki_.shortdesc_kind()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SEEALSO_MOD
+        seealsomod_.set_context(h2(235, static_cast<std::uint64_t>(wiki_.seealso_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PORTAL_MOD
+        portalmod_.set_context(h2(236, static_cast<std::uint64_t>(wiki_.portal_kind()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_AUTHCTL_MOD
+        authctlmod_.set_context(h2(237, static_cast<std::uint64_t>(wiki_.authctl_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_USEDATE_MOD
+        usedatemod_.set_context(h2(238, static_cast<std::uint64_t>(wiki_.usedate_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_IPA_MOD
+        ipamod_.set_context(h2(239, static_cast<std::uint64_t>(wiki_.ipa_kind()) +
+                                   ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_GOODART_MOD
+        goodartmod_.set_context(h2(240, static_cast<std::uint64_t>(wiki_.goodart_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CAPTION_MOD
+        captionmod_.set_context(h2(241, static_cast<std::uint64_t>(wiki_.caption_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_NAVBOX_MOD
+        navboxmod_.set_context(h2(242, static_cast<std::uint64_t>(wiki_.navbox_kind()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_EFOOT_MOD
+        efootmod_.set_context(h2(243, static_cast<std::uint64_t>(wiki_.efoot_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_RSHORT_MOD
+        rshortmod_.set_context(h2(244, static_cast<std::uint64_t>(wiki_.rshort_kind()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ASOF_MOD
+        asofmod_.set_context(h2(245, static_cast<std::uint64_t>(wiki_.asof_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CLARIFY_MOD
+        clarifymod_.set_context(h2(246, static_cast<std::uint64_t>(wiki_.clarify_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CURRENCY_MOD
+        currencymod_.set_context(h2(247, static_cast<std::uint64_t>(wiki_.currency_kind()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DISPLAYTITLE_MOD
+        displaytitlemod_.set_context(h2(248, static_cast<std::uint64_t>(wiki_.displaytitle_kind()) +
+                                            ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_NOWRAP_MOD
+        nowrapmod_.set_context(h2(249, static_cast<std::uint64_t>(wiki_.nowrap_kind()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_STUB_MOD
+        stubmod_.set_context(h2(250, static_cast<std::uint64_t>(wiki_.stub_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PERSONDATA_MOD
+        persondatamod_.set_context(h2(251, static_cast<std::uint64_t>(wiki_.persondata_kind()) +
+                                         ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_FLAG_MOD
+        flagmod_.set_context(h2(252, static_cast<std::uint64_t>(wiki_.flag_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_QUOTEBOX_MOD
+        quoteboxmod_.set_context(h2(253, static_cast<std::uint64_t>(wiki_.quotebox_kind()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CLEAR_MOD
+        clearmod_.set_context(h2(254, static_cast<std::uint64_t>(wiki_.clear_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_IMDB_MOD
+        imdbmod_.set_context(h2(255, static_cast<std::uint64_t>(wiki_.imdb_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_RP_MOD
+        rpmod_.set_context(h2(256, static_cast<std::uint64_t>(wiki_.rp_kind()) +
+                                  ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_FN_MOD
+        fnmod_.set_context(h2(257, static_cast<std::uint64_t>(wiki_.fn_kind()) +
+                                  ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SMALL_MOD
+        smallmod_.set_context(h2(258, static_cast<std::uint64_t>(wiki_.small_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SUPSUB_MOD
+        supsubmod_.set_context(h2(259, static_cast<std::uint64_t>(wiki_.supsub_kind()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PRECODE_MOD
+        precodemod_.set_context(h2(260, static_cast<std::uint64_t>(wiki_.precode_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_TAXOBOX_MOD
+        taxoboxmod_.set_context(h2(261, static_cast<std::uint64_t>(wiki_.taxobox_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_NIHONGO_MOD
+        nihongomod_.set_context(h2(262, static_cast<std::uint64_t>(wiki_.nihongo_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DEADLINK_MOD
+        deadlinkmod_.set_context(h2(263, static_cast<std::uint64_t>(wiki_.deadlink_kind()) +
+                                        ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_WAYBACK_MOD
+        waybackmod_.set_context(h2(264, static_cast<std::uint64_t>(wiki_.wayback_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ROWSPAN_MOD
+        rowspanmod_.set_context(h2(265, static_cast<std::uint64_t>(wiki_.rowspan_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_UNREF_MOD
+        unrefmod_.set_context(h2(266, static_cast<std::uint64_t>(wiki_.unref_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_CLEANUP_MOD
+        cleanupmod_.set_context(h2(267, static_cast<std::uint64_t>(wiki_.cleanup_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_NPOV_MOD
+        npovmod_.set_context(h2(268, static_cast<std::uint64_t>(wiki_.npov_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_RFROM_MOD
+        rfrommod_.set_context(h2(269, static_cast<std::uint64_t>(wiki_.rfrom_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DOI_MOD
+        doimod_.set_context(h2(270, static_cast<std::uint64_t>(wiki_.doi_kind()) +
+                                   ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_PMID_MOD
+        pmidmod_.set_context(h2(271, static_cast<std::uint64_t>(wiki_.pmid_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ISBN_MOD
+        isbnmod_.set_context(h2(272, static_cast<std::uint64_t>(wiki_.isbn_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_MEDAL_MOD
+        medalmod_.set_context(h2(273, static_cast<std::uint64_t>(wiki_.medal_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_THUMB_MOD
+        thumbmod_.set_context(h2(274, static_cast<std::uint64_t>(wiki_.thumb_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_FURTHER_MOD
+        furthermod_.set_context(h2(275, static_cast<std::uint64_t>(wiki_.further_kind()) +
+                                       ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_DEATH_MOD
+        deathmod_.set_context(h2(276, static_cast<std::uint64_t>(wiki_.death_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_HARV_MOD
+        harvmod_.set_context(h2(277, static_cast<std::uint64_t>(wiki_.harv_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ISSN_MOD
+        issnmod_.set_context(h2(278, static_cast<std::uint64_t>(wiki_.issn_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_OCLC_MOD
+        oclcmod_.set_context(h2(279, static_cast<std::uint64_t>(wiki_.oclc_kind()) +
+                                    ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_ALIGN_MOD
+        alignmod_.set_context(h2(280, static_cast<std::uint64_t>(wiki_.align_kind()) +
+                                     ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_SYNTAX_MOD
+        syntaxmod_.set_context(h2(281, static_cast<std::uint64_t>(wiki_.syntax_kind()) +
+                                      ((hist_ & 0xffffffull) << 8)));
+#endif
     }
 
     void init_ctx_chain_() {
@@ -3175,6 +4531,369 @@ class Predictor {
 #endif
 #if HP_REFIDX_MOD
         ctx_chain_[n_ctx_chain_++] = &refidxmod_;
+#endif
+#if HP_PRESPACE_MOD
+        ctx_chain_[n_ctx_chain_++] = &prespacemod_;
+#endif
+#if HP_EXTDISP_MOD
+        ctx_chain_[n_ctx_chain_++] = &extdispmod_;
+#endif
+#if HP_PXSIZE_MOD
+        ctx_chain_[n_ctx_chain_++] = &pxsizemod_;
+#endif
+#if HP_ENTNUM_MOD
+        ctx_chain_[n_ctx_chain_++] = &entnummod_;
+#endif
+#if HP_WIKIHR_MOD
+        ctx_chain_[n_ctx_chain_++] = &wikihrmod_;
+#endif
+#if HP_FONTCOL_MOD
+        ctx_chain_[n_ctx_chain_++] = &fontcolmod_;
+#endif
+#if HP_TBLDEPTH_MOD
+        ctx_chain_[n_ctx_chain_++] = &tbldepthmod_;
+#endif
+#if HP_UTF8ST_MOD
+        ctx_chain_[n_ctx_chain_++] = &utf8stmod_;
+#endif
+#if HP_DLTERM_MOD
+        ctx_chain_[n_ctx_chain_++] = &dltermmod_;
+#endif
+#if HP_HEADCLOSE_MOD
+        ctx_chain_[n_ctx_chain_++] = &headclosemod_;
+#endif
+#if HP_WIKITIME_MOD
+        ctx_chain_[n_ctx_chain_++] = &wikitimemod_;
+#endif
+#if HP_LINKCOMMA_MOD
+        ctx_chain_[n_ctx_chain_++] = &linkcommamod_;
+#endif
+#if HP_CATBLOCK_MOD
+        ctx_chain_[n_ctx_chain_++] = &catblockmod_;
+#endif
+#if HP_BR_MOD
+        ctx_chain_[n_ctx_chain_++] = &brmod_;
+#endif
+#if HP_AMPNBSP_MOD
+        ctx_chain_[n_ctx_chain_++] = &ampnbspmod_;
+#endif
+#if HP_MDASH_MOD
+        ctx_chain_[n_ctx_chain_++] = &mdashmod_;
+#endif
+#if HP_MATH_MOD
+        ctx_chain_[n_ctx_chain_++] = &mathmod_;
+#endif
+#if HP_LISTMIX_MOD
+        ctx_chain_[n_ctx_chain_++] = &listmixmod_;
+#endif
+#if HP_PROTOCOL_MOD
+        ctx_chain_[n_ctx_chain_++] = &protocolmod_;
+#endif
+#if HP_HEXRUN_MOD
+        ctx_chain_[n_ctx_chain_++] = &hexrunmod_;
+#endif
+#if HP_SQDEPTH_MOD
+        ctx_chain_[n_ctx_chain_++] = &sqdepthmod_;
+#endif
+#if HP_PIPEROLE_MOD
+        ctx_chain_[n_ctx_chain_++] = &piperolemod_;
+#endif
+#if HP_AFTERREF_MOD
+        ctx_chain_[n_ctx_chain_++] = &afterrefmod_;
+#endif
+#if HP_SENTPOS_MOD
+        ctx_chain_[n_ctx_chain_++] = &sentposmod_;
+#endif
+#if HP_ABBREV_MOD
+        ctx_chain_[n_ctx_chain_++] = &abbrevmod_;
+#endif
+#if HP_THOUSAND_MOD
+        ctx_chain_[n_ctx_chain_++] = &thousandmod_;
+#endif
+#if HP_REFPUNCT_MOD
+        ctx_chain_[n_ctx_chain_++] = &refpunctmod_;
+#endif
+#if HP_QPERIOD_MOD
+        ctx_chain_[n_ctx_chain_++] = &qperiodmod_;
+#endif
+#if HP_ELLIPSIS_MOD
+        ctx_chain_[n_ctx_chain_++] = &ellipsismod_;
+#endif
+#if HP_NUMRANGE_MOD
+        ctx_chain_[n_ctx_chain_++] = &numrangemod_;
+#endif
+#if HP_DEG_MOD
+        ctx_chain_[n_ctx_chain_++] = &degmod_;
+#endif
+#if HP_PERCENT_MOD
+        ctx_chain_[n_ctx_chain_++] = &percentmod_;
+#endif
+#if HP_STATETRANS_MOD
+        ctx_chain_[n_ctx_chain_++] = &statetransmod_;
+#endif
+#if HP_COLRING_MOD
+        ctx_chain_[n_ctx_chain_++] = &colringmod_;
+#endif
+#if HP_LISTPARA_MOD
+        ctx_chain_[n_ctx_chain_++] = &listparamod_;
+#endif
+#if HP_SECFRAG_MOD
+        ctx_chain_[n_ctx_chain_++] = &secfragmod_;
+#endif
+#if HP_WIKIVAR_MOD
+        ctx_chain_[n_ctx_chain_++] = &wikivarmod_;
+#endif
+#if HP_SUBPAGE_MOD
+        ctx_chain_[n_ctx_chain_++] = &subpagemod_;
+#endif
+#if HP_LINKNS_MOD
+        ctx_chain_[n_ctx_chain_++] = &linknsmod_;
+#endif
+#if HP_FCCUR_MOD
+        ctx_chain_[n_ctx_chain_++] = &fccurmod_;
+#endif
+#if HP_PARAST_MOD
+        ctx_chain_[n_ctx_chain_++] = &parastmod_;
+#endif
+#if HP_BOLDST_MOD
+        ctx_chain_[n_ctx_chain_++] = &boldstmod_;
+#endif
+#if HP_HEADBOLD_MOD
+        ctx_chain_[n_ctx_chain_++] = &headboldmod_;
+#endif
+#if HP_BOLDLINE_MOD
+        ctx_chain_[n_ctx_chain_++] = &boldlinemod_;
+#endif
+#if HP_CAPPARA_MOD
+        ctx_chain_[n_ctx_chain_++] = &capparamod_;
+#endif
+#if HP_NESTPARA_MOD
+        ctx_chain_[n_ctx_chain_++] = &nestparamod_;
+#endif
+#if HP_CATPIPE_MOD
+        ctx_chain_[n_ctx_chain_++] = &catpipemod_;
+#endif
+#if HP_HEADPARA_MOD
+        ctx_chain_[n_ctx_chain_++] = &headparamod_;
+#endif
+#if HP_EXPECTCL_MOD
+        ctx_chain_[n_ctx_chain_++] = &expectclmod_;
+#endif
+#if HP_REFGROUP_MOD
+        ctx_chain_[n_ctx_chain_++] = &refgroupmod_;
+#endif
+#if HP_REFLIST_MOD
+        ctx_chain_[n_ctx_chain_++] = &reflistmod_;
+#endif
+#if HP_SISTER_MOD
+        ctx_chain_[n_ctx_chain_++] = &sistermod_;
+#endif
+#if HP_CONVERT_MOD
+        ctx_chain_[n_ctx_chain_++] = &convertmod_;
+#endif
+#if HP_CN_MOD
+        ctx_chain_[n_ctx_chain_++] = &cnmod_;
+#endif
+#if HP_BLOCK_MOD
+        ctx_chain_[n_ctx_chain_++] = &blockmod_;
+#endif
+#if HP_PIPETRICK_MOD
+        ctx_chain_[n_ctx_chain_++] = &pipetrickmod_;
+#endif
+#if HP_NOTES_MOD
+        ctx_chain_[n_ctx_chain_++] = &notesmod_;
+#endif
+#if HP_LANGTPL_MOD
+        ctx_chain_[n_ctx_chain_++] = &langtplmod_;
+#endif
+#if HP_FRAC_MOD
+        ctx_chain_[n_ctx_chain_++] = &fracmod_;
+#endif
+#if HP_LISTEN_MOD
+        ctx_chain_[n_ctx_chain_++] = &listenmod_;
+#endif
+#if HP_BIRTH_MOD
+        ctx_chain_[n_ctx_chain_++] = &birthmod_;
+#endif
+#if HP_HLIST_MOD
+        ctx_chain_[n_ctx_chain_++] = &hlistmod_;
+#endif
+#if HP_MAINART_MOD
+        ctx_chain_[n_ctx_chain_++] = &mainartmod_;
+#endif
+#if HP_CHEM_MOD
+        ctx_chain_[n_ctx_chain_++] = &chemmod_;
+#endif
+#if HP_SFN_MOD
+        ctx_chain_[n_ctx_chain_++] = &sfnmod_;
+#endif
+#if HP_GEOTEMP_MOD
+        ctx_chain_[n_ctx_chain_++] = &geotempmod_;
+#endif
+#if HP_EPIGRAPH_MOD
+        ctx_chain_[n_ctx_chain_++] = &epigraphmod_;
+#endif
+#if HP_TRACKLIST_MOD
+        ctx_chain_[n_ctx_chain_++] = &tracklistmod_;
+#endif
+#if HP_SUCCESSION_MOD
+        ctx_chain_[n_ctx_chain_++] = &successionmod_;
+#endif
+#if HP_COLSTART_MOD
+        ctx_chain_[n_ctx_chain_++] = &colstartmod_;
+#endif
+#if HP_TOC_MOD
+        ctx_chain_[n_ctx_chain_++] = &tocmod_;
+#endif
+#if HP_REFBEGIN_MOD
+        ctx_chain_[n_ctx_chain_++] = &refbeginmod_;
+#endif
+#if HP_SHORTDESC_MOD
+        ctx_chain_[n_ctx_chain_++] = &shortdescmod_;
+#endif
+#if HP_SEEALSO_MOD
+        ctx_chain_[n_ctx_chain_++] = &seealsomod_;
+#endif
+#if HP_PORTAL_MOD
+        ctx_chain_[n_ctx_chain_++] = &portalmod_;
+#endif
+#if HP_AUTHCTL_MOD
+        ctx_chain_[n_ctx_chain_++] = &authctlmod_;
+#endif
+#if HP_USEDATE_MOD
+        ctx_chain_[n_ctx_chain_++] = &usedatemod_;
+#endif
+#if HP_IPA_MOD
+        ctx_chain_[n_ctx_chain_++] = &ipamod_;
+#endif
+#if HP_GOODART_MOD
+        ctx_chain_[n_ctx_chain_++] = &goodartmod_;
+#endif
+#if HP_CAPTION_MOD
+        ctx_chain_[n_ctx_chain_++] = &captionmod_;
+#endif
+#if HP_NAVBOX_MOD
+        ctx_chain_[n_ctx_chain_++] = &navboxmod_;
+#endif
+#if HP_EFOOT_MOD
+        ctx_chain_[n_ctx_chain_++] = &efootmod_;
+#endif
+#if HP_RSHORT_MOD
+        ctx_chain_[n_ctx_chain_++] = &rshortmod_;
+#endif
+#if HP_ASOF_MOD
+        ctx_chain_[n_ctx_chain_++] = &asofmod_;
+#endif
+#if HP_CLARIFY_MOD
+        ctx_chain_[n_ctx_chain_++] = &clarifymod_;
+#endif
+#if HP_CURRENCY_MOD
+        ctx_chain_[n_ctx_chain_++] = &currencymod_;
+#endif
+#if HP_DISPLAYTITLE_MOD
+        ctx_chain_[n_ctx_chain_++] = &displaytitlemod_;
+#endif
+#if HP_NOWRAP_MOD
+        ctx_chain_[n_ctx_chain_++] = &nowrapmod_;
+#endif
+#if HP_STUB_MOD
+        ctx_chain_[n_ctx_chain_++] = &stubmod_;
+#endif
+#if HP_PERSONDATA_MOD
+        ctx_chain_[n_ctx_chain_++] = &persondatamod_;
+#endif
+#if HP_FLAG_MOD
+        ctx_chain_[n_ctx_chain_++] = &flagmod_;
+#endif
+#if HP_QUOTEBOX_MOD
+        ctx_chain_[n_ctx_chain_++] = &quoteboxmod_;
+#endif
+#if HP_CLEAR_MOD
+        ctx_chain_[n_ctx_chain_++] = &clearmod_;
+#endif
+#if HP_IMDB_MOD
+        ctx_chain_[n_ctx_chain_++] = &imdbmod_;
+#endif
+#if HP_RP_MOD
+        ctx_chain_[n_ctx_chain_++] = &rpmod_;
+#endif
+#if HP_FN_MOD
+        ctx_chain_[n_ctx_chain_++] = &fnmod_;
+#endif
+#if HP_SMALL_MOD
+        ctx_chain_[n_ctx_chain_++] = &smallmod_;
+#endif
+#if HP_SUPSUB_MOD
+        ctx_chain_[n_ctx_chain_++] = &supsubmod_;
+#endif
+#if HP_PRECODE_MOD
+        ctx_chain_[n_ctx_chain_++] = &precodemod_;
+#endif
+#if HP_TAXOBOX_MOD
+        ctx_chain_[n_ctx_chain_++] = &taxoboxmod_;
+#endif
+#if HP_NIHONGO_MOD
+        ctx_chain_[n_ctx_chain_++] = &nihongomod_;
+#endif
+#if HP_DEADLINK_MOD
+        ctx_chain_[n_ctx_chain_++] = &deadlinkmod_;
+#endif
+#if HP_WAYBACK_MOD
+        ctx_chain_[n_ctx_chain_++] = &waybackmod_;
+#endif
+#if HP_ROWSPAN_MOD
+        ctx_chain_[n_ctx_chain_++] = &rowspanmod_;
+#endif
+#if HP_UNREF_MOD
+        ctx_chain_[n_ctx_chain_++] = &unrefmod_;
+#endif
+#if HP_CLEANUP_MOD
+        ctx_chain_[n_ctx_chain_++] = &cleanupmod_;
+#endif
+#if HP_NPOV_MOD
+        ctx_chain_[n_ctx_chain_++] = &npovmod_;
+#endif
+#if HP_RFROM_MOD
+        ctx_chain_[n_ctx_chain_++] = &rfrommod_;
+#endif
+#if HP_DOI_MOD
+        ctx_chain_[n_ctx_chain_++] = &doimod_;
+#endif
+#if HP_PMID_MOD
+        ctx_chain_[n_ctx_chain_++] = &pmidmod_;
+#endif
+#if HP_ISBN_MOD
+        ctx_chain_[n_ctx_chain_++] = &isbnmod_;
+#endif
+#if HP_MEDAL_MOD
+        ctx_chain_[n_ctx_chain_++] = &medalmod_;
+#endif
+#if HP_THUMB_MOD
+        ctx_chain_[n_ctx_chain_++] = &thumbmod_;
+#endif
+#if HP_FURTHER_MOD
+        ctx_chain_[n_ctx_chain_++] = &furthermod_;
+#endif
+#if HP_DEATH_MOD
+        ctx_chain_[n_ctx_chain_++] = &deathmod_;
+#endif
+#if HP_HARV_MOD
+        ctx_chain_[n_ctx_chain_++] = &harvmod_;
+#endif
+#if HP_ISSN_MOD
+        ctx_chain_[n_ctx_chain_++] = &issnmod_;
+#endif
+#if HP_OCLC_MOD
+        ctx_chain_[n_ctx_chain_++] = &oclcmod_;
+#endif
+#if HP_ALIGN_MOD
+        ctx_chain_[n_ctx_chain_++] = &alignmod_;
+#endif
+#if HP_SYNTAX_MOD
+        ctx_chain_[n_ctx_chain_++] = &syntaxmod_;
+#endif
+#if HP_NULL_EXPERT
+        ctx_chain_[n_ctx_chain_++] = &nullexpert_;
 #endif
     }
 
@@ -3609,6 +5328,369 @@ class Predictor {
 #endif
 #if HP_REFIDX_MOD
     ContextModel refidxmod_;
+#endif
+#if HP_PRESPACE_MOD
+    ContextModel prespacemod_;
+#endif
+#if HP_EXTDISP_MOD
+    ContextModel extdispmod_;
+#endif
+#if HP_PXSIZE_MOD
+    ContextModel pxsizemod_;
+#endif
+#if HP_ENTNUM_MOD
+    ContextModel entnummod_;
+#endif
+#if HP_WIKIHR_MOD
+    ContextModel wikihrmod_;
+#endif
+#if HP_FONTCOL_MOD
+    ContextModel fontcolmod_;
+#endif
+#if HP_TBLDEPTH_MOD
+    ContextModel tbldepthmod_;
+#endif
+#if HP_UTF8ST_MOD
+    ContextModel utf8stmod_;
+#endif
+#if HP_DLTERM_MOD
+    ContextModel dltermmod_;
+#endif
+#if HP_HEADCLOSE_MOD
+    ContextModel headclosemod_;
+#endif
+#if HP_WIKITIME_MOD
+    ContextModel wikitimemod_;
+#endif
+#if HP_LINKCOMMA_MOD
+    ContextModel linkcommamod_;
+#endif
+#if HP_CATBLOCK_MOD
+    ContextModel catblockmod_;
+#endif
+#if HP_BR_MOD
+    ContextModel brmod_;
+#endif
+#if HP_AMPNBSP_MOD
+    ContextModel ampnbspmod_;
+#endif
+#if HP_MDASH_MOD
+    ContextModel mdashmod_;
+#endif
+#if HP_MATH_MOD
+    ContextModel mathmod_;
+#endif
+#if HP_LISTMIX_MOD
+    ContextModel listmixmod_;
+#endif
+#if HP_PROTOCOL_MOD
+    ContextModel protocolmod_;
+#endif
+#if HP_HEXRUN_MOD
+    ContextModel hexrunmod_;
+#endif
+#if HP_SQDEPTH_MOD
+    ContextModel sqdepthmod_;
+#endif
+#if HP_PIPEROLE_MOD
+    ContextModel piperolemod_;
+#endif
+#if HP_AFTERREF_MOD
+    ContextModel afterrefmod_;
+#endif
+#if HP_SENTPOS_MOD
+    ContextModel sentposmod_;
+#endif
+#if HP_ABBREV_MOD
+    ContextModel abbrevmod_;
+#endif
+#if HP_THOUSAND_MOD
+    ContextModel thousandmod_;
+#endif
+#if HP_REFPUNCT_MOD
+    ContextModel refpunctmod_;
+#endif
+#if HP_QPERIOD_MOD
+    ContextModel qperiodmod_;
+#endif
+#if HP_ELLIPSIS_MOD
+    ContextModel ellipsismod_;
+#endif
+#if HP_NUMRANGE_MOD
+    ContextModel numrangemod_;
+#endif
+#if HP_DEG_MOD
+    ContextModel degmod_;
+#endif
+#if HP_PERCENT_MOD
+    ContextModel percentmod_;
+#endif
+#if HP_STATETRANS_MOD
+    ContextModel statetransmod_;
+#endif
+#if HP_COLRING_MOD
+    ContextModel colringmod_;
+#endif
+#if HP_LISTPARA_MOD
+    ContextModel listparamod_;
+#endif
+#if HP_SECFRAG_MOD
+    ContextModel secfragmod_;
+#endif
+#if HP_WIKIVAR_MOD
+    ContextModel wikivarmod_;
+#endif
+#if HP_SUBPAGE_MOD
+    ContextModel subpagemod_;
+#endif
+#if HP_LINKNS_MOD
+    ContextModel linknsmod_;
+#endif
+#if HP_FCCUR_MOD
+    ContextModel fccurmod_;
+#endif
+#if HP_PARAST_MOD
+    ContextModel parastmod_;
+#endif
+#if HP_BOLDST_MOD
+    ContextModel boldstmod_;
+#endif
+#if HP_HEADBOLD_MOD
+    ContextModel headboldmod_;
+#endif
+#if HP_BOLDLINE_MOD
+    ContextModel boldlinemod_;
+#endif
+#if HP_CAPPARA_MOD
+    ContextModel capparamod_;
+#endif
+#if HP_NESTPARA_MOD
+    ContextModel nestparamod_;
+#endif
+#if HP_CATPIPE_MOD
+    ContextModel catpipemod_;
+#endif
+#if HP_HEADPARA_MOD
+    ContextModel headparamod_;
+#endif
+#if HP_EXPECTCL_MOD
+    ContextModel expectclmod_;
+#endif
+#if HP_REFGROUP_MOD
+    ContextModel refgroupmod_;
+#endif
+#if HP_REFLIST_MOD
+    ContextModel reflistmod_;
+#endif
+#if HP_SISTER_MOD
+    ContextModel sistermod_;
+#endif
+#if HP_CONVERT_MOD
+    ContextModel convertmod_;
+#endif
+#if HP_CN_MOD
+    ContextModel cnmod_;
+#endif
+#if HP_BLOCK_MOD
+    ContextModel blockmod_;
+#endif
+#if HP_PIPETRICK_MOD
+    ContextModel pipetrickmod_;
+#endif
+#if HP_NOTES_MOD
+    ContextModel notesmod_;
+#endif
+#if HP_LANGTPL_MOD
+    ContextModel langtplmod_;
+#endif
+#if HP_FRAC_MOD
+    ContextModel fracmod_;
+#endif
+#if HP_LISTEN_MOD
+    ContextModel listenmod_;
+#endif
+#if HP_BIRTH_MOD
+    ContextModel birthmod_;
+#endif
+#if HP_HLIST_MOD
+    ContextModel hlistmod_;
+#endif
+#if HP_MAINART_MOD
+    ContextModel mainartmod_;
+#endif
+#if HP_CHEM_MOD
+    ContextModel chemmod_;
+#endif
+#if HP_SFN_MOD
+    ContextModel sfnmod_;
+#endif
+#if HP_GEOTEMP_MOD
+    ContextModel geotempmod_;
+#endif
+#if HP_EPIGRAPH_MOD
+    ContextModel epigraphmod_;
+#endif
+#if HP_TRACKLIST_MOD
+    ContextModel tracklistmod_;
+#endif
+#if HP_SUCCESSION_MOD
+    ContextModel successionmod_;
+#endif
+#if HP_COLSTART_MOD
+    ContextModel colstartmod_;
+#endif
+#if HP_TOC_MOD
+    ContextModel tocmod_;
+#endif
+#if HP_REFBEGIN_MOD
+    ContextModel refbeginmod_;
+#endif
+#if HP_SHORTDESC_MOD
+    ContextModel shortdescmod_;
+#endif
+#if HP_SEEALSO_MOD
+    ContextModel seealsomod_;
+#endif
+#if HP_PORTAL_MOD
+    ContextModel portalmod_;
+#endif
+#if HP_AUTHCTL_MOD
+    ContextModel authctlmod_;
+#endif
+#if HP_USEDATE_MOD
+    ContextModel usedatemod_;
+#endif
+#if HP_IPA_MOD
+    ContextModel ipamod_;
+#endif
+#if HP_GOODART_MOD
+    ContextModel goodartmod_;
+#endif
+#if HP_CAPTION_MOD
+    ContextModel captionmod_;
+#endif
+#if HP_NAVBOX_MOD
+    ContextModel navboxmod_;
+#endif
+#if HP_EFOOT_MOD
+    ContextModel efootmod_;
+#endif
+#if HP_RSHORT_MOD
+    ContextModel rshortmod_;
+#endif
+#if HP_ASOF_MOD
+    ContextModel asofmod_;
+#endif
+#if HP_CLARIFY_MOD
+    ContextModel clarifymod_;
+#endif
+#if HP_CURRENCY_MOD
+    ContextModel currencymod_;
+#endif
+#if HP_DISPLAYTITLE_MOD
+    ContextModel displaytitlemod_;
+#endif
+#if HP_NOWRAP_MOD
+    ContextModel nowrapmod_;
+#endif
+#if HP_STUB_MOD
+    ContextModel stubmod_;
+#endif
+#if HP_PERSONDATA_MOD
+    ContextModel persondatamod_;
+#endif
+#if HP_FLAG_MOD
+    ContextModel flagmod_;
+#endif
+#if HP_QUOTEBOX_MOD
+    ContextModel quoteboxmod_;
+#endif
+#if HP_CLEAR_MOD
+    ContextModel clearmod_;
+#endif
+#if HP_IMDB_MOD
+    ContextModel imdbmod_;
+#endif
+#if HP_RP_MOD
+    ContextModel rpmod_;
+#endif
+#if HP_FN_MOD
+    ContextModel fnmod_;
+#endif
+#if HP_SMALL_MOD
+    ContextModel smallmod_;
+#endif
+#if HP_SUPSUB_MOD
+    ContextModel supsubmod_;
+#endif
+#if HP_PRECODE_MOD
+    ContextModel precodemod_;
+#endif
+#if HP_TAXOBOX_MOD
+    ContextModel taxoboxmod_;
+#endif
+#if HP_NIHONGO_MOD
+    ContextModel nihongomod_;
+#endif
+#if HP_DEADLINK_MOD
+    ContextModel deadlinkmod_;
+#endif
+#if HP_WAYBACK_MOD
+    ContextModel waybackmod_;
+#endif
+#if HP_ROWSPAN_MOD
+    ContextModel rowspanmod_;
+#endif
+#if HP_UNREF_MOD
+    ContextModel unrefmod_;
+#endif
+#if HP_CLEANUP_MOD
+    ContextModel cleanupmod_;
+#endif
+#if HP_NPOV_MOD
+    ContextModel npovmod_;
+#endif
+#if HP_RFROM_MOD
+    ContextModel rfrommod_;
+#endif
+#if HP_DOI_MOD
+    ContextModel doimod_;
+#endif
+#if HP_PMID_MOD
+    ContextModel pmidmod_;
+#endif
+#if HP_ISBN_MOD
+    ContextModel isbnmod_;
+#endif
+#if HP_MEDAL_MOD
+    ContextModel medalmod_;
+#endif
+#if HP_THUMB_MOD
+    ContextModel thumbmod_;
+#endif
+#if HP_FURTHER_MOD
+    ContextModel furthermod_;
+#endif
+#if HP_DEATH_MOD
+    ContextModel deathmod_;
+#endif
+#if HP_HARV_MOD
+    ContextModel harvmod_;
+#endif
+#if HP_ISSN_MOD
+    ContextModel issnmod_;
+#endif
+#if HP_OCLC_MOD
+    ContextModel oclcmod_;
+#endif
+#if HP_ALIGN_MOD
+    ContextModel alignmod_;
+#endif
+#if HP_SYNTAX_MOD
+    ContextModel syntaxmod_;
+#endif
+#if HP_NULL_EXPERT
+    ContextModel nullexpert_;
 #endif
     MatchModel match_[kMatchModels];
 #if HP_SPARSE_UTF8

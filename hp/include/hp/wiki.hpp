@@ -55,6 +55,9 @@ class WikiMachine {
         prev2_ = prev1_;
         prev1_ = last_;
         last_ = c;
+#if HP_STATETRANS_MOD
+        prev_state_ = state_;
+#endif
 #if HP_WIKISTACK_MOD
         stack_feed(c);
 #endif
@@ -217,6 +220,9 @@ class WikiMachine {
 #if HP_LEAD_MOD
         if (first_of_line_ && c == '=') lead_ = 0;
 #endif
+#if HP_MAINART_MOD
+        if (first_of_line_ && c == '=') ma_seen_head_ = 1;
+#endif
 #if HP_HEADIDX_MOD
         if (first_of_line_ && c == '=') {
             if (!hi_on_ && headidx_ < 15) ++headidx_;
@@ -330,6 +336,961 @@ class WikiMachine {
             }
         }
 #endif
+#if HP_CONVERT_MOD || HP_CN_MOD || HP_REFLIST_MOD
+        if (prev1_ == '{' && c == '{') {
+            if (h39t_depth_ < 7) ++h39t_depth_;
+            h39t_n_ = 0;
+            h39t_col_ = 1;
+        } else if (prev1_ == '}' && c == '}') {
+            if (h39t_depth_ > 0) --h39t_depth_;
+#if HP_CONVERT_MOD
+            if (convert_ && h39t_depth_ < convert_d_) convert_ = 0;
+#endif
+#if HP_CN_MOD
+            if (cn_ && h39t_depth_ < cn_d_) cn_ = 0;
+#endif
+#if HP_REFLIST_MOD
+            if (reflist_ && rl_from_tpl_ && h39t_depth_ < rl_d_) {
+                reflist_ = 0;
+                rl_from_tpl_ = 0;
+            }
+#endif
+            h39t_col_ = 0;
+        } else if (h39t_col_) {
+            const int lc = c | 32;
+            if (lc >= 'a' && lc <= 'z' && h39t_n_ < 16) {
+                h39t_buf_[h39t_n_++] = static_cast<char>(lc);
+            } else if (c != ' ' && c != '_') {
+                h39t_col_ = 0;
+                auto teq = [&](const char* w, int n) {
+                    if (h39t_n_ != n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (h39t_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+#if HP_CONVERT_MOD
+                if (teq("convert", 7)) {
+                    convert_ = 1;
+                    convert_d_ = h39t_depth_;
+                }
+#endif
+#if HP_CN_MOD
+                if (teq("cn", 2)) {
+                    cn_ = 1;
+                    cn_d_ = h39t_depth_;
+                } else if (teq("citationneeded", 15)) {
+                    cn_ = 2;
+                    cn_d_ = h39t_depth_;
+                } else if (teq("fact", 4)) {
+                    cn_ = 3;
+                    cn_d_ = h39t_depth_;
+                } else if (teq("clarify", 7)) {
+                    cn_ = 4;
+                    cn_d_ = h39t_depth_;
+                }
+#endif
+#if HP_REFLIST_MOD
+                if (teq("reflist", 7)) {
+                    reflist_ = 1;
+                    rl_from_tpl_ = 1;
+                    rl_d_ = h39t_depth_;
+                }
+#endif
+            }
+        }
+#endif
+#if HP_NOTES_MOD || HP_LANGTPL_MOD || HP_FRAC_MOD || HP_LISTEN_MOD || \
+    HP_BIRTH_MOD || HP_HLIST_MOD || HP_MAINART_MOD
+        if (prev1_ == '{' && c == '{') {
+            if (h40t_depth_ < 7) ++h40t_depth_;
+            h40t_n_ = 0;
+            h40t_col_ = 1;
+        } else if (prev1_ == '}' && c == '}') {
+            if (h40t_depth_ > 0) --h40t_depth_;
+#if HP_NOTES_MOD
+            if (notes_ && h40t_depth_ < notes_d_) notes_ = 0;
+#endif
+#if HP_LANGTPL_MOD
+            if (langtpl_ && h40t_depth_ < langtpl_d_) langtpl_ = 0;
+#endif
+#if HP_FRAC_MOD
+            if (frac_ && h40t_depth_ < frac_d_) frac_ = 0;
+#endif
+#if HP_LISTEN_MOD
+            if (listen_ && listen_ < 3 && h40t_depth_ < listen_d_) listen_ = 0;
+#endif
+#if HP_BIRTH_MOD
+            if (birth_ && h40t_depth_ < birth_d_) birth_ = 0;
+#endif
+#if HP_HLIST_MOD
+            if (hlist_ && h40t_depth_ < hlist_d_) hlist_ = 0;
+#endif
+#if HP_MAINART_MOD
+            if (mainart_ && h40t_depth_ < mainart_d_) mainart_ = 0;
+#endif
+            h40t_col_ = 0;
+        } else if (h40t_col_) {
+            const int lc = c | 32;
+            if (lc >= 'a' && lc <= 'z' && h40t_n_ < 16) {
+                h40t_buf_[h40t_n_++] = static_cast<char>(lc);
+            } else if (c != ' ' && c != '_' && c != '-') {
+                h40t_col_ = 0;
+                auto teq = [&](const char* w, int n) {
+                    if (h40t_n_ != n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (h40t_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+#if HP_LANGTPL_MOD || HP_BIRTH_MOD
+                auto tpre = [&](const char* w, int n) {
+                    if (h40t_n_ < n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (h40t_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+#endif
+#if HP_NOTES_MOD
+                if (teq("notelist", 8)) {
+                    notes_ = 1;
+                    notes_d_ = h40t_depth_;
+                } else if (teq("notes", 5)) {
+                    notes_ = 2;
+                    notes_d_ = h40t_depth_;
+                } else if (teq("notefoot", 8)) {
+                    notes_ = 3;
+                    notes_d_ = h40t_depth_;
+                }
+#endif
+#if HP_LANGTPL_MOD
+                if (teq("lang", 4)) {
+                    langtpl_ = 1;
+                    langtpl_d_ = h40t_depth_;
+                } else if (h40t_n_ >= 6 && h40t_n_ <= 7 && tpre("lang", 4)) {
+                    int rest_ok = 1;
+                    for (int i = 4; i < h40t_n_; ++i) {
+                        const int ch = h40t_buf_[i];
+                        if (ch < 'a' || ch > 'z') rest_ok = 0;
+                    }
+                    if (rest_ok) {
+                        langtpl_ = 2;
+                        langtpl_d_ = h40t_depth_;
+                    }
+                }
+#endif
+#if HP_FRAC_MOD
+                if (teq("frac", 4)) {
+                    frac_ = 1;
+                    frac_d_ = h40t_depth_;
+                } else if (teq("sfrac", 5)) {
+                    frac_ = 2;
+                    frac_d_ = h40t_depth_;
+                }
+#endif
+#if HP_LISTEN_MOD
+                if (teq("listen", 6)) {
+                    listen_ = 1;
+                    listen_d_ = h40t_depth_;
+                } else if (teq("audio", 5)) {
+                    listen_ = 2;
+                    listen_d_ = h40t_depth_;
+                }
+#endif
+#if HP_BIRTH_MOD
+                if (tpre("birthdate", 9)) {
+                    birth_ = 1;
+                    birth_d_ = h40t_depth_;
+                } else if (tpre("deathdate", 9)) {
+                    birth_ = 2;
+                    birth_d_ = h40t_depth_;
+                }
+#endif
+#if HP_HLIST_MOD
+                if (teq("hlist", 5)) {
+                    hlist_ = 1;
+                    hlist_d_ = h40t_depth_;
+                } else if (teq("plainlist", 9)) {
+                    hlist_ = 2;
+                    hlist_d_ = h40t_depth_;
+                } else if (teq("unbulletedlist", 14)) {
+                    hlist_ = 3;
+                    hlist_d_ = h40t_depth_;
+                }
+#endif
+#if HP_MAINART_MOD
+                if (ma_seen_head_) {
+                    if (teq("main", 4)) {
+                        mainart_ = 1;
+                        mainart_d_ = h40t_depth_;
+                    } else if (teq("seealso", 7)) {
+                        mainart_ = 2;
+                        mainart_d_ = h40t_depth_;
+                    } else if (teq("further", 7)) {
+                        mainart_ = 3;
+                        mainart_d_ = h40t_depth_;
+                    }
+                }
+#endif
+            }
+        }
+#endif
+#if HP_SFN_MOD || HP_GEOTEMP_MOD || HP_EPIGRAPH_MOD || HP_TRACKLIST_MOD || \
+    HP_SUCCESSION_MOD || HP_COLSTART_MOD || HP_REFBEGIN_MOD
+        if (prev1_ == '{' && c == '{') {
+            if (h41t_depth_ < 7) ++h41t_depth_;
+            h41t_n_ = 0;
+            h41t_col_ = 1;
+        } else if (prev1_ == '}' && c == '}') {
+            if (h41t_depth_ > 0) --h41t_depth_;
+#if HP_SFN_MOD
+            if (sfn_ && h41t_depth_ < sfn_d_) sfn_ = 0;
+#endif
+#if HP_GEOTEMP_MOD
+            if (geotemp_ && h41t_depth_ < geotemp_d_) geotemp_ = 0;
+#endif
+#if HP_EPIGRAPH_MOD
+            if (epigraph_ && h41t_depth_ < epigraph_d_) epigraph_ = 0;
+#endif
+#if HP_TRACKLIST_MOD
+            if (tracklist_ && h41t_depth_ < tracklist_d_) tracklist_ = 0;
+#endif
+#if HP_SUCCESSION_MOD
+            if (succession_ && h41t_depth_ < succession_d_) succession_ = 0;
+#endif
+#if HP_COLSTART_MOD
+            if (colstart_ && h41t_depth_ < colstart_d_) colstart_ = 0;
+#endif
+            h41t_col_ = 0;
+        } else if (h41t_col_) {
+            const int lc = c | 32;
+            if (lc >= 'a' && lc <= 'z' && h41t_n_ < 16) {
+                h41t_buf_[h41t_n_++] = static_cast<char>(lc);
+            } else if (c != ' ' && c != '_' && c != '-') {
+                h41t_col_ = 0;
+                auto teq = [&](const char* w, int n) {
+                    if (h41t_n_ != n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (h41t_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+#if HP_SFN_MOD
+                if (teq("sfn", 3)) {
+                    sfn_ = 1;
+                    sfn_d_ = h41t_depth_;
+                } else if (teq("harvnb", 6)) {
+                    sfn_ = 2;
+                    sfn_d_ = h41t_depth_;
+                } else if (teq("harv", 4)) {
+                    sfn_ = 3;
+                    sfn_d_ = h41t_depth_;
+                }
+#endif
+#if HP_GEOTEMP_MOD
+                if (teq("coord", 5)) {
+                    geotemp_ = 1;
+                    geotemp_d_ = h41t_depth_;
+                }
+#endif
+#if HP_EPIGRAPH_MOD
+                if (teq("quotebox", 8)) {
+                    epigraph_ = 1;
+                    epigraph_d_ = h41t_depth_;
+                } else if (teq("cquote", 6)) {
+                    epigraph_ = 2;
+                    epigraph_d_ = h41t_depth_;
+                } else if (teq("blockquote", 10)) {
+                    epigraph_ = 3;
+                    epigraph_d_ = h41t_depth_;
+                }
+#endif
+#if HP_TRACKLIST_MOD
+                if (teq("tracklist", 9)) {
+                    tracklist_ = 1;
+                    tracklist_d_ = h41t_depth_;
+                } else if (teq("tracklisting", 12)) {
+                    tracklist_ = 2;
+                    tracklist_d_ = h41t_depth_;
+                }
+#endif
+#if HP_SUCCESSION_MOD
+                if (teq("sstart", 6)) {
+                    succession_ = 1;
+                    succession_d_ = h41t_depth_;
+                } else if (teq("successionbox", 14)) {
+                    succession_ = 2;
+                    succession_d_ = h41t_depth_;
+                } else if (teq("sbef", 4)) {
+                    succession_ = 3;
+                    succession_d_ = h41t_depth_;
+                } else if (teq("sttl", 4)) {
+                    succession_ = 4;
+                    succession_d_ = h41t_depth_;
+                }
+#endif
+#if HP_COLSTART_MOD
+                if (teq("colbegin", 8)) {
+                    colstart_ = 1;
+                    colstart_d_ = h41t_depth_;
+                } else if (teq("divcol", 6)) {
+                    colstart_ = 2;
+                    colstart_d_ = h41t_depth_;
+                } else if (teq("columnslist", 11)) {
+                    colstart_ = 3;
+                    colstart_d_ = h41t_depth_;
+                }
+#endif
+#if HP_REFBEGIN_MOD
+                if (teq("refbegin", 8))
+                    refbegin_ = 1;
+                else if (teq("refend", 6))
+                    refbegin_ = 0;
+#endif
+            }
+        }
+#endif
+#if HP_TOC_MOD
+        if (c == '_' && prev1_ == '_') {
+            if (toc_col_) {
+                auto teq = [&](const char* w, int n) {
+                    if (toc_n_ != n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (toc_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+                if (teq("toc", 3)) toc_ = 1;
+                else if (teq("notoc", 5)) toc_ = 2;
+                else if (teq("forcetoc", 8)) toc_ = 3;
+                toc_col_ = 0;
+                toc_n_ = 0;
+            } else {
+                toc_col_ = 1;
+                toc_n_ = 0;
+            }
+        } else if (toc_col_) {
+            const int lc = c | 32;
+            if (lc >= 'a' && lc <= 'z' && toc_n_ < 12)
+                toc_buf_[toc_n_++] = static_cast<char>(lc);
+            else if (c != '_')
+                toc_col_ = 0;
+        }
+#endif
+#if HP_SHORTDESC_MOD || HP_SEEALSO_MOD || HP_PORTAL_MOD || HP_AUTHCTL_MOD || \
+    HP_USEDATE_MOD || HP_IPA_MOD || HP_GOODART_MOD || HP_CAPTION_MOD
+        if (prev1_ == '{' && c == '{') {
+            if (h42t_depth_ < 7) ++h42t_depth_;
+            h42t_n_ = 0;
+            h42t_col_ = 1;
+#if HP_CAPTION_MOD
+            cap_key_on_ = 0;
+            cap_key_n_ = 0;
+#endif
+        } else if (prev1_ == '}' && c == '}') {
+            if (h42t_depth_ > 0) --h42t_depth_;
+#if HP_SHORTDESC_MOD
+            if (shortdesc_ && h42t_depth_ < shortdesc_d_) shortdesc_ = 0;
+#endif
+#if HP_SEEALSO_MOD
+            if (seealso_ && h42t_depth_ < seealso_d_) seealso_ = 0;
+#endif
+#if HP_PORTAL_MOD
+            if (portal_ && h42t_depth_ < portal_d_) portal_ = 0;
+#endif
+#if HP_AUTHCTL_MOD
+            if (authctl_ && h42t_depth_ < authctl_d_) authctl_ = 0;
+#endif
+#if HP_IPA_MOD
+            if (ipa_ && h42t_depth_ < ipa_d_) ipa_ = 0;
+#endif
+#if HP_CAPTION_MOD
+            if (caption_ && h42t_depth_ < caption_d_) caption_ = 0;
+            cap_key_on_ = 0;
+            cap_key_n_ = 0;
+            if (h42t_depth_ == 0) cap_sq_ = 0;
+#endif
+            h42t_col_ = 0;
+        } else if (h42t_col_) {
+            const int lc = c | 32;
+            if (lc >= 'a' && lc <= 'z' && h42t_n_ < 20) {
+                h42t_buf_[h42t_n_++] = static_cast<char>(lc);
+            } else if (c != ' ' && c != '_' && c != '-') {
+                h42t_col_ = 0;
+                auto teq = [&](const char* w, int n) {
+                    if (h42t_n_ != n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (h42t_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+                auto tpre = [&](const char* w, int n) {
+                    if (h42t_n_ < n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (h42t_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+#if HP_SHORTDESC_MOD
+                if (teq("shortdescription", 16)) {
+                    shortdesc_ = 1;
+                    shortdesc_d_ = h42t_depth_;
+                } else if (teq("shortdesc", 9)) {
+                    shortdesc_ = 2;
+                    shortdesc_d_ = h42t_depth_;
+                }
+#endif
+#if HP_SEEALSO_MOD
+                if (teq("seealso", 7)) {
+                    seealso_ = 1;
+                    seealso_d_ = h42t_depth_;
+                } else if (teq("further", 7)) {
+                    seealso_ = 2;
+                    seealso_d_ = h42t_depth_;
+                }
+#endif
+#if HP_PORTAL_MOD
+                if (teq("portalbar", 9)) {
+                    portal_ = 2;
+                    portal_d_ = h42t_depth_;
+                } else if (teq("portal", 6)) {
+                    portal_ = 1;
+                    portal_d_ = h42t_depth_;
+                }
+#endif
+#if HP_AUTHCTL_MOD
+                if (teq("authoritycontrol", 16)) {
+                    authctl_ = 1;
+                    authctl_d_ = h42t_depth_;
+                }
+#endif
+#if HP_USEDATE_MOD
+                if (tpre("usedmy", 6))
+                    usedate_ = 1;
+                else if (tpre("usemdy", 6))
+                    usedate_ = 2;
+                else if (tpre("useymd", 6))
+                    usedate_ = 3;
+#endif
+#if HP_IPA_MOD
+                if (teq("ipa", 3)) {
+                    ipa_ = 1;
+                    ipa_d_ = h42t_depth_;
+                } else if (teq("ipacen", 6)) {
+                    ipa_ = 2;
+                    ipa_d_ = h42t_depth_;
+                } else if (teq("pronen", 6)) {
+                    ipa_ = 3;
+                    ipa_d_ = h42t_depth_;
+                }
+#endif
+#if HP_GOODART_MOD
+                if (teq("goodarticle", 11))
+                    goodart_ = 1;
+                else if (teq("ga", 2))
+                    goodart_ = 2;
+                else if (teq("featuredarticle", 15))
+                    goodart_ = 3;
+#endif
+#if HP_CAPTION_MOD
+                if (c == '|') {
+                    if (caption_ && h42t_depth_ == caption_d_) caption_ = 0;
+                    cap_key_on_ = 1;
+                    cap_key_n_ = 0;
+                }
+#endif
+            }
+        }
+#if HP_CAPTION_MOD
+        else if (h42t_depth_ > 0) {
+            if (prev1_ == '[' && c == '[') {
+                if (cap_sq_ < 7) ++cap_sq_;
+            } else if (prev1_ == ']' && c == ']') {
+                if (cap_sq_ > 0) --cap_sq_;
+            }
+            if (cap_sq_ == 0 && c == '|') {
+                if (caption_ && h42t_depth_ == caption_d_) caption_ = 0;
+                cap_key_on_ = 1;
+                cap_key_n_ = 0;
+            } else if (cap_key_on_) {
+                const int lc = c | 32;
+                if (lc >= 'a' && lc <= 'z' && cap_key_n_ < 16) {
+                    cap_key_[cap_key_n_++] = static_cast<char>(lc);
+                } else if (c == '=') {
+                    cap_key_on_ = 0;
+                    auto keq = [&](const char* w, int n) {
+                        if (cap_key_n_ != n) return 0;
+                        for (int i = 0; i < n; ++i)
+                            if (cap_key_[i] != w[i]) return 0;
+                        return 1;
+                    };
+                    if (keq("caption", 7)) {
+                        caption_ = 1;
+                        caption_d_ = h42t_depth_;
+                    } else if (keq("imagecaption", 13)) {
+                        caption_ = 2;
+                        caption_d_ = h42t_depth_;
+                    }
+                } else if (c != ' ' && c != '_' && c != '-') {
+                    cap_key_on_ = 0;
+                }
+            }
+        }
+#endif
+#endif
+#if HP_NAVBOX_MOD || HP_EFOOT_MOD || HP_RSHORT_MOD || HP_ASOF_MOD || \
+    HP_CLARIFY_MOD || HP_CURRENCY_MOD || HP_DISPLAYTITLE_MOD || HP_NOWRAP_MOD || \
+    HP_STUB_MOD || HP_PERSONDATA_MOD || HP_FLAG_MOD || HP_QUOTEBOX_MOD || \
+    HP_CLEAR_MOD || HP_IMDB_MOD || HP_RP_MOD || HP_FN_MOD || \
+    HP_TAXOBOX_MOD || HP_NIHONGO_MOD || HP_DEADLINK_MOD || HP_WAYBACK_MOD || \
+    HP_UNREF_MOD || HP_CLEANUP_MOD || HP_NPOV_MOD || HP_RFROM_MOD || \
+    HP_DOI_MOD || HP_PMID_MOD || HP_MEDAL_MOD || \
+    HP_FURTHER_MOD || HP_DEATH_MOD || HP_HARV_MOD
+        if (prev1_ == '{' && c == '{') {
+            if (h43t_depth_ < 7) ++h43t_depth_;
+            h43t_n_ = 0;
+            h43t_col_ = 1;
+#if HP_CLEAR_MOD
+            h43t_dash_ = 0;
+#endif
+        } else if (prev1_ == '}' && c == '}') {
+            if (h43t_depth_ > 0) --h43t_depth_;
+#if HP_NAVBOX_MOD
+            if (navbox_ && h43t_depth_ < navbox_d_) navbox_ = 0;
+#endif
+#if HP_EFOOT_MOD
+            if (efoot_ && h43t_depth_ < efoot_d_) efoot_ = 0;
+#endif
+#if HP_RSHORT_MOD
+            if (rshort_ && h43t_depth_ < rshort_d_) rshort_ = 0;
+#endif
+#if HP_ASOF_MOD
+            if (asof_ && h43t_depth_ < asof_d_) asof_ = 0;
+#endif
+#if HP_CLARIFY_MOD
+            if (clarify_ && h43t_depth_ < clarify_d_) clarify_ = 0;
+#endif
+#if HP_CURRENCY_MOD
+            if (currency_ && h43t_depth_ < currency_d_) currency_ = 0;
+#endif
+#if HP_NOWRAP_MOD
+            if (nowrap_ && h43t_depth_ < nowrap_d_) nowrap_ = 0;
+#endif
+#if HP_PERSONDATA_MOD
+            if (persondata_ && h43t_depth_ < persondata_d_) persondata_ = 0;
+#endif
+#if HP_FLAG_MOD
+            if (flag_ && h43t_depth_ < flag_d_) flag_ = 0;
+#endif
+#if HP_QUOTEBOX_MOD
+            if (quotebox_ && h43t_depth_ < quotebox_d_) quotebox_ = 0;
+#endif
+#if HP_IMDB_MOD
+            if (imdb_ && h43t_depth_ < imdb_d_) imdb_ = 0;
+#endif
+#if HP_RP_MOD
+            if (rp_ && h43t_depth_ < rp_d_) rp_ = 0;
+#endif
+#if HP_FN_MOD
+            if (fn_ && h43t_depth_ < fn_d_) fn_ = 0;
+#endif
+#if HP_TAXOBOX_MOD
+            if (taxobox_ && h43t_depth_ < taxobox_d_) taxobox_ = 0;
+#endif
+#if HP_NIHONGO_MOD
+            if (nihongo_ && h43t_depth_ < nihongo_d_) nihongo_ = 0;
+#endif
+#if HP_DEADLINK_MOD
+            if (deadlink_ && h43t_depth_ < deadlink_d_) deadlink_ = 0;
+#endif
+#if HP_WAYBACK_MOD
+            if (wayback_ && h43t_depth_ < wayback_d_) wayback_ = 0;
+#endif
+#if HP_UNREF_MOD
+            if (unref_ && h43t_depth_ < unref_d_) unref_ = 0;
+#endif
+#if HP_CLEANUP_MOD
+            if (cleanup_ && h43t_depth_ < cleanup_d_) cleanup_ = 0;
+#endif
+#if HP_NPOV_MOD
+            if (npov_ && h43t_depth_ < npov_d_) npov_ = 0;
+#endif
+#if HP_RFROM_MOD
+            if (rfrom_ && h43t_depth_ < rfrom_d_) rfrom_ = 0;
+#endif
+#if HP_DOI_MOD
+            if (doi_ && doi_d_ && h43t_depth_ < doi_d_) doi_ = 0;
+#endif
+#if HP_PMID_MOD
+            if (pmid_ && pmid_d_ && h43t_depth_ < pmid_d_) pmid_ = 0;
+#endif
+#if HP_MEDAL_MOD
+            if (medal_ && h43t_depth_ < medal_d_) medal_ = 0;
+#endif
+#if HP_FURTHER_MOD
+            if (further_ && h43t_depth_ < further_d_) further_ = 0;
+#endif
+#if HP_DEATH_MOD
+            if (death_ && h43t_depth_ < death_d_) death_ = 0;
+#endif
+#if HP_HARV_MOD
+            if (harv_ && h43t_depth_ < harv_d_) harv_ = 0;
+#endif
+            h43t_col_ = 0;
+        } else if (h43t_col_) {
+            const int lc = c | 32;
+            if (lc >= 'a' && lc <= 'z' && h43t_n_ < 20) {
+                h43t_buf_[h43t_n_++] = static_cast<char>(lc);
+#if HP_CLEAR_MOD
+            } else if (c == '-' && h43t_n_ == 0) {
+                h43t_dash_ = 1;
+#endif
+            } else if (c != ' ' && c != '_' && c != '-') {
+                h43t_col_ = 0;
+                auto teq = [&](const char* w, int n) {
+                    if (h43t_n_ != n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (h43t_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+                auto tpre = [&](const char* w, int n) {
+                    if (h43t_n_ < n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (h43t_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+#if HP_NAVBOX_MOD
+                if (tpre("navbox", 6)) {
+                    navbox_ = 1;
+                    navbox_d_ = h43t_depth_;
+                } else if (tpre("sidebar", 7)) {
+                    navbox_ = 2;
+                    navbox_d_ = h43t_depth_;
+                }
+#endif
+#if HP_EFOOT_MOD
+                if (tpre("efn", 3)) {
+                    efoot_ = 1;
+                    efoot_d_ = h43t_depth_;
+                } else if (teq("notelist", 8)) {
+                    efoot_ = 2;
+                    efoot_d_ = h43t_depth_;
+                } else if (teq("notefoot", 8)) {
+                    efoot_ = 3;
+                    efoot_d_ = h43t_depth_;
+                }
+#endif
+#if HP_RSHORT_MOD
+                if (teq("r", 1) && (c == '|' || c == '}')) {
+                    rshort_ = 1;
+                    rshort_d_ = h43t_depth_;
+                }
+#endif
+#if HP_ASOF_MOD
+                if (teq("asof", 4)) {
+                    asof_ = 1;
+                    asof_d_ = h43t_depth_;
+                }
+#endif
+#if HP_CLARIFY_MOD
+                if (teq("clarify", 7)) {
+                    clarify_ = 1;
+                    clarify_d_ = h43t_depth_;
+                } else if (teq("who", 3)) {
+                    clarify_ = 2;
+                    clarify_d_ = h43t_depth_;
+                } else if (teq("which", 5)) {
+                    clarify_ = 3;
+                    clarify_d_ = h43t_depth_;
+                } else if (teq("when", 4)) {
+                    clarify_ = 4;
+                    clarify_d_ = h43t_depth_;
+                }
+#endif
+#if HP_CURRENCY_MOD
+                if (teq("usd", 3)) {
+                    currency_ = 1;
+                    currency_d_ = h43t_depth_;
+                } else if (teq("gbp", 3)) {
+                    currency_ = 2;
+                    currency_d_ = h43t_depth_;
+                } else if (teq("eur", 3)) {
+                    currency_ = 3;
+                    currency_d_ = h43t_depth_;
+                } else if (tpre("currency", 8)) {
+                    currency_ = 4;
+                    currency_d_ = h43t_depth_;
+                }
+#endif
+#if HP_DISPLAYTITLE_MOD
+                if (teq("displaytitle", 12))
+                    displaytitle_ = 1;
+                else if (tpre("italictitle", 11))
+                    displaytitle_ = 2;
+                else if (tpre("lowercase", 9))
+                    displaytitle_ = 3;
+#endif
+#if HP_NOWRAP_MOD
+                if (teq("nowrap", 6)) {
+                    nowrap_ = 1;
+                    nowrap_d_ = h43t_depth_;
+                } else if (teq("nobold", 6)) {
+                    nowrap_ = 2;
+                    nowrap_d_ = h43t_depth_;
+                } else if (teq("noitalic", 8)) {
+                    nowrap_ = 3;
+                    nowrap_d_ = h43t_depth_;
+                }
+#endif
+#if HP_STUB_MOD
+                if (teq("stub", 4)) {
+                    stub_ = 1;
+                } else if (h43t_n_ >= 4) {
+                    int ok = 1;
+                    const char* sw = "stub";
+                    for (int i = 0; i < 4; ++i)
+                        if (h43t_buf_[h43t_n_ - 4 + i] != sw[i]) ok = 0;
+                    if (ok) stub_ = 2;
+                }
+#endif
+#if HP_PERSONDATA_MOD
+                if (tpre("persondata", 10)) {
+                    persondata_ = 1;
+                    persondata_d_ = h43t_depth_;
+                }
+#endif
+#if HP_FLAG_MOD
+                if (tpre("flagcountry", 11)) {
+                    flag_ = 4;
+                    flag_d_ = h43t_depth_;
+                } else if (tpre("flagicon", 8)) {
+                    flag_ = 2;
+                    flag_d_ = h43t_depth_;
+                } else if (tpre("flagu", 5)) {
+                    flag_ = 3;
+                    flag_d_ = h43t_depth_;
+                } else if (tpre("flag", 4)) {
+                    flag_ = 1;
+                    flag_d_ = h43t_depth_;
+                }
+#endif
+#if HP_QUOTEBOX_MOD
+                if (tpre("quotebox", 8)) {
+                    quotebox_ = 4;
+                    quotebox_d_ = h43t_depth_;
+                } else if (tpre("quotation", 9)) {
+                    quotebox_ = 3;
+                    quotebox_d_ = h43t_depth_;
+                } else if (teq("cquote", 6)) {
+                    quotebox_ = 2;
+                    quotebox_d_ = h43t_depth_;
+                } else if (tpre("quote", 5)) {
+                    quotebox_ = 1;
+                    quotebox_d_ = h43t_depth_;
+                }
+#endif
+#if HP_CLEAR_MOD
+                if ((h43t_dash_ && h43t_n_ == 0) ||
+                    (h43t_n_ == 1 && h43t_buf_[0] == '-')) {
+                    clear_ = 3;
+                } else if (tpre("clear", 5)) {
+                    clear_ = 1;
+                } else if (teq("clr", 3)) {
+                    clear_ = 2;
+                }
+#endif
+#if HP_IMDB_MOD
+                if (tpre("imdbtitle", 9)) {
+                    imdb_ = 2;
+                    imdb_d_ = h43t_depth_;
+                } else if (tpre("imdbname", 8)) {
+                    imdb_ = 3;
+                    imdb_d_ = h43t_depth_;
+                } else if (tpre("imdb", 4)) {
+                    imdb_ = 1;
+                    imdb_d_ = h43t_depth_;
+                }
+#endif
+#if HP_RP_MOD
+                if (teq("rp", 2) && (c == '|' || c == '}')) {
+                    rp_ = 1;
+                    rp_d_ = h43t_depth_;
+                }
+#endif
+#if HP_FN_MOD
+                if (teq("fnb", 3)) {
+                    fn_ = 2;
+                    fn_d_ = h43t_depth_;
+                } else if (teq("fn", 2)) {
+                    fn_ = 1;
+                    fn_d_ = h43t_depth_;
+                } else if (teq("reflabel", 8)) {
+                    fn_ = 3;
+                    fn_d_ = h43t_depth_;
+                } else if (teq("notelabel", 9)) {
+                    fn_ = 4;
+                    fn_d_ = h43t_depth_;
+                }
+#endif
+#if HP_TAXOBOX_MOD
+                if (tpre("taxobox", 7)) {
+                    taxobox_ = 1;
+                    taxobox_d_ = h43t_depth_;
+                }
+#endif
+#if HP_NIHONGO_MOD
+                if (tpre("nihongo", 7)) {
+                    nihongo_ = 1;
+                    nihongo_d_ = h43t_depth_;
+                } else if (tpre("korean", 6)) {
+                    nihongo_ = 2;
+                    nihongo_d_ = h43t_depth_;
+                } else if (tpre("chinese", 7)) {
+                    nihongo_ = 3;
+                    nihongo_d_ = h43t_depth_;
+                }
+#endif
+#if HP_DEADLINK_MOD
+                if (teq("deadlink", 8)) {
+                    deadlink_ = 1;
+                    deadlink_d_ = h43t_depth_;
+                } else if (teq("brokenlink", 10)) {
+                    deadlink_ = 2;
+                    deadlink_d_ = h43t_depth_;
+                }
+#endif
+#if HP_WAYBACK_MOD
+                if (tpre("wayback", 7)) {
+                    wayback_ = 1;
+                    wayback_d_ = h43t_depth_;
+                } else if (tpre("webarchive", 10)) {
+                    wayback_ = 2;
+                    wayback_d_ = h43t_depth_;
+                } else if (tpre("dmoz", 4)) {
+                    wayback_ = 3;
+                    wayback_d_ = h43t_depth_;
+                }
+#endif
+#if HP_UNREF_MOD
+                if (tpre("unreferenced", 12)) {
+                    unref_ = 1;
+                    unref_d_ = h43t_depth_;
+                } else if (teq("unref", 5)) {
+                    unref_ = 2;
+                    unref_d_ = h43t_depth_;
+                } else if (tpre("refimprove", 10)) {
+                    unref_ = 3;
+                    unref_d_ = h43t_depth_;
+                }
+#endif
+#if HP_CLEANUP_MOD
+                if (tpre("cleanup", 7)) {
+                    cleanup_ = 1;
+                    cleanup_d_ = h43t_depth_;
+                } else if (tpre("wikify", 6)) {
+                    cleanup_ = 2;
+                    cleanup_d_ = h43t_depth_;
+                } else if (tpre("orphan", 6)) {
+                    cleanup_ = 3;
+                    cleanup_d_ = h43t_depth_;
+                }
+#endif
+#if HP_NPOV_MOD
+                if (tpre("npov", 4)) {
+                    npov_ = 1;
+                    npov_d_ = h43t_depth_;
+                } else if (tpre("pov", 3)) {
+                    npov_ = 2;
+                    npov_d_ = h43t_depth_;
+                } else if (teq("coi", 3)) {
+                    npov_ = 3;
+                    npov_d_ = h43t_depth_;
+                } else if (tpre("advert", 6)) {
+                    npov_ = 4;
+                    npov_d_ = h43t_depth_;
+                }
+#endif
+#if HP_RFROM_MOD
+                if (tpre("rfrom", 5)) {
+                    rfrom_ = 1;
+                    rfrom_d_ = h43t_depth_;
+                } else if (tpre("rto", 3)) {
+                    rfrom_ = 2;
+                    rfrom_d_ = h43t_depth_;
+                } else if (tpre("softredirect", 12)) {
+                    rfrom_ = 3;
+                    rfrom_d_ = h43t_depth_;
+                }
+#endif
+#if HP_DOI_MOD
+                if (teq("doi", 3)) {
+                    doi_ = 2;
+                    doi_d_ = h43t_depth_;
+                } else if (tpre("citedoi", 7)) {
+                    doi_ = 3;
+                    doi_d_ = h43t_depth_;
+                }
+#endif
+#if HP_PMID_MOD
+                if (teq("pmid", 4)) {
+                    pmid_ = 3;
+                    pmid_d_ = h43t_depth_;
+                } else if (teq("pmc", 3)) {
+                    pmid_ = 4;
+                    pmid_d_ = h43t_depth_;
+                }
+#endif
+#if HP_MEDAL_MOD
+                if (tpre("medal", 5)) {
+                    medal_ = 1;
+                    medal_d_ = h43t_depth_;
+                } else if (tpre("gold", 4)) {
+                    medal_ = 2;
+                    medal_d_ = h43t_depth_;
+                } else if (tpre("silver", 6)) {
+                    medal_ = 3;
+                    medal_d_ = h43t_depth_;
+                } else if (tpre("bronze", 6)) {
+                    medal_ = 4;
+                    medal_d_ = h43t_depth_;
+                }
+#endif
+#if HP_FURTHER_MOD
+                if (tpre("further", 7)) {
+                    further_ = 1;
+                    further_d_ = h43t_depth_;
+                } else if (tpre("details", 7)) {
+                    further_ = 2;
+                    further_d_ = h43t_depth_;
+                } else if (teq("more", 4) && (c == '|' || c == '}')) {
+                    further_ = 3;
+                    further_d_ = h43t_depth_;
+                }
+#endif
+#if HP_DEATH_MOD
+                if (tpre("deathdate", 9)) {
+                    death_ = 1;
+                    death_d_ = h43t_depth_;
+                } else if (tpre("deathyear", 9)) {
+                    death_ = 2;
+                    death_d_ = h43t_depth_;
+                } else if (teq("dda", 3)) {
+                    death_ = 3;
+                    death_d_ = h43t_depth_;
+                }
+#endif
+#if HP_HARV_MOD
+                if (tpre("harvnb", 6)) {
+                    harv_ = 2;
+                    harv_d_ = h43t_depth_;
+                } else if (tpre("harvtxt", 7)) {
+                    harv_ = 3;
+                    harv_d_ = h43t_depth_;
+                } else if (tpre("harvp", 5)) {
+                    harv_ = 4;
+                    harv_d_ = h43t_depth_;
+                } else if (tpre("harv", 4)) {
+                    harv_ = 1;
+                    harv_d_ = h43t_depth_;
+                }
+#endif
+            }
+        }
+#endif
 #if HP_SECLEVEL_MOD
         if (c == '\n') {
             sl_run_ = 0;
@@ -412,6 +1373,631 @@ class WikiMachine {
         } else {
             urlpart_ = 0;
         }
+#endif
+#if HP_PRESPACE_MOD
+        if (c == '\n')
+            prespace_ = 0;
+        else if (first_of_line_ && (c == ' ' || c == '\t'))
+            prespace_ = 1;
+#endif
+#if HP_EXTDISP_MOD
+        if (ed_pend_) {
+            ed_pend_ = 0;
+            if (c != '[') {
+                ed_on_ = 1;
+                extdisp_ = 0;
+                ed_slash_ = 0;
+            }
+        }
+        if (ed_on_) {
+            if (c == ']' || c == '\n') {
+                ed_on_ = 0;
+                extdisp_ = 0;
+                ed_slash_ = 0;
+            } else if (c == '/' && prev1_ == '/') {
+                ed_slash_ = 1;
+            } else if (c == ' ' && ed_slash_) {
+                extdisp_ = 1;
+            }
+        }
+        if (c == '[' && prev1_ != '[') ed_pend_ = 1;
+#endif
+#if HP_PXSIZE_MOD
+        if (c >= '0' && c <= '9') {
+            if (px_n_ < 4) {
+                px_acc_ = px_acc_ * 10 + (c - '0');
+                ++px_n_;
+            }
+            px_p_ = 0;
+        } else if (px_n_ && (c | 32) == 'p') {
+            px_p_ = 1;
+        } else if (px_p_ && (c | 32) == 'x') {
+            int v = px_acc_;
+            int b = 8;
+            if (v <= 16) b = 1;
+            else if (v <= 32) b = 2;
+            else if (v <= 64) b = 3;
+            else if (v <= 120) b = 4;
+            else if (v <= 180) b = 5;
+            else if (v <= 250) b = 6;
+            else if (v <= 400) b = 7;
+            pxsize_ = b;
+            px_n_ = 0;
+            px_p_ = 0;
+            px_acc_ = 0;
+        } else {
+            px_n_ = 0;
+            px_p_ = 0;
+            px_acc_ = 0;
+        }
+#endif
+#if HP_ENTNUM_MOD
+        if (c == '&') {
+            en_st_ = 1;
+            entnum_ = 0;
+        } else if (en_st_ == 1) {
+            en_st_ = (c == '#') ? 2 : 0;
+        } else if (en_st_ == 2) {
+            if (c == 'x' || c == 'X') {
+                en_st_ = 3;
+                entnum_ = 2;
+            } else if (c >= '0' && c <= '9') {
+                en_st_ = 3;
+                entnum_ = 1;
+            } else {
+                en_st_ = 0;
+                entnum_ = 0;
+            }
+        } else if (en_st_ == 3) {
+            if (c == ';') {
+                en_st_ = 0;
+            } else if (!((c >= '0' && c <= '9') ||
+                         (c >= 'a' && c <= 'f') ||
+                         (c >= 'A' && c <= 'F'))) {
+                en_st_ = 0;
+                entnum_ = 0;
+            }
+        }
+#endif
+#if HP_WIKIHR_MOD
+        if (c == '\n') {
+            hr_run_ = 0;
+            wikihr_ = 0;
+        } else if (hr_run_) {
+            if (c == '-') {
+                if (hr_run_ < 8) ++hr_run_;
+                if (hr_run_ >= 4) wikihr_ = 1;
+            } else {
+                hr_run_ = 0;
+            }
+        } else if (first_of_line_ && c == '-') {
+            hr_run_ = 1;
+        }
+#endif
+#if HP_FONTCOL_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            fc_win_ = (fc_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if (c == '<' || c == '>') {
+                fontcol_ = 0;
+                fc_eat_ = 0;
+            } else if (fc_eat_) {
+                if (c == '"' || c == '\'' || c == ' ' || c == '|' || c == '\n')
+                    fc_eat_ = 0;
+            } else if ((fc_win_ & 0xffffffffffffull) == 0x636f6c6f723dull) {
+                fontcol_ = 1;
+                fc_eat_ = 1;
+            } else if ((fc_win_ & 0xffffffffffull) == 0x73697a653dull) {
+                fontcol_ = 2;
+                fc_eat_ = 1;
+            }
+        }
+#endif
+#if HP_UTF8ST_MOD
+        {
+            const unsigned u = static_cast<unsigned>(c) & 255u;
+            if (u < 0x80u) {
+                utf8st_ = 0;
+                utf8left_ = 0;
+            } else if (u >= 0xC0u) {
+                utf8st_ = static_cast<int>(u >> 4);
+                if (u < 0xE0u) utf8left_ = 1;
+                else if (u < 0xF0u) utf8left_ = 2;
+                else utf8left_ = 3;
+            } else {
+                if (utf8left_ > 0) --utf8left_;
+                utf8st_ = 16 + utf8left_;
+            }
+        }
+#endif
+#if HP_DLTERM_MOD
+        if (c == '\n') {
+            dlterm_ = 0;
+            dl_on_ = 0;
+        } else if (first_of_line_ && c == ';') {
+            dlterm_ = 1;
+            dl_on_ = 1;
+        } else if (dl_on_ && c == ':') {
+            dlterm_ = 2;
+        }
+#endif
+#if HP_HEADCLOSE_MOD
+        if (c == '\n') {
+            hc_sol_ = 1;
+            hc_eq_ = 0;
+            hc_text_ = 0;
+            headclose_ = 0;
+        } else if (hc_sol_ && c == '=') {
+            hc_eq_ = 1;
+        } else if (hc_eq_) {
+            if (c == '=') {
+                if (hc_text_ && headclose_ < 6) ++headclose_;
+            } else if (c != ' ' && c != '\t') {
+                hc_text_ = 1;
+            }
+            hc_sol_ = 0;
+        } else {
+            hc_sol_ = 0;
+        }
+#endif
+#if HP_WIKITIME_MOD
+        if (c >= '0' && c <= '9') {
+            if (tm_st_ == 2) {
+                if (tm_n2_ < 2) ++tm_n2_;
+                if (tm_n2_ >= 2) wikitime_ = 1;
+            } else {
+                tm_st_ = 1;
+                if (tm_n1_ < 2) ++tm_n1_;
+            }
+        } else if (c == ':' && tm_st_ == 1 && tm_n1_ >= 1) {
+            tm_st_ = 2;
+            tm_n2_ = 0;
+        } else {
+            tm_st_ = 0;
+            tm_n1_ = 0;
+            tm_n2_ = 0;
+            if (c != ':') wikitime_ = 0;
+        }
+#endif
+#if HP_BR_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            br_win_ = (br_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((br_win_ & 0xffffffull) == 0x3c6272ull) {
+                br_ = 1;
+            } else if (c == '>' || c == '\n') {
+                br_ = 0;
+            }
+        }
+#endif
+#if HP_AMPNBSP_MOD
+        {
+            ampnbsp_win_ = (ampnbsp_win_ << 8) | static_cast<std::uint64_t>(c & 255);
+            if ((ampnbsp_win_ & 0xffffffffffffull) == 0x266e6273703bull)
+                ampnbsp_ = 1;
+            else if (c == ';' || c == ' ' || c == '\n')
+                ampnbsp_ = 0;
+        }
+#endif
+#if HP_MDASH_MOD
+        {
+            const unsigned u = static_cast<unsigned>(c) & 255u;
+            if (u == 0xE2u) {
+                md_st_ = 1;
+            } else if (md_st_ == 1 && u == 0x80u) {
+                md_st_ = 2;
+            } else if (md_st_ == 2 && (u == 0x93u || u == 0x94u || u == 0x92u)) {
+                mdash_ = (u == 0x94u) ? 2 : (u == 0x93u) ? 1 : 3;
+                md_st_ = 0;
+            } else {
+                md_st_ = 0;
+                if (u < 0x80u) mdash_ = 0;
+            }
+        }
+#endif
+#if HP_LISTMIX_MOD
+        if (c == '\n') {
+            listmix_ = 0;
+            lm_run_ = 1;
+        } else if (lm_run_) {
+            if (c == '*') listmix_ |= 1;
+            else if (c == '#') listmix_ |= 2;
+            else if (c == ':') listmix_ |= 4;
+            else if (c == ';') listmix_ |= 8;
+            else
+                lm_run_ = 0;
+        }
+#endif
+#if HP_MATH_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            mh_win_ = (mh_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((mh_win_ & 0xffffffffffffull) == 0x3c2f6d617468ull) {
+                in_math_ = 0;
+                mh_open_ = 0;
+            } else if ((mh_win_ & 0xffffffffffull) == 0x3c6d617468ull) {
+                mh_open_ = 1;
+            } else if (c == '>' && mh_open_) {
+                in_math_ = 1;
+                mh_open_ = 0;
+            }
+        }
+#endif
+#if HP_CHEM_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            ch_win_ = (ch_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((ch_win_ & 0xffffffffffffull) == 0x3c2f6368656dull) {
+                in_chem_ = 0;
+                ch_open_ = 0;
+            } else if ((ch_win_ & 0xffffffffffull) == 0x3c6368656dull) {
+                ch_open_ = 1;
+            } else if (c == '>' && ch_open_) {
+                in_chem_ = 1;
+                ch_open_ = 0;
+            }
+        }
+#endif
+#if HP_SMALL_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            sm_win_ = (sm_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((sm_win_ & 0xffffffffffffffull) == 0x3c2f736d616c6cull) {
+                in_small_ = 0;
+                sm_open_ = 0;
+            } else if ((sm_win_ & 0xffffffffffffull) == 0x3c736d616c6cull) {
+                sm_open_ = 1;
+            } else if (c == '>' && sm_open_) {
+                in_small_ = 1;
+                sm_open_ = 0;
+            } else if (sm_open_ && lc >= 'a' && lc <= 'z') {
+                sm_open_ = 0;
+            }
+        }
+#endif
+#if HP_SUPSUB_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            ss_win_ = (ss_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((ss_win_ & 0xffffffffffull) == 0x3c2f737570ull) {
+                if (supsub_ == 1) supsub_ = 0;
+                ss_open_ = 0;
+            } else if ((ss_win_ & 0xffffffffffull) == 0x3c2f737562ull) {
+                if (supsub_ == 2) supsub_ = 0;
+                ss_open_ = 0;
+            } else if ((ss_win_ & 0xffffffffull) == 0x3c737570ull) {
+                ss_open_ = 1;
+            } else if ((ss_win_ & 0xffffffffull) == 0x3c737562ull) {
+                ss_open_ = 2;
+            } else if (c == '>' && ss_open_) {
+                supsub_ = ss_open_;
+                ss_open_ = 0;
+            } else if (ss_open_ && lc >= 'a' && lc <= 'z') {
+                ss_open_ = 0;
+            }
+        }
+#endif
+#if HP_PRECODE_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            pc_win_ = (pc_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((pc_win_ & 0xffffffffffull) == 0x3c2f707265ull) {
+                if (precode_ == 1) precode_ = 0;
+                pc_open_ = 0;
+            } else if ((pc_win_ & 0xffffffffffffull) == 0x3c2f636f6465ull) {
+                if (precode_ == 2) precode_ = 0;
+                pc_open_ = 0;
+            } else if ((pc_win_ & 0xffffffffull) == 0x3c2f7474ull) {
+                if (precode_ == 3) precode_ = 0;
+                pc_open_ = 0;
+            } else if ((pc_win_ & 0xffffffffull) == 0x3c707265ull) {
+                pc_open_ = 1;
+            } else if ((pc_win_ & 0xffffffffffull) == 0x3c636f6465ull) {
+                pc_open_ = 2;
+            } else if ((pc_win_ & 0xffffffull) == 0x3c7474ull) {
+                pc_open_ = 3;
+            } else if (c == '>' && pc_open_) {
+                precode_ = pc_open_;
+                pc_open_ = 0;
+            } else if (pc_open_ && lc >= 'a' && lc <= 'z') {
+                pc_open_ = 0;
+            }
+        }
+#endif
+#if HP_SYNTAX_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            sx_win_ = (sx_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if (sx_win_ == 0x3c2f73796e746178ull) {
+                if (syntax_ == 1 || syntax_ == 3) syntax_ = 0;
+                sx_open_ = 0;
+            } else if (sx_win_ == 0x3c2f736f75726365ull) {
+                if (syntax_ == 2) syntax_ = 0;
+                sx_open_ = 0;
+            } else if ((sx_win_ & 0xffffffffffffffull) == 0x3c73796e746178ull) {
+                sx_open_ = 3;
+            } else if ((sx_win_ & 0xffffffffffffffull) == 0x3c736f75726365ull) {
+                sx_open_ = 2;
+            } else if (sx_open_ == 3 && lc == 'h') {
+                sx_open_ = 1;
+            } else if (sx_open_ == 2 && lc >= 'a' && lc <= 'z') {
+                sx_open_ = 0;
+            } else if (c == '>' && sx_open_) {
+                syntax_ = sx_open_;
+                sx_open_ = 0;
+            } else if (sx_open_ && (c == ' ' || c == '\n' || c == '/')) {
+                ;
+            } else if (sx_open_ && sx_open_ != 1 && lc >= 'a' && lc <= 'z') {
+                sx_open_ = 0;
+            }
+        }
+#endif
+#if HP_PROTOCOL_MOD
+        {
+            const int lc = ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+                               ? (c | 32) : 0;
+            if (lc) {
+                if (proto_n_ < 8) proto_buf_[proto_n_++] = static_cast<char>(lc);
+            } else if (c != ':' && c != '/') {
+                proto_n_ = 0;
+            }
+            if (c == '/' && prev1_ == '/') {
+                auto eq = [&](const char* s, int m) {
+                    if (proto_n_ != m) return 0;
+                    for (int i = 0; i < m; ++i)
+                        if (proto_buf_[i] != s[i]) return 0;
+                    return 1;
+                };
+                if (eq("https", 5)) protocol_ = 2;
+                else if (eq("http", 4)) protocol_ = 1;
+                else if (eq("ftp", 3)) protocol_ = 3;
+                else if (eq("mailto", 6)) protocol_ = 4;
+                else if (eq("irc", 3)) protocol_ = 5;
+                else if (eq("file", 4)) protocol_ = 6;
+                else if (proto_n_ >= 2) protocol_ = 7;
+                proto_n_ = 0;
+            }
+            if (c == ' ' || c == '\n' || c == ']' || c == '<') protocol_ = 0;
+        }
+#endif
+#if HP_HEXRUN_MOD
+        {
+            const int hx = (c >= '0' && c <= '9') ||
+                           ((c | 32) >= 'a' && (c | 32) <= 'f');
+            if (c == '#') {
+                hex_on_ = 1;
+                hexrun_ = 0;
+            } else if (hex_on_ && hx) {
+                if (hexrun_ < 8) ++hexrun_;
+                hexval_ = hexrun_;
+            } else {
+                hex_on_ = 0;
+            }
+        }
+#endif
+#if HP_SQDEPTH_MOD
+        if (prev1_ == '[' && c == '[') {
+            if (sqdepth_ < 7) ++sqdepth_;
+        } else if (prev1_ == ']' && c == ']') {
+            if (sqdepth_ > 0) --sqdepth_;
+        }
+#endif
+#if HP_PIPEROLE_MOD
+        if (c == '|') {
+            if (state_ == kWkSquareOpen)
+                piperole_ = 3;
+            else if (in_table_ || state_ == kWkWikiTable)
+                piperole_ = 1;
+            else if (state_ == kWkCurly || state_ == kWkVerticalBar)
+                piperole_ = 2;
+        }
+#endif
+#if HP_AFTERREF_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            ar_win_ = (ar_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((ar_win_ & 0xffffffffffffull) == 0x3c2f7265663eull)
+                afterref_ = 1;
+            else if (afterref_ &&
+                     ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
+                afterref_ = 0;
+        }
+#endif
+#if HP_SENTPOS_MOD
+        {
+            const int letter =
+                (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+            if (c == '.' || c == '?' || c == '!' || c == '\n') {
+                sentpos_ = 0;
+                sp_inword_ = 0;
+            } else if (letter) {
+                if (!sp_inword_) {
+                    if (sentpos_ < 31) ++sentpos_;
+                    sp_inword_ = 1;
+                }
+            } else {
+                sp_inword_ = 0;
+            }
+        }
+#endif
+#if HP_ABBREV_MOD
+        {
+            const int lc = ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+                               ? (c | 32) : 0;
+            if (lc) {
+                if (ab_n_ < 8) {
+                    ab_w_ = (ab_w_ << 8) | static_cast<std::uint64_t>(lc);
+                    ++ab_n_;
+                }
+            } else if (c == '.') {
+                abbrev_ = 2;
+                if (ab_n_ == 1) {
+                    abbrev_ = 1;
+                } else if (ab_n_ >= 2 && ab_n_ <= 6) {
+                    auto eq = [&](const char* s, int n) {
+                        if (ab_n_ != n) return 0;
+                        for (int i = 0; i < n; ++i) {
+                            const int sh = 8 * (n - 1 - i);
+                            if (((ab_w_ >> sh) & 255u) !=
+                                static_cast<unsigned char>(s[i]))
+                                return 0;
+                        }
+                        return 1;
+                    };
+                    if (eq("mr", 2) || eq("ms", 2) || eq("dr", 2) ||
+                        eq("st", 2) || eq("vs", 2) || eq("eg", 2) ||
+                        eq("ie", 2) || eq("al", 2) || eq("ca", 2) ||
+                        eq("pp", 2) || eq("jr", 2) || eq("sr", 2) ||
+                        eq("no", 2) || eq("ed", 2) || eq("ft", 2) ||
+                        eq("lb", 2) || eq("oz", 2) || eq("kg", 2) ||
+                        eq("km", 2) || eq("cm", 2) || eq("mm", 2) ||
+                        eq("mrs", 3) || eq("etc", 3) || eq("vol", 3) ||
+                        eq("fig", 3) || eq("inc", 3) || eq("ltd", 3) ||
+                        eq("rev", 3) || eq("gen", 3) || eq("col", 3) ||
+                        eq("prof", 4) || eq("dept", 4) || eq("univ", 4) ||
+                        eq("approx", 6))
+                        abbrev_ = 1;
+                }
+                ab_n_ = 0;
+                ab_w_ = 0;
+            } else {
+                ab_n_ = 0;
+                ab_w_ = 0;
+                if (c == '\n') abbrev_ = 0;
+            }
+        }
+#endif
+#if HP_THOUSAND_MOD
+        if (c >= '0' && c <= '9') {
+            if (th_st_ == 2) {
+                th_st_ = 3;
+                th_n_ = 1;
+            } else if (th_st_ == 3) {
+                if (th_n_ < 3) ++th_n_;
+                if (th_n_ == 3) thousand_ = 1;
+            } else {
+                th_st_ = 1;
+                if (th_n_ < 15) ++th_n_;
+            }
+        } else if (c == ',' && th_st_ == 1) {
+            th_st_ = 2;
+            th_n_ = 0;
+        } else if (c == ',' && th_st_ == 3 && th_n_ == 3) {
+            th_st_ = 2;
+            th_n_ = 0;
+        } else {
+            th_st_ = 0;
+            th_n_ = 0;
+            if (c != ' ') thousand_ = 0;
+        }
+#endif
+#if HP_REFPUNCT_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            rp_win_ = (rp_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((rp_win_ & 0xffffffffffull) == 0x2e3c726566ull)
+                refpunct_ = 1;
+            else if ((rp_win_ & 0xffffffffffffull) == 0x2f7265663e2eull)
+                refpunct_ = 2;
+            else if (c == '\n')
+                refpunct_ = 0;
+        }
+#endif
+#if HP_QPERIOD_MOD
+        if (c == '.' && (prev1_ == '"' || prev1_ == '\''))
+            qperiod_ = 1;
+        else if ((c == '"' || c == '\'') && prev1_ == '.')
+            qperiod_ = 2;
+        else if (c == '\n')
+            qperiod_ = 0;
+#endif
+#if HP_ELLIPSIS_MOD
+        if (c == '.') {
+            if (ellip_n_ < 3) ++ellip_n_;
+            ellipsis_ = (ellip_n_ >= 2) ? ellip_n_ : 0;
+        } else {
+            ellip_n_ = 0;
+            if (c != ' ') ellipsis_ = 0;
+        }
+#endif
+#if HP_NUMRANGE_MOD
+        if (c >= '0' && c <= '9') {
+            if (nr_st_ == 2) {
+                nr_st_ = 3;
+                numrange_ = 1;
+            } else if (nr_st_ != 3) {
+                nr_st_ = 1;
+            }
+        } else if ((c == '-' || c == 0x96) && nr_st_ == 1) {
+            nr_st_ = 2;
+        } else if (nr_st_ == 1 && static_cast<unsigned>(c) == 0xE2u) {
+            nr_utf_ = 1;
+        } else if (nr_utf_ == 1 && static_cast<unsigned>(c) == 0x80u) {
+            nr_utf_ = 2;
+        } else if (nr_utf_ == 2 &&
+                   (static_cast<unsigned>(c) == 0x93u ||
+                    static_cast<unsigned>(c) == 0x94u) &&
+                   nr_st_ == 1) {
+            nr_st_ = 2;
+            nr_utf_ = 0;
+        } else {
+            nr_utf_ = 0;
+            if (nr_st_ == 3 && (c == ' ' || c == ',' || c == '.')) {
+            } else {
+                nr_st_ = 0;
+                numrange_ = 0;
+            }
+        }
+#endif
+#if HP_DEG_MOD
+        {
+            const unsigned u = static_cast<unsigned>(c) & 255u;
+            if (c >= '0' && c <= '9') {
+                deg_d_ = 1;
+                deg_st_ = 0;
+            } else if (deg_d_ && u == 0xC2u) {
+                deg_st_ = 1;
+            } else if (deg_st_ == 1 && u == 0xB0u) {
+                deg_ = 1;
+                deg_st_ = 0;
+                deg_d_ = 0;
+            } else {
+                deg_st_ = 0;
+                if (c != ' ' && c != 'C' && c != 'F' && c != 'c' && c != 'f') {
+                    deg_d_ = 0;
+                    deg_ = 0;
+                }
+            }
+            deg_win_ = (deg_win_ << 8) | static_cast<std::uint64_t>(c & 255);
+            if ((deg_win_ & 0xffffffffffull) == 0x266465673bull)
+                deg_ = 1;
+        }
+#endif
+#if HP_PERCENT_MOD
+        if (c >= '0' && c <= '9') {
+            pct_d_ = 1;
+        } else if (pct_d_ && c == '%') {
+            percent_ = 1;
+            pct_d_ = 0;
+        } else {
+            pct_d_ = 0;
+            if (c != ' ') percent_ = 0;
+        }
+#endif
+#if HP_CATBLOCK_MOD
+        if (catblock_ && state_ != kWkSquareOpen &&
+            c != '[' && c != ']' && c != ' ' && c != '\n' && c != '\t')
+            catblock_ = 0;
 #endif
 #if HP_INIT_MOD
         {
@@ -623,6 +2209,152 @@ class WikiMachine {
                        cs_win_ == 0x726f777370616e3dull) {
                 cs_eat_ = 1;
                 cs_val_ = 0;
+            }
+        }
+#endif
+#if HP_ROWSPAN_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            const int pre = static_cast<int>((rs_win_ >> 56) & 255);
+            rs_win_ = (rs_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if (rs_win_ == 0x726f777370616e3dull) {
+                if (pre == '|') rowspan_ = 1;
+                else if (pre == '!') rowspan_ = 2;
+            } else if (rowspan_) {
+                if (prev1_ == '\n' && (c == '|' || c == '!'))
+                    rowspan_ = 0;
+                else if (prev1_ == '|' && (c == '|' || c == '}'))
+                    rowspan_ = 0;
+            }
+        }
+#endif
+#if HP_DOI_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            doi_win_ = (doi_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((doi_win_ & 0xffffffffffull) == 0x7c646f693dull) {
+                doi_ = 1;
+                doi_d_ = 0;
+            } else if (doi_ == 1 && (c == '|' || c == '}' || c == '\n')) {
+                doi_ = 0;
+            }
+        }
+#endif
+#if HP_PMID_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            pmid_win_ = (pmid_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((pmid_win_ & 0xffffffffffffull) == 0x7c706d69643dull) {
+                pmid_ = 1;
+                pmid_d_ = 0;
+            } else if ((pmid_win_ & 0xffffffffffull) == 0x7c706d633dull) {
+                pmid_ = 2;
+                pmid_d_ = 0;
+            } else if ((pmid_ == 1 || pmid_ == 2) &&
+                       (c == '|' || c == '}' || c == '\n')) {
+                pmid_ = 0;
+            }
+        }
+#endif
+#if HP_ISBN_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            isbn_win_ = (isbn_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            const int pre = static_cast<int>((isbn_win_ >> 32) & 255);
+            if ((isbn_win_ & 0xffffffffffffull) == 0x7c6973626e3dull) {
+                isbn_ = 1;
+            } else if ((isbn_win_ & 0xffffffffull) == 0x6973626eull) {
+                if (!(pre == '|' || (pre >= 'a' && pre <= 'z')))
+                    isbn_ = 2;
+            } else if (isbn_) {
+                if (isbn_ == 1 && (c == '|' || c == '}' || c == '\n'))
+                    isbn_ = 0;
+                else if (isbn_ == 2 && c == '\n')
+                    isbn_ = 0;
+            }
+        }
+#endif
+#if HP_THUMB_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            thumb_win_ = (thumb_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if ((thumb_win_ & 0xffffffffffffull) == 0x7c7468756d62ull) {
+                thumb_ = 1;
+            } else if ((thumb_win_ & 0xffffffffffffull) == 0x7c7269676874ull) {
+                thumb_ = 2;
+            } else if ((thumb_win_ & 0xffffffffffull) == 0x7c6c656674ull) {
+                thumb_ = 3;
+            } else if (thumb_win_ == 0x7c75707269676874ull) {
+                thumb_ = 4;
+            } else if (thumb_win_ == 0x7c6672616d656c65ull) {
+                thumb_ = 5;
+            } else if (thumb_) {
+                if (c == '|' || c == '\n' || c == '}')
+                    thumb_ = 0;
+                else if (prev1_ == ']' && c == ']')
+                    thumb_ = 0;
+            }
+        }
+#endif
+#if HP_ISSN_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            issn_win_ = (issn_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            const int pre = static_cast<int>((issn_win_ >> 32) & 255);
+            if ((issn_win_ & 0xffffffffffffull) == 0x7c6973736e3dull) {
+                issn_ = 1;
+            } else if ((issn_win_ & 0xffffffffull) == 0x6973736eull) {
+                if (!(pre == '|' || (pre >= 'a' && pre <= 'z')))
+                    issn_ = 2;
+            } else if (issn_) {
+                if (issn_ == 1 && (c == '|' || c == '}' || c == '\n'))
+                    issn_ = 0;
+                else if (issn_ == 2 && c == '\n')
+                    issn_ = 0;
+            }
+        }
+#endif
+#if HP_OCLC_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            oclc_win_ = (oclc_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            const int pre = static_cast<int>((oclc_win_ >> 32) & 255);
+            if ((oclc_win_ & 0xffffffffffffull) == 0x7c6f636c633dull) {
+                oclc_ = 1;
+            } else if ((oclc_win_ & 0xffffffffull) == 0x6f636c63ull) {
+                if (!(pre == '|' || (pre >= 'a' && pre <= 'z')))
+                    oclc_ = 2;
+            } else if (oclc_) {
+                if (oclc_ == 1 && (c == '|' || c == '}' || c == '\n'))
+                    oclc_ = 0;
+                else if (oclc_ == 2 && c == '\n')
+                    oclc_ = 0;
+            }
+        }
+#endif
+#if HP_ALIGN_MOD
+        {
+            int lc = c;
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) lc = c | 32;
+            align_win_ = (align_win_ << 8) | static_cast<std::uint64_t>(lc & 255);
+            if (align_win_ == 0x7c76616c69676e3dull) {
+                align_ = 2;
+            } else if ((align_win_ & 0xffffffffffffffull) == 0x7c616c69676e3dull) {
+                align_ = 1;
+            } else if ((align_win_ & 0xffffffffffffffull) == 0x616c69676e3d22ull ||
+                       (align_win_ & 0xffffffffffffffull) == 0x616c69676e3d27ull) {
+                align_ = 3;
+            } else if (align_ &&
+                       (c == '|' || c == '"' || c == '\'' || c == '\n' ||
+                        c == '>' || c == '}')) {
+                align_ = 0;
             }
         }
 #endif
@@ -1044,6 +2776,21 @@ class WikiMachine {
             ri_slash_ = 0;
             ri_n_ = 0;
 #endif
+#if HP_REFGROUP_MOD
+            rg_slash_ = 0;
+            rg_n_ = 0;
+            rg_win_ = 0;
+            rg_name_ = 0;
+            rg_group_ = 0;
+#endif
+#if HP_REFLIST_MOD
+            rl_slash_ = 0;
+            rl_n_ = 0;
+#endif
+#if HP_BLOCK_MOD
+            bk_slash_ = 0;
+            bk_n_ = 0;
+#endif
             return;
         }
         if (c == '>' && in_tag_) {
@@ -1116,6 +2863,58 @@ class WikiMachine {
                 if (refidx_ < 15) ++refidx_;
             }
 #endif
+#if HP_REFGROUP_MOD
+            if (rg_n_ == 3 && rg_buf_[0] == 'r' && rg_buf_[1] == 'e' &&
+                rg_buf_[2] == 'f') {
+                if (rg_slash_)
+                    refgroup_ = 0;
+                else if (rg_group_)
+                    refgroup_ = 3;
+                else if (rg_name_)
+                    refgroup_ = 2;
+                else
+                    refgroup_ = 1;
+            }
+#endif
+#if HP_REFLIST_MOD
+            if (rl_n_ == 10) {
+                static const char kRl[] = "references";
+                int ok = 1;
+                for (int i = 0; i < 10; ++i)
+                    if (rl_buf_[i] != kRl[i]) ok = 0;
+                if (ok) {
+                    if (rl_slash_) {
+                        reflist_ = 0;
+                        rl_from_tpl_ = 0;
+                    } else {
+                        reflist_ = 1;
+                        rl_from_tpl_ = 0;
+                    }
+                }
+            }
+#endif
+#if HP_BLOCK_MOD
+            if (bk_n_ > 0) {
+                auto beq = [&](const char* w, int n) {
+                    if (bk_n_ != n) return 0;
+                    for (int i = 0; i < n; ++i)
+                        if (bk_buf_[i] != w[i]) return 0;
+                    return 1;
+                };
+                int kind = 0;
+                if (beq("blockquote", 10)) kind = 1;
+                else if (beq("center", 6)) kind = 2;
+                else if (beq("div", 3)) kind = 3;
+                else if (beq("span", 4)) kind = 4;
+                if (kind) {
+                    if (bk_slash_) {
+                        if (block_ == kind) block_ = 0;
+                    } else {
+                        block_ = kind;
+                    }
+                }
+            }
+#endif
             in_tag_ = 0;
             state_ = kWkText;
             return;
@@ -1141,6 +2940,15 @@ class WikiMachine {
 #endif
 #if HP_REFIDX_MOD
             if (ri_n_ == 0) ri_slash_ = 1;
+#endif
+#if HP_REFGROUP_MOD
+            if (rg_n_ == 0) rg_slash_ = 1;
+#endif
+#if HP_REFLIST_MOD
+            if (rl_n_ == 0) rl_slash_ = 1;
+#endif
+#if HP_BLOCK_MOD
+            if (bk_n_ == 0) bk_slash_ = 1;
 #endif
             if (depth_ > 0) --depth_;
             state_ = kWkTagEnd;
@@ -1227,6 +3035,34 @@ class WikiMachine {
                     ri_buf_[ri_n_++] = static_cast<char>(lc);
             }
 #endif
+#if HP_REFGROUP_MOD
+            {
+                const unsigned ch = static_cast<unsigned>(c & 255);
+                const unsigned lc = ch | 32u;
+                const unsigned packed = (ch == '=') ? '=' : lc;
+                if (lc >= 'a' && lc <= 'z' && rg_n_ < 4)
+                    rg_buf_[rg_n_++] = static_cast<char>(lc);
+                rg_win_ = (rg_win_ << 8) | packed;
+                if ((rg_win_ & 0xffffffffffull) == 0x6e616d653dull)
+                    rg_name_ = 1;
+                if ((rg_win_ & 0xffffffffffffull) == 0x67726f75703dull)
+                    rg_group_ = 1;
+            }
+#endif
+#if HP_REFLIST_MOD
+            {
+                const int lc = c | 32;
+                if (lc >= 'a' && lc <= 'z' && rl_n_ < 12)
+                    rl_buf_[rl_n_++] = static_cast<char>(lc);
+            }
+#endif
+#if HP_BLOCK_MOD
+            {
+                const int lc = c | 32;
+                if (lc >= 'a' && lc <= 'z' && bk_n_ < 12)
+                    bk_buf_[bk_n_++] = static_cast<char>(lc);
+            }
+#endif
             if (prev1_ == '!' && c == '-') state_ = kWkComment;
             return;
         }
@@ -1239,6 +3075,14 @@ class WikiMachine {
 #if HP_CAT_MOD
             ns_collect_ = 1;
             ns_hash_ = 0;
+#endif
+#if HP_LINKCOMMA_MOD
+            linkcomma_ = 0;
+            lc_pipe_ = 0;
+#endif
+#if HP_CATBLOCK_MOD
+            cb_n_ = 0;
+            cb_hit_ = 0;
 #endif
 #if HP_ANCHOR_MOD
             an_collect_ = 0;
@@ -1259,6 +3103,33 @@ class WikiMachine {
             ll_acc_ = 0;
             ll_stop_ = 0;
 #endif
+#if HP_LINKNS_MOD
+            ln_n_ = 0;
+            ln_on_ = 1;
+            linkns_ = 0;
+#endif
+#if HP_SECFRAG_MOD
+            secfrag_ = 0;
+#endif
+#if HP_SUBPAGE_MOD
+            subpage_ = 0;
+#endif
+#if HP_SISTER_MOD
+            sister_ = 0;
+            sis_on_ = 1;
+            sis_n_ = 0;
+#endif
+#if HP_PIPETRICK_MOD
+            pipetrick_ = 0;
+            pt_pipe_ = 0;
+#endif
+#if HP_LISTEN_MOD
+            ls_pre_n_ = 0;
+            ls_pre_on_ = 1;
+            ls_in_file_ = 0;
+            ls_win_ = 0;
+            if (listen_ == 3) listen_ = 0;
+#endif
             return;
         }
         if (state_ == kWkSquareOpen) {
@@ -1275,6 +3146,19 @@ class WikiMachine {
                     ns_collect_ = 0;
                     ns_hash_ = 0;
 #endif
+#if HP_LINKCOMMA_MOD
+                    linkcomma_ = 0;
+                    lc_pipe_ = 0;
+#endif
+#if HP_CATBLOCK_MOD
+                    if (cb_hit_) {
+                        if (catblock_ < 15) ++catblock_;
+                    } else {
+                        catblock_ = 0;
+                    }
+                    cb_n_ = 0;
+                    cb_hit_ = 0;
+#endif
 #if HP_ANCHOR_MOD
                     an_collect_ = 0;
 #endif
@@ -1289,6 +3173,31 @@ class WikiMachine {
 #endif
 #if HP_LINKTRAIL_MOD
                     lt_on_ = 1;
+#endif
+#if HP_LINKNS_MOD
+                    linkns_ = 0;
+                    ln_on_ = 0;
+                    ln_n_ = 0;
+#endif
+#if HP_SECFRAG_MOD
+                    secfrag_ = 0;
+#endif
+#if HP_SUBPAGE_MOD
+                    subpage_ = 0;
+#endif
+#if HP_SISTER_MOD
+                    sister_ = 0;
+                    sis_on_ = 0;
+                    sis_n_ = 0;
+#endif
+#if HP_PIPETRICK_MOD
+                    pipetrick_ = 0;
+                    pt_pipe_ = 0;
+#endif
+#if HP_LISTEN_MOD
+                    ls_pre_on_ = 0;
+                    ls_in_file_ = 0;
+                    if (listen_ == 3) listen_ = 0;
 #endif
                 }
             } else if (c == ':') {
@@ -1325,6 +3234,30 @@ class WikiMachine {
                     if (ok) pre_kind_ = 2;
                 }
 #endif
+#if HP_LINKNS_MOD
+                if (ln_on_) {
+                    linkns_ = link_ns_id_(ln_buf_, ln_n_);
+                    ln_on_ = 0;
+                }
+#endif
+#if HP_SISTER_MOD
+                if (sis_on_) {
+                    sister_ = sister_id_(sis_buf_, sis_n_);
+                    sis_on_ = 0;
+                }
+#endif
+#if HP_LISTEN_MOD
+                if (ls_pre_on_) {
+                    ls_pre_on_ = 0;
+                    if (ls_pre_n_ == 4 && ls_pre_[0] == 'f' && ls_pre_[1] == 'i' &&
+                        ls_pre_[2] == 'l' && ls_pre_[3] == 'e')
+                        ls_in_file_ = 1;
+                    else if (ls_pre_n_ == 5 && ls_pre_[0] == 'i' &&
+                             ls_pre_[1] == 'm' && ls_pre_[2] == 'a' &&
+                             ls_pre_[3] == 'g' && ls_pre_[4] == 'e')
+                        ls_in_file_ = 1;
+                }
+#endif
             } else {
                 // fx2-cmix: linkword = linkword * 2104 + j
                 linkword_ = linkword_ * 2104ull + static_cast<std::uint64_t>(c);
@@ -1344,6 +3277,92 @@ class WikiMachine {
                                          static_cast<std::uint64_t>(lc));
                     else if (c != ' ' && c != '_')
                         ns_collect_ = 0;
+                }
+#endif
+#if HP_LINKNS_MOD
+                if (ln_on_) {
+                    const int lc = c | 32;
+                    if (lc >= 'a' && lc <= 'z' && ln_n_ < 16)
+                        ln_buf_[ln_n_++] = static_cast<char>(lc);
+                    else if ((c == ' ' || c == '_') && ln_n_ > 0 && ln_n_ < 16)
+                        ln_buf_[ln_n_++] = ' ';
+                    else if (c != ' ')
+                        ln_on_ = 0;
+                }
+#endif
+#if HP_SECFRAG_MOD
+                if (c == '#') secfrag_ = 1;
+                else if (c == '|') secfrag_ = 0;
+#endif
+#if HP_SUBPAGE_MOD
+                if (c == '/') subpage_ = 1;
+                else if (c == '|') subpage_ = 0;
+#endif
+#if HP_SISTER_MOD
+                if (sis_on_) {
+                    const int lc = c | 32;
+                    if (lc >= 'a' && lc <= 'z' && sis_n_ < 12)
+                        sis_buf_[sis_n_++] = static_cast<char>(lc);
+                    else if (c != ' ' && c != '_')
+                        sis_on_ = 0;
+                }
+#endif
+#if HP_PIPETRICK_MOD
+                if (c == '|') {
+                    pt_pipe_ = 1;
+                    pipetrick_ = 1;
+                } else if (pt_pipe_ && c != ']' && c != ' ' && c != '\t' &&
+                           c != '\n') {
+                    pipetrick_ = 0;
+                    pt_pipe_ = 0;
+                }
+#endif
+#if HP_LISTEN_MOD
+                if (ls_pre_on_) {
+                    const int lc = c | 32;
+                    if (lc >= 'a' && lc <= 'z' && ls_pre_n_ < 8)
+                        ls_pre_[ls_pre_n_++] = static_cast<char>(lc);
+                    else if (c != ' ' && c != '_')
+                        ls_pre_on_ = 0;
+                }
+                if (ls_in_file_) {
+                    if (c == '|') {
+                        ls_in_file_ = 0;
+                    } else {
+                        int lc = 0;
+                        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+                            lc = c | 32;
+                        else if (c == '.')
+                            lc = '.';
+                        if (lc) {
+                            ls_win_ = (ls_win_ << 8) |
+                                      static_cast<std::uint64_t>(lc & 255);
+                            const std::uint32_t ext = static_cast<std::uint32_t>(
+                                ls_win_ & 0xffffffffull);
+                            if ((ext == 0x2e6f6767u || ext == 0x2e6f6761u ||
+                                 ext == 0x2e6d7033u) &&
+                                listen_ == 0)
+                                listen_ = 3;
+                        }
+                    }
+                }
+#endif
+#if HP_LINKCOMMA_MOD
+                if (c == '|')
+                    lc_pipe_ = 1;
+                else if (c == ',' && !lc_pipe_)
+                    linkcomma_ = 1;
+#endif
+#if HP_CATBLOCK_MOD
+                {
+                    const int lc = c | 32;
+                    static const char kCb[] = "category";
+                    if (cb_n_ < 8 && lc == kCb[cb_n_]) {
+                        ++cb_n_;
+                        if (cb_n_ == 8) cb_hit_ = 1;
+                    } else if (cb_n_ < 8 && c != ':' && c != ' ' && c != '_') {
+                        cb_n_ = 0;
+                    }
                 }
 #endif
 #if HP_ANCHOR_MOD
@@ -1445,12 +3464,20 @@ class WikiMachine {
             ck_i_ = 0;
             ck_done_ = 0;
 #endif
+#if HP_WIKIVAR_MOD
+            wv_n_ = 0;
+            wv_on_ = 1;
+            wikivar_ = 0;
+#endif
             return;
         }
         if (prev1_ == '{' && c == '|') {
             state_ = kWkWikiTable;
             in_table_ = 1;
-#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD
+#if HP_TBLDEPTH_MOD
+            if (tbldepth_ < 7) ++tbldepth_;
+#endif
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD || HP_COLRING_MOD
             table_reset();
 #endif
 #if HP_TABLECLASS_MOD
@@ -1471,7 +3498,10 @@ class WikiMachine {
         if (prev1_ == '|' && c == '}') {
             state_ = kWkText;
             in_table_ = 0;
-#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD
+#if HP_TBLDEPTH_MOD
+            if (tbldepth_ > 0) --tbldepth_;
+#endif
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD || HP_COLRING_MOD
             table_reset();
 #endif
 #if HP_TABLECLASS_MOD
@@ -1488,6 +3518,12 @@ class WikiMachine {
         if (prev1_ == '}' && c == '}') {
             if (depth_ > 0) --depth_;
             state_ = kWkText;
+#if HP_WIKIVAR_MOD
+            if (wv_on_ && wv_n_ >= 4)
+                wikivar_ = wiki_var_id_(wv_buf_, wv_n_);
+            wv_on_ = 0;
+            wikivar_ = 0;
+#endif
 #if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
             tpl_collect_ = 0;
             key_collect_ = 0;
@@ -1503,6 +3539,12 @@ class WikiMachine {
 
         if (c == '|' && (in_table_ || state_ == kWkCurly || state_ == kWkWikiTable)) {
             state_ = kWkVerticalBar;
+#if HP_WIKIVAR_MOD
+            if (wv_on_) {
+                wv_on_ = 0;
+                if (wv_n_ >= 4) wikivar_ = wiki_var_id_(wv_buf_, wv_n_);
+            }
+#endif
 #if HP_TPLNAME_MOD || HP_INFOKEY_MOD || HP_BARIDX_MOD
             tpl_collect_ = 0;
             if (bar_idx_ < 31) ++bar_idx_;
@@ -1577,7 +3619,7 @@ class WikiMachine {
         if (c == '.' || c == ',' || c == ':' || c == '(' || c == ')' || c == '\n')
             senword_ = 0;
 
-#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD || HP_COLRING_MOD
         if (in_table_) table_push(c);
 #endif
 #if HP_TBLROW_MOD
@@ -1937,6 +3979,58 @@ class WikiMachine {
 #if HP_EXTLINK_MOD
         if (c == '[' && prev1_ != '[') ext_pend_ = 1;
 #endif
+#if HP_LISTPARA_MOD
+        if (c == '\n') {
+            listpara_ = 0;
+            lp_apos_ = 0;
+        } else {
+            if (c == '\'') {
+                if (lp_apos_ < 5) ++lp_apos_;
+            } else {
+                if (lp_apos_ >= 2 && c == ' ' &&
+                    line_kind_ != '*' && line_kind_ != '#' &&
+                    line_kind_ != ':' && line_kind_ != ';')
+                    listpara_ = 1;
+                lp_apos_ = 0;
+            }
+            if ((line_kind_ == '*' || line_kind_ == '#') &&
+                prev1_ == ']' && (c == ' ' || c == ','))
+                listpara_ = 1;
+            if (line_kind_ == '[' && prev1_ == ']' && c == ' ')
+                listpara_ = 1;
+            if (line_kind_ == '*' && prev1_ == '*' && c == '-')
+                listpara_ = 1;
+        }
+#endif
+#if HP_FCCUR_MOD
+        if (c == '\n') {
+            fccur_ = 0;
+            fccur_set_ = 0;
+        } else if (!fccur_set_ && c != ' ' && c != '\t') {
+            fccur_ = fccur_token_(c);
+            fccur_set_ = 1;
+        }
+        if (prev2_ == ':' && prev1_ == '/' && c == '/')
+            fccur_ = 14;
+        if (c == ' ' && prev1_ == ']' &&
+            (line_kind_ == '*' || line_kind_ == '#' || line_kind_ == '['))
+            fccur_ = 1;
+        if (c == ' ' && prev1_ == '\'' && prev2_ == '\'')
+            fccur_ = 1;
+#endif
+#if HP_WIKIVAR_MOD
+        if (wv_on_) {
+            int u = c;
+            if (c >= 'a' && c <= 'z') u = c - 32;
+            if (u >= 'A' && u <= 'Z' && wv_n_ < 20) {
+                wv_buf_[wv_n_++] = static_cast<char>(u);
+                if (wv_n_ >= 4) wikivar_ = wiki_var_id_(wv_buf_, wv_n_);
+            } else if (c != '{') {
+                wv_on_ = 0;
+            }
+        }
+        if (c == '\n') wikivar_ = 0;
+#endif
     }
 
     int state() const { return state_; }
@@ -2001,7 +4095,7 @@ class WikiMachine {
         return 0;
     }
     int above_cell() const {
-#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD || HP_COLRING_MOD
         const int r = (tbl_row_ + 3) & 3;
         const int c = tbl_cell_ > 31 ? 31 : tbl_cell_;
         return tbl_cells_[r][c];
@@ -2010,7 +4104,7 @@ class WikiMachine {
 #endif
     }
     int cell_first() const {
-#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD || HP_COLRING_MOD
         const int c = tbl_cell_ > 31 ? 31 : tbl_cell_;
         return tbl_cells_[tbl_row_][c];
 #else
@@ -2018,8 +4112,567 @@ class WikiMachine {
 #endif
     }
     int tbl_cell() const {
-#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD || HP_COLRING_MOD
         return tbl_cell_;
+#else
+        return 0;
+#endif
+    }
+    int state_trans() const {
+#if HP_STATETRANS_MOD
+        return (prev_state_ & 15) | ((state_ & 15) << 4);
+#else
+        return 0;
+#endif
+    }
+    std::uint64_t col_ring() const {
+#if HP_COLRING_MOD
+        const int c = tbl_cell_ > 31 ? 31 : tbl_cell_;
+        return static_cast<std::uint64_t>(tbl_cells_[0][c]) |
+               (static_cast<std::uint64_t>(tbl_cells_[1][c]) << 8) |
+               (static_cast<std::uint64_t>(tbl_cells_[2][c]) << 16) |
+               (static_cast<std::uint64_t>(tbl_cells_[3][c]) << 24) |
+               (static_cast<std::uint64_t>(tbl_row_ & 3) << 32) |
+               (static_cast<std::uint64_t>(c & 31) << 34);
+#else
+        return 0;
+#endif
+    }
+    int list_para() const {
+#if HP_LISTPARA_MOD
+        return listpara_;
+#else
+        return 0;
+#endif
+    }
+    int sec_frag() const {
+#if HP_SECFRAG_MOD
+        return secfrag_;
+#else
+        return 0;
+#endif
+    }
+    int wiki_var() const {
+#if HP_WIKIVAR_MOD
+        return wikivar_;
+#else
+        return 0;
+#endif
+    }
+    int sub_page() const {
+#if HP_SUBPAGE_MOD
+        return subpage_;
+#else
+        return 0;
+#endif
+    }
+    int link_ns() const {
+#if HP_LINKNS_MOD
+        return linkns_;
+#else
+        return 0;
+#endif
+    }
+    int fc_cur() const {
+#if HP_FCCUR_MOD
+        return fccur_;
+#else
+        return 0;
+#endif
+    }
+    int ref_group() const {
+#if HP_REFGROUP_MOD
+        return refgroup_;
+#else
+        return 0;
+#endif
+    }
+    int in_reflist() const {
+#if HP_REFLIST_MOD
+        return reflist_;
+#else
+        return 0;
+#endif
+    }
+    int sister() const {
+#if HP_SISTER_MOD
+        return sister_;
+#else
+        return 0;
+#endif
+    }
+    int in_convert() const {
+#if HP_CONVERT_MOD
+        return convert_;
+#else
+        return 0;
+#endif
+    }
+    int cn_kind() const {
+#if HP_CN_MOD
+        return cn_;
+#else
+        return 0;
+#endif
+    }
+    int block_kind() const {
+#if HP_BLOCK_MOD
+        return block_;
+#else
+        return 0;
+#endif
+    }
+    int pipe_trick() const {
+#if HP_PIPETRICK_MOD
+        return pipetrick_;
+#else
+        return 0;
+#endif
+    }
+    int notes_kind() const {
+#if HP_NOTES_MOD
+        return notes_;
+#else
+        return 0;
+#endif
+    }
+    int lang_tpl() const {
+#if HP_LANGTPL_MOD
+        return langtpl_;
+#else
+        return 0;
+#endif
+    }
+    int frac_kind() const {
+#if HP_FRAC_MOD
+        return frac_;
+#else
+        return 0;
+#endif
+    }
+    int listen_kind() const {
+#if HP_LISTEN_MOD
+        return listen_;
+#else
+        return 0;
+#endif
+    }
+    int birth_kind() const {
+#if HP_BIRTH_MOD
+        return birth_;
+#else
+        return 0;
+#endif
+    }
+    int hlist_kind() const {
+#if HP_HLIST_MOD
+        return hlist_;
+#else
+        return 0;
+#endif
+    }
+    int mainart_kind() const {
+#if HP_MAINART_MOD
+        return mainart_;
+#else
+        return 0;
+#endif
+    }
+    int in_chem() const {
+#if HP_CHEM_MOD
+        return in_chem_;
+#else
+        return 0;
+#endif
+    }
+    int sfn_kind() const {
+#if HP_SFN_MOD
+        return sfn_;
+#else
+        return 0;
+#endif
+    }
+    int in_geotemp() const {
+#if HP_GEOTEMP_MOD
+        return geotemp_;
+#else
+        return 0;
+#endif
+    }
+    int epigraph_kind() const {
+#if HP_EPIGRAPH_MOD
+        return epigraph_;
+#else
+        return 0;
+#endif
+    }
+    int tracklist_kind() const {
+#if HP_TRACKLIST_MOD
+        return tracklist_;
+#else
+        return 0;
+#endif
+    }
+    int succession_kind() const {
+#if HP_SUCCESSION_MOD
+        return succession_;
+#else
+        return 0;
+#endif
+    }
+    int colstart_kind() const {
+#if HP_COLSTART_MOD
+        return colstart_;
+#else
+        return 0;
+#endif
+    }
+    int toc_mode() const {
+#if HP_TOC_MOD
+        return toc_;
+#else
+        return 0;
+#endif
+    }
+    int in_refbegin() const {
+#if HP_REFBEGIN_MOD
+        return refbegin_;
+#else
+        return 0;
+#endif
+    }
+    int shortdesc_kind() const {
+#if HP_SHORTDESC_MOD
+        return shortdesc_;
+#else
+        return 0;
+#endif
+    }
+    int seealso_kind() const {
+#if HP_SEEALSO_MOD
+        return seealso_;
+#else
+        return 0;
+#endif
+    }
+    int portal_kind() const {
+#if HP_PORTAL_MOD
+        return portal_;
+#else
+        return 0;
+#endif
+    }
+    int authctl_kind() const {
+#if HP_AUTHCTL_MOD
+        return authctl_;
+#else
+        return 0;
+#endif
+    }
+    int usedate_kind() const {
+#if HP_USEDATE_MOD
+        return usedate_;
+#else
+        return 0;
+#endif
+    }
+    int ipa_kind() const {
+#if HP_IPA_MOD
+        return ipa_;
+#else
+        return 0;
+#endif
+    }
+    int goodart_kind() const {
+#if HP_GOODART_MOD
+        return goodart_;
+#else
+        return 0;
+#endif
+    }
+    int caption_kind() const {
+#if HP_CAPTION_MOD
+        return caption_;
+#else
+        return 0;
+#endif
+    }
+    int navbox_kind() const {
+#if HP_NAVBOX_MOD
+        return navbox_;
+#else
+        return 0;
+#endif
+    }
+    int efoot_kind() const {
+#if HP_EFOOT_MOD
+        return efoot_;
+#else
+        return 0;
+#endif
+    }
+    int rshort_kind() const {
+#if HP_RSHORT_MOD
+        return rshort_;
+#else
+        return 0;
+#endif
+    }
+    int asof_kind() const {
+#if HP_ASOF_MOD
+        return asof_;
+#else
+        return 0;
+#endif
+    }
+    int clarify_kind() const {
+#if HP_CLARIFY_MOD
+        return clarify_;
+#else
+        return 0;
+#endif
+    }
+    int currency_kind() const {
+#if HP_CURRENCY_MOD
+        return currency_;
+#else
+        return 0;
+#endif
+    }
+    int displaytitle_kind() const {
+#if HP_DISPLAYTITLE_MOD
+        return displaytitle_;
+#else
+        return 0;
+#endif
+    }
+    int nowrap_kind() const {
+#if HP_NOWRAP_MOD
+        return nowrap_;
+#else
+        return 0;
+#endif
+    }
+    int stub_kind() const {
+#if HP_STUB_MOD
+        return stub_;
+#else
+        return 0;
+#endif
+    }
+    int persondata_kind() const {
+#if HP_PERSONDATA_MOD
+        return persondata_;
+#else
+        return 0;
+#endif
+    }
+    int flag_kind() const {
+#if HP_FLAG_MOD
+        return flag_;
+#else
+        return 0;
+#endif
+    }
+    int quotebox_kind() const {
+#if HP_QUOTEBOX_MOD
+        return quotebox_;
+#else
+        return 0;
+#endif
+    }
+    int clear_kind() const {
+#if HP_CLEAR_MOD
+        return clear_;
+#else
+        return 0;
+#endif
+    }
+    int imdb_kind() const {
+#if HP_IMDB_MOD
+        return imdb_;
+#else
+        return 0;
+#endif
+    }
+    int rp_kind() const {
+#if HP_RP_MOD
+        return rp_;
+#else
+        return 0;
+#endif
+    }
+    int fn_kind() const {
+#if HP_FN_MOD
+        return fn_;
+#else
+        return 0;
+#endif
+    }
+    int small_kind() const {
+#if HP_SMALL_MOD
+        return in_small_;
+#else
+        return 0;
+#endif
+    }
+    int supsub_kind() const {
+#if HP_SUPSUB_MOD
+        return supsub_;
+#else
+        return 0;
+#endif
+    }
+    int precode_kind() const {
+#if HP_PRECODE_MOD
+        return precode_;
+#else
+        return 0;
+#endif
+    }
+    int taxobox_kind() const {
+#if HP_TAXOBOX_MOD
+        return taxobox_;
+#else
+        return 0;
+#endif
+    }
+    int nihongo_kind() const {
+#if HP_NIHONGO_MOD
+        return nihongo_;
+#else
+        return 0;
+#endif
+    }
+    int deadlink_kind() const {
+#if HP_DEADLINK_MOD
+        return deadlink_;
+#else
+        return 0;
+#endif
+    }
+    int wayback_kind() const {
+#if HP_WAYBACK_MOD
+        return wayback_;
+#else
+        return 0;
+#endif
+    }
+    int rowspan_kind() const {
+#if HP_ROWSPAN_MOD
+        return rowspan_;
+#else
+        return 0;
+#endif
+    }
+    int unref_kind() const {
+#if HP_UNREF_MOD
+        return unref_;
+#else
+        return 0;
+#endif
+    }
+    int cleanup_kind() const {
+#if HP_CLEANUP_MOD
+        return cleanup_;
+#else
+        return 0;
+#endif
+    }
+    int npov_kind() const {
+#if HP_NPOV_MOD
+        return npov_;
+#else
+        return 0;
+#endif
+    }
+    int rfrom_kind() const {
+#if HP_RFROM_MOD
+        return rfrom_;
+#else
+        return 0;
+#endif
+    }
+    int doi_kind() const {
+#if HP_DOI_MOD
+        return doi_;
+#else
+        return 0;
+#endif
+    }
+    int pmid_kind() const {
+#if HP_PMID_MOD
+        return pmid_;
+#else
+        return 0;
+#endif
+    }
+    int isbn_kind() const {
+#if HP_ISBN_MOD
+        return isbn_;
+#else
+        return 0;
+#endif
+    }
+    int medal_kind() const {
+#if HP_MEDAL_MOD
+        return medal_;
+#else
+        return 0;
+#endif
+    }
+    int thumb_kind() const {
+#if HP_THUMB_MOD
+        return thumb_;
+#else
+        return 0;
+#endif
+    }
+    int further_kind() const {
+#if HP_FURTHER_MOD
+        return further_;
+#else
+        return 0;
+#endif
+    }
+    int death_kind() const {
+#if HP_DEATH_MOD
+        return death_;
+#else
+        return 0;
+#endif
+    }
+    int harv_kind() const {
+#if HP_HARV_MOD
+        return harv_;
+#else
+        return 0;
+#endif
+    }
+    int issn_kind() const {
+#if HP_ISSN_MOD
+        return issn_;
+#else
+        return 0;
+#endif
+    }
+    int oclc_kind() const {
+#if HP_OCLC_MOD
+        return oclc_;
+#else
+        return 0;
+#endif
+    }
+    int align_kind() const {
+#if HP_ALIGN_MOD
+        return align_;
+#else
+        return 0;
+#endif
+    }
+    int syntax_kind() const {
+#if HP_SYNTAX_MOD
+        return syntax_;
 #else
         return 0;
 #endif
@@ -2825,6 +5478,230 @@ class WikiMachine {
         return 0;
 #endif
     }
+    int prespace() const {
+#if HP_PRESPACE_MOD
+        return prespace_;
+#else
+        return 0;
+#endif
+    }
+    int ext_disp() const {
+#if HP_EXTDISP_MOD
+        return extdisp_;
+#else
+        return 0;
+#endif
+    }
+    int px_size() const {
+#if HP_PXSIZE_MOD
+        return pxsize_;
+#else
+        return 0;
+#endif
+    }
+    int ent_num() const {
+#if HP_ENTNUM_MOD
+        return entnum_;
+#else
+        return 0;
+#endif
+    }
+    int wiki_hr() const {
+#if HP_WIKIHR_MOD
+        return wikihr_;
+#else
+        return 0;
+#endif
+    }
+    int font_col() const {
+#if HP_FONTCOL_MOD
+        return fontcol_;
+#else
+        return 0;
+#endif
+    }
+    int tbl_depth() const {
+#if HP_TBLDEPTH_MOD
+        return tbldepth_;
+#else
+        return 0;
+#endif
+    }
+    int utf8_st() const {
+#if HP_UTF8ST_MOD
+        return utf8st_;
+#else
+        return 0;
+#endif
+    }
+    int dl_term() const {
+#if HP_DLTERM_MOD
+        return dlterm_;
+#else
+        return 0;
+#endif
+    }
+    int head_close() const {
+#if HP_HEADCLOSE_MOD
+        return headclose_;
+#else
+        return 0;
+#endif
+    }
+    int wiki_time() const {
+#if HP_WIKITIME_MOD
+        return wikitime_;
+#else
+        return 0;
+#endif
+    }
+    int link_comma() const {
+#if HP_LINKCOMMA_MOD
+        return linkcomma_;
+#else
+        return 0;
+#endif
+    }
+    int cat_block() const {
+#if HP_CATBLOCK_MOD
+        return catblock_;
+#else
+        return 0;
+#endif
+    }
+    int br_tag() const {
+#if HP_BR_MOD
+        return br_;
+#else
+        return 0;
+#endif
+    }
+    int amp_nbsp() const {
+#if HP_AMPNBSP_MOD
+        return ampnbsp_;
+#else
+        return 0;
+#endif
+    }
+    int mdash() const {
+#if HP_MDASH_MOD
+        return mdash_;
+#else
+        return 0;
+#endif
+    }
+    int in_math() const {
+#if HP_MATH_MOD
+        return in_math_;
+#else
+        return 0;
+#endif
+    }
+    int list_mix() const {
+#if HP_LISTMIX_MOD
+        return listmix_;
+#else
+        return 0;
+#endif
+    }
+    int protocol() const {
+#if HP_PROTOCOL_MOD
+        return protocol_;
+#else
+        return 0;
+#endif
+    }
+    int hex_run() const {
+#if HP_HEXRUN_MOD
+        return hexval_;
+#else
+        return 0;
+#endif
+    }
+    int sq_depth() const {
+#if HP_SQDEPTH_MOD
+        return sqdepth_;
+#else
+        return 0;
+#endif
+    }
+    int pipe_role() const {
+#if HP_PIPEROLE_MOD
+        return piperole_;
+#else
+        return 0;
+#endif
+    }
+    int after_ref() const {
+#if HP_AFTERREF_MOD
+        return afterref_;
+#else
+        return 0;
+#endif
+    }
+    int sent_pos() const {
+#if HP_SENTPOS_MOD
+        return sentpos_;
+#else
+        return 0;
+#endif
+    }
+    int abbrev() const {
+#if HP_ABBREV_MOD
+        return abbrev_;
+#else
+        return 0;
+#endif
+    }
+    int thousand() const {
+#if HP_THOUSAND_MOD
+        return thousand_;
+#else
+        return 0;
+#endif
+    }
+    int ref_punct() const {
+#if HP_REFPUNCT_MOD
+        return refpunct_;
+#else
+        return 0;
+#endif
+    }
+    int q_period() const {
+#if HP_QPERIOD_MOD
+        return qperiod_;
+#else
+        return 0;
+#endif
+    }
+    int ellipsis() const {
+#if HP_ELLIPSIS_MOD
+        return ellipsis_;
+#else
+        return 0;
+#endif
+    }
+    int num_range() const {
+#if HP_NUMRANGE_MOD
+        return numrange_;
+#else
+        return 0;
+#endif
+    }
+    int deg() const {
+#if HP_DEG_MOD
+        return deg_;
+#else
+        return 0;
+#endif
+    }
+    int percent() const {
+#if HP_PERCENT_MOD
+        return percent_;
+#else
+        return 0;
+#endif
+    }
     int is_temp() const {
 #if HP_WIKI_TEMP
         return is_temp_;
@@ -3067,6 +5944,10 @@ class WikiMachine {
     int cs_val_ = 0;
     std::uint64_t cs_win_ = 0;
 #endif
+#if HP_ROWSPAN_MOD
+    int rowspan_ = 0;
+    std::uint64_t rs_win_ = 0;
+#endif
 #if HP_STYLE_MOD
     std::uint64_t style_hash_ = 0;
     int style_eat_ = 0;
@@ -3246,6 +6127,523 @@ class WikiMachine {
     int ri_slash_ = 0;
     char ri_buf_[4] = {};
 #endif
+#if HP_PRESPACE_MOD
+    int prespace_ = 0;
+#endif
+#if HP_EXTDISP_MOD
+    int extdisp_ = 0;
+    int ed_pend_ = 0;
+    int ed_on_ = 0;
+    int ed_slash_ = 0;
+#endif
+#if HP_PXSIZE_MOD
+    int pxsize_ = 0;
+    int px_n_ = 0;
+    int px_p_ = 0;
+    int px_acc_ = 0;
+#endif
+#if HP_ENTNUM_MOD
+    int entnum_ = 0;
+    int en_st_ = 0;
+#endif
+#if HP_WIKIHR_MOD
+    int wikihr_ = 0;
+    int hr_run_ = 0;
+#endif
+#if HP_FONTCOL_MOD
+    int fontcol_ = 0;
+    int fc_eat_ = 0;
+    std::uint64_t fc_win_ = 0;
+#endif
+#if HP_TBLDEPTH_MOD
+    int tbldepth_ = 0;
+#endif
+#if HP_UTF8ST_MOD
+    int utf8st_ = 0;
+    int utf8left_ = 0;
+#endif
+#if HP_DLTERM_MOD
+    int dlterm_ = 0;
+    int dl_on_ = 0;
+#endif
+#if HP_HEADCLOSE_MOD
+    int headclose_ = 0;
+    int hc_sol_ = 1;
+    int hc_eq_ = 0;
+    int hc_text_ = 0;
+#endif
+#if HP_WIKITIME_MOD
+    int wikitime_ = 0;
+    int tm_st_ = 0;
+    int tm_n1_ = 0;
+    int tm_n2_ = 0;
+#endif
+#if HP_LINKCOMMA_MOD
+    int linkcomma_ = 0;
+    int lc_pipe_ = 0;
+#endif
+#if HP_CATBLOCK_MOD
+    int catblock_ = 0;
+    int cb_n_ = 0;
+    int cb_hit_ = 0;
+#endif
+#if HP_BR_MOD
+    int br_ = 0;
+    std::uint64_t br_win_ = 0;
+#endif
+#if HP_AMPNBSP_MOD
+    int ampnbsp_ = 0;
+    std::uint64_t ampnbsp_win_ = 0;
+#endif
+#if HP_MDASH_MOD
+    int mdash_ = 0;
+    int md_st_ = 0;
+#endif
+#if HP_LISTMIX_MOD
+    int listmix_ = 0;
+    int lm_run_ = 1;
+#endif
+#if HP_MATH_MOD
+    int in_math_ = 0;
+    int mh_open_ = 0;
+    std::uint64_t mh_win_ = 0;
+#endif
+#if HP_CHEM_MOD
+    int in_chem_ = 0;
+    int ch_open_ = 0;
+    std::uint64_t ch_win_ = 0;
+#endif
+#if HP_SMALL_MOD
+    int in_small_ = 0;
+    int sm_open_ = 0;
+    std::uint64_t sm_win_ = 0;
+#endif
+#if HP_SUPSUB_MOD
+    int supsub_ = 0;
+    int ss_open_ = 0;
+    std::uint64_t ss_win_ = 0;
+#endif
+#if HP_PRECODE_MOD
+    int precode_ = 0;
+    int pc_open_ = 0;
+    std::uint64_t pc_win_ = 0;
+#endif
+#if HP_PROTOCOL_MOD
+    int protocol_ = 0;
+    int proto_n_ = 0;
+    char proto_buf_[8] = {};
+#endif
+#if HP_HEXRUN_MOD
+    int hexval_ = 0;
+    int hexrun_ = 0;
+    int hex_on_ = 0;
+#endif
+#if HP_SQDEPTH_MOD
+    int sqdepth_ = 0;
+#endif
+#if HP_PIPEROLE_MOD
+    int piperole_ = 0;
+#endif
+#if HP_AFTERREF_MOD
+    int afterref_ = 0;
+    std::uint64_t ar_win_ = 0;
+#endif
+#if HP_SENTPOS_MOD
+    int sentpos_ = 0;
+    int sp_inword_ = 0;
+#endif
+#if HP_ABBREV_MOD
+    int abbrev_ = 0;
+    int ab_n_ = 0;
+    std::uint64_t ab_w_ = 0;
+#endif
+#if HP_THOUSAND_MOD
+    int thousand_ = 0;
+    int th_st_ = 0;
+    int th_n_ = 0;
+#endif
+#if HP_REFPUNCT_MOD
+    int refpunct_ = 0;
+    std::uint64_t rp_win_ = 0;
+#endif
+#if HP_QPERIOD_MOD
+    int qperiod_ = 0;
+#endif
+#if HP_ELLIPSIS_MOD
+    int ellipsis_ = 0;
+    int ellip_n_ = 0;
+#endif
+#if HP_NUMRANGE_MOD
+    int numrange_ = 0;
+    int nr_st_ = 0;
+    int nr_utf_ = 0;
+#endif
+#if HP_DEG_MOD
+    int deg_ = 0;
+    int deg_d_ = 0;
+    int deg_st_ = 0;
+    std::uint64_t deg_win_ = 0;
+#endif
+#if HP_PERCENT_MOD
+    int percent_ = 0;
+    int pct_d_ = 0;
+#endif
+#if HP_STATETRANS_MOD
+    int prev_state_ = 0;
+#endif
+#if HP_LISTPARA_MOD
+    int listpara_ = 0;
+    int lp_apos_ = 0;
+#endif
+#if HP_SECFRAG_MOD
+    int secfrag_ = 0;
+#endif
+#if HP_WIKIVAR_MOD
+    int wikivar_ = 0;
+    int wv_on_ = 0;
+    int wv_n_ = 0;
+    char wv_buf_[20] = {};
+#endif
+#if HP_SUBPAGE_MOD
+    int subpage_ = 0;
+#endif
+#if HP_LINKNS_MOD
+    int linkns_ = 0;
+    int ln_on_ = 0;
+    int ln_n_ = 0;
+    char ln_buf_[16] = {};
+#endif
+#if HP_FCCUR_MOD
+    int fccur_ = 0;
+    int fccur_set_ = 0;
+#endif
+#if HP_REFGROUP_MOD
+    int refgroup_ = 0;
+    int rg_slash_ = 0;
+    int rg_n_ = 0;
+    int rg_name_ = 0;
+    int rg_group_ = 0;
+    std::uint64_t rg_win_ = 0;
+    char rg_buf_[4] = {};
+#endif
+#if HP_REFLIST_MOD
+    int reflist_ = 0;
+    int rl_from_tpl_ = 0;
+    int rl_d_ = 0;
+    int rl_slash_ = 0;
+    int rl_n_ = 0;
+    char rl_buf_[12] = {};
+#endif
+#if HP_SISTER_MOD
+    int sister_ = 0;
+    int sis_on_ = 0;
+    int sis_n_ = 0;
+    char sis_buf_[12] = {};
+#endif
+#if HP_CONVERT_MOD
+    int convert_ = 0;
+    int convert_d_ = 0;
+#endif
+#if HP_CN_MOD
+    int cn_ = 0;
+    int cn_d_ = 0;
+#endif
+#if HP_CONVERT_MOD || HP_CN_MOD || HP_REFLIST_MOD
+    int h39t_depth_ = 0;
+    int h39t_n_ = 0;
+    int h39t_col_ = 0;
+    char h39t_buf_[16] = {};
+#endif
+#if HP_BLOCK_MOD
+    int block_ = 0;
+    int bk_slash_ = 0;
+    int bk_n_ = 0;
+    char bk_buf_[12] = {};
+#endif
+#if HP_PIPETRICK_MOD
+    int pipetrick_ = 0;
+    int pt_pipe_ = 0;
+#endif
+#if HP_NOTES_MOD
+    int notes_ = 0;
+    int notes_d_ = 0;
+#endif
+#if HP_LANGTPL_MOD
+    int langtpl_ = 0;
+    int langtpl_d_ = 0;
+#endif
+#if HP_FRAC_MOD
+    int frac_ = 0;
+    int frac_d_ = 0;
+#endif
+#if HP_LISTEN_MOD
+    int listen_ = 0;
+    int listen_d_ = 0;
+    int ls_pre_n_ = 0;
+    int ls_pre_on_ = 0;
+    int ls_in_file_ = 0;
+    std::uint64_t ls_win_ = 0;
+    char ls_pre_[8] = {};
+#endif
+#if HP_BIRTH_MOD
+    int birth_ = 0;
+    int birth_d_ = 0;
+#endif
+#if HP_HLIST_MOD
+    int hlist_ = 0;
+    int hlist_d_ = 0;
+#endif
+#if HP_MAINART_MOD
+    int mainart_ = 0;
+    int mainart_d_ = 0;
+    int ma_seen_head_ = 0;
+#endif
+#if HP_NOTES_MOD || HP_LANGTPL_MOD || HP_FRAC_MOD || HP_LISTEN_MOD || \
+    HP_BIRTH_MOD || HP_HLIST_MOD || HP_MAINART_MOD
+    int h40t_depth_ = 0;
+    int h40t_n_ = 0;
+    int h40t_col_ = 0;
+    char h40t_buf_[16] = {};
+#endif
+#if HP_SFN_MOD
+    int sfn_ = 0;
+    int sfn_d_ = 0;
+#endif
+#if HP_GEOTEMP_MOD
+    int geotemp_ = 0;
+    int geotemp_d_ = 0;
+#endif
+#if HP_EPIGRAPH_MOD
+    int epigraph_ = 0;
+    int epigraph_d_ = 0;
+#endif
+#if HP_TRACKLIST_MOD
+    int tracklist_ = 0;
+    int tracklist_d_ = 0;
+#endif
+#if HP_SUCCESSION_MOD
+    int succession_ = 0;
+    int succession_d_ = 0;
+#endif
+#if HP_COLSTART_MOD
+    int colstart_ = 0;
+    int colstart_d_ = 0;
+#endif
+#if HP_REFBEGIN_MOD
+    int refbegin_ = 0;
+#endif
+#if HP_SFN_MOD || HP_GEOTEMP_MOD || HP_EPIGRAPH_MOD || HP_TRACKLIST_MOD || \
+    HP_SUCCESSION_MOD || HP_COLSTART_MOD || HP_REFBEGIN_MOD
+    int h41t_depth_ = 0;
+    int h41t_n_ = 0;
+    int h41t_col_ = 0;
+    char h41t_buf_[16] = {};
+#endif
+#if HP_TOC_MOD
+    int toc_ = 0;
+    int toc_col_ = 0;
+    int toc_n_ = 0;
+    char toc_buf_[12] = {};
+#endif
+#if HP_SHORTDESC_MOD
+    int shortdesc_ = 0;
+    int shortdesc_d_ = 0;
+#endif
+#if HP_SEEALSO_MOD
+    int seealso_ = 0;
+    int seealso_d_ = 0;
+#endif
+#if HP_PORTAL_MOD
+    int portal_ = 0;
+    int portal_d_ = 0;
+#endif
+#if HP_AUTHCTL_MOD
+    int authctl_ = 0;
+    int authctl_d_ = 0;
+#endif
+#if HP_USEDATE_MOD
+    int usedate_ = 0;
+#endif
+#if HP_IPA_MOD
+    int ipa_ = 0;
+    int ipa_d_ = 0;
+#endif
+#if HP_GOODART_MOD
+    int goodart_ = 0;
+#endif
+#if HP_CAPTION_MOD
+    int caption_ = 0;
+    int caption_d_ = 0;
+    int cap_key_on_ = 0;
+    int cap_key_n_ = 0;
+    int cap_sq_ = 0;
+    char cap_key_[16] = {};
+#endif
+#if HP_SHORTDESC_MOD || HP_SEEALSO_MOD || HP_PORTAL_MOD || HP_AUTHCTL_MOD || \
+    HP_USEDATE_MOD || HP_IPA_MOD || HP_GOODART_MOD || HP_CAPTION_MOD
+    int h42t_depth_ = 0;
+    int h42t_n_ = 0;
+    int h42t_col_ = 0;
+    char h42t_buf_[20] = {};
+#endif
+#if HP_NAVBOX_MOD
+    int navbox_ = 0;
+    int navbox_d_ = 0;
+#endif
+#if HP_EFOOT_MOD
+    int efoot_ = 0;
+    int efoot_d_ = 0;
+#endif
+#if HP_RSHORT_MOD
+    int rshort_ = 0;
+    int rshort_d_ = 0;
+#endif
+#if HP_ASOF_MOD
+    int asof_ = 0;
+    int asof_d_ = 0;
+#endif
+#if HP_CLARIFY_MOD
+    int clarify_ = 0;
+    int clarify_d_ = 0;
+#endif
+#if HP_CURRENCY_MOD
+    int currency_ = 0;
+    int currency_d_ = 0;
+#endif
+#if HP_DISPLAYTITLE_MOD
+    int displaytitle_ = 0;
+#endif
+#if HP_NOWRAP_MOD
+    int nowrap_ = 0;
+    int nowrap_d_ = 0;
+#endif
+#if HP_STUB_MOD
+    int stub_ = 0;
+#endif
+#if HP_PERSONDATA_MOD
+    int persondata_ = 0;
+    int persondata_d_ = 0;
+#endif
+#if HP_FLAG_MOD
+    int flag_ = 0;
+    int flag_d_ = 0;
+#endif
+#if HP_QUOTEBOX_MOD
+    int quotebox_ = 0;
+    int quotebox_d_ = 0;
+#endif
+#if HP_CLEAR_MOD
+    int clear_ = 0;
+    int h43t_dash_ = 0;
+#endif
+#if HP_IMDB_MOD
+    int imdb_ = 0;
+    int imdb_d_ = 0;
+#endif
+#if HP_RP_MOD
+    int rp_ = 0;
+    int rp_d_ = 0;
+#endif
+#if HP_FN_MOD
+    int fn_ = 0;
+    int fn_d_ = 0;
+#endif
+#if HP_TAXOBOX_MOD
+    int taxobox_ = 0;
+    int taxobox_d_ = 0;
+#endif
+#if HP_NIHONGO_MOD
+    int nihongo_ = 0;
+    int nihongo_d_ = 0;
+#endif
+#if HP_DEADLINK_MOD
+    int deadlink_ = 0;
+    int deadlink_d_ = 0;
+#endif
+#if HP_WAYBACK_MOD
+    int wayback_ = 0;
+    int wayback_d_ = 0;
+#endif
+#if HP_UNREF_MOD
+    int unref_ = 0;
+    int unref_d_ = 0;
+#endif
+#if HP_CLEANUP_MOD
+    int cleanup_ = 0;
+    int cleanup_d_ = 0;
+#endif
+#if HP_NPOV_MOD
+    int npov_ = 0;
+    int npov_d_ = 0;
+#endif
+#if HP_RFROM_MOD
+    int rfrom_ = 0;
+    int rfrom_d_ = 0;
+#endif
+#if HP_DOI_MOD
+    int doi_ = 0;
+    int doi_d_ = 0;
+    std::uint64_t doi_win_ = 0;
+#endif
+#if HP_PMID_MOD
+    int pmid_ = 0;
+    int pmid_d_ = 0;
+    std::uint64_t pmid_win_ = 0;
+#endif
+#if HP_ISBN_MOD
+    int isbn_ = 0;
+    std::uint64_t isbn_win_ = 0;
+#endif
+#if HP_MEDAL_MOD
+    int medal_ = 0;
+    int medal_d_ = 0;
+#endif
+#if HP_THUMB_MOD
+    int thumb_ = 0;
+    std::uint64_t thumb_win_ = 0;
+#endif
+#if HP_FURTHER_MOD
+    int further_ = 0;
+    int further_d_ = 0;
+#endif
+#if HP_DEATH_MOD
+    int death_ = 0;
+    int death_d_ = 0;
+#endif
+#if HP_HARV_MOD
+    int harv_ = 0;
+    int harv_d_ = 0;
+#endif
+#if HP_ISSN_MOD
+    int issn_ = 0;
+    std::uint64_t issn_win_ = 0;
+#endif
+#if HP_OCLC_MOD
+    int oclc_ = 0;
+    std::uint64_t oclc_win_ = 0;
+#endif
+#if HP_ALIGN_MOD
+    int align_ = 0;
+    std::uint64_t align_win_ = 0;
+#endif
+#if HP_SYNTAX_MOD
+    int syntax_ = 0;
+    int sx_open_ = 0;
+    std::uint64_t sx_win_ = 0;
+#endif
+#if HP_NAVBOX_MOD || HP_EFOOT_MOD || HP_RSHORT_MOD || HP_ASOF_MOD || \
+    HP_CLARIFY_MOD || HP_CURRENCY_MOD || HP_DISPLAYTITLE_MOD || HP_NOWRAP_MOD || \
+    HP_STUB_MOD || HP_PERSONDATA_MOD || HP_FLAG_MOD || HP_QUOTEBOX_MOD || \
+    HP_CLEAR_MOD || HP_IMDB_MOD || HP_RP_MOD || HP_FN_MOD || \
+    HP_TAXOBOX_MOD || HP_NIHONGO_MOD || HP_DEADLINK_MOD || HP_WAYBACK_MOD || \
+    HP_UNREF_MOD || HP_CLEANUP_MOD || HP_NPOV_MOD || HP_RFROM_MOD || \
+    HP_DOI_MOD || HP_PMID_MOD || HP_MEDAL_MOD || \
+    HP_FURTHER_MOD || HP_DEATH_MOD || HP_HARV_MOD
+    int h43t_depth_ = 0;
+    int h43t_n_ = 0;
+    int h43t_col_ = 0;
+    char h43t_buf_[20] = {};
+#endif
 #if HP_HEADING_MOD
     int heading_ = 0;
     int heading_run_ = 0;
@@ -3395,7 +6793,35 @@ class WikiMachine {
     HP_LEAD_MOD || HP_INFOVAL_MOD || HP_LINKTRAIL_MOD || HP_CELLKIND_MOD || \
     HP_TBLCOL_MOD || HP_HEADIDX_MOD || HP_HTMLFMT_MOD || HP_INFOBOX_MOD || \
     HP_SECLEVEL_MOD || HP_BRACE3_MOD || HP_NAMEDARG_MOD || HP_INCLUDE_MOD || \
-    HP_SIG_MOD || HP_WIKIBOLD_MOD || HP_URLPART_MOD || HP_REFIDX_MOD
+    HP_SIG_MOD || HP_WIKIBOLD_MOD || HP_URLPART_MOD || HP_REFIDX_MOD || \
+    HP_PRESPACE_MOD || HP_EXTDISP_MOD || HP_PXSIZE_MOD || HP_ENTNUM_MOD || \
+    HP_WIKIHR_MOD || HP_FONTCOL_MOD || HP_TBLDEPTH_MOD || HP_UTF8ST_MOD || \
+    HP_DLTERM_MOD || HP_HEADCLOSE_MOD || HP_WIKITIME_MOD || HP_LINKCOMMA_MOD || \
+    HP_CATBLOCK_MOD || HP_BR_MOD || HP_AMPNBSP_MOD || HP_MDASH_MOD || \
+    HP_MATH_MOD || HP_LISTMIX_MOD || HP_PROTOCOL_MOD || HP_HEXRUN_MOD || \
+    HP_SQDEPTH_MOD || HP_PIPEROLE_MOD || HP_AFTERREF_MOD || HP_SENTPOS_MOD || \
+    HP_ABBREV_MOD || HP_THOUSAND_MOD || HP_REFPUNCT_MOD || HP_QPERIOD_MOD || \
+    HP_ELLIPSIS_MOD || HP_NUMRANGE_MOD || HP_DEG_MOD || HP_PERCENT_MOD || \
+    HP_STATETRANS_MOD || HP_COLRING_MOD || HP_LISTPARA_MOD || HP_SECFRAG_MOD || \
+    HP_WIKIVAR_MOD || HP_SUBPAGE_MOD || HP_LINKNS_MOD || HP_FCCUR_MOD || \
+    HP_REFGROUP_MOD || HP_REFLIST_MOD || HP_SISTER_MOD || HP_CONVERT_MOD || \
+    HP_CN_MOD || HP_BLOCK_MOD || HP_PIPETRICK_MOD || HP_NOTES_MOD || \
+    HP_LANGTPL_MOD || HP_FRAC_MOD || HP_LISTEN_MOD || HP_BIRTH_MOD || \
+    HP_HLIST_MOD || HP_MAINART_MOD || HP_CHEM_MOD || HP_SFN_MOD || \
+    HP_GEOTEMP_MOD || HP_EPIGRAPH_MOD || HP_TRACKLIST_MOD || \
+    HP_SUCCESSION_MOD || HP_COLSTART_MOD || HP_TOC_MOD || HP_REFBEGIN_MOD || \
+    HP_SHORTDESC_MOD || HP_SEEALSO_MOD || HP_PORTAL_MOD || HP_AUTHCTL_MOD || \
+    HP_USEDATE_MOD || HP_IPA_MOD || HP_GOODART_MOD || HP_CAPTION_MOD || \
+    HP_NAVBOX_MOD || HP_EFOOT_MOD || HP_RSHORT_MOD || HP_ASOF_MOD || \
+    HP_CLARIFY_MOD || HP_CURRENCY_MOD || HP_DISPLAYTITLE_MOD || HP_NOWRAP_MOD || \
+    HP_STUB_MOD || HP_PERSONDATA_MOD || HP_FLAG_MOD || HP_QUOTEBOX_MOD || \
+    HP_CLEAR_MOD || HP_IMDB_MOD || HP_RP_MOD || HP_FN_MOD || \
+    HP_SMALL_MOD || HP_SUPSUB_MOD || HP_PRECODE_MOD || HP_TAXOBOX_MOD || \
+    HP_NIHONGO_MOD || HP_DEADLINK_MOD || HP_WAYBACK_MOD || HP_ROWSPAN_MOD || \
+    HP_UNREF_MOD || HP_CLEANUP_MOD || HP_NPOV_MOD || HP_RFROM_MOD || \
+    HP_DOI_MOD || HP_PMID_MOD || HP_ISBN_MOD || HP_MEDAL_MOD || \
+    HP_THUMB_MOD || HP_FURTHER_MOD || HP_DEATH_MOD || HP_HARV_MOD || \
+    HP_ISSN_MOD || HP_OCLC_MOD || HP_ALIGN_MOD || HP_SYNTAX_MOD
         if (eq("page") && !xml_slash_) {
 #if HP_LASTLINK_MOD
             lastlink_ = 0;
@@ -3519,6 +6945,10 @@ class WikiMachine {
             cs_eat_ = 0;
             cs_val_ = 0;
             cs_win_ = 0;
+#endif
+#if HP_ROWSPAN_MOD
+            rowspan_ = 0;
+            rs_win_ = 0;
 #endif
 #if HP_STYLE_MOD
             style_hash_ = 0;
@@ -3691,6 +7121,508 @@ class WikiMachine {
             ri_n_ = 0;
             ri_slash_ = 0;
 #endif
+#if HP_PRESPACE_MOD
+            prespace_ = 0;
+#endif
+#if HP_EXTDISP_MOD
+            extdisp_ = 0;
+            ed_pend_ = 0;
+            ed_on_ = 0;
+            ed_slash_ = 0;
+#endif
+#if HP_PXSIZE_MOD
+            pxsize_ = 0;
+            px_n_ = 0;
+            px_p_ = 0;
+            px_acc_ = 0;
+#endif
+#if HP_ENTNUM_MOD
+            entnum_ = 0;
+            en_st_ = 0;
+#endif
+#if HP_WIKIHR_MOD
+            wikihr_ = 0;
+            hr_run_ = 0;
+#endif
+#if HP_FONTCOL_MOD
+            fontcol_ = 0;
+            fc_eat_ = 0;
+            fc_win_ = 0;
+#endif
+#if HP_TBLDEPTH_MOD
+            tbldepth_ = 0;
+#endif
+#if HP_UTF8ST_MOD
+            utf8st_ = 0;
+            utf8left_ = 0;
+#endif
+#if HP_DLTERM_MOD
+            dlterm_ = 0;
+            dl_on_ = 0;
+#endif
+#if HP_HEADCLOSE_MOD
+            headclose_ = 0;
+            hc_sol_ = 1;
+            hc_eq_ = 0;
+            hc_text_ = 0;
+#endif
+#if HP_WIKITIME_MOD
+            wikitime_ = 0;
+            tm_st_ = 0;
+            tm_n1_ = 0;
+            tm_n2_ = 0;
+#endif
+#if HP_LINKCOMMA_MOD
+            linkcomma_ = 0;
+            lc_pipe_ = 0;
+#endif
+#if HP_CATBLOCK_MOD
+            catblock_ = 0;
+            cb_n_ = 0;
+            cb_hit_ = 0;
+#endif
+#if HP_BR_MOD
+            br_ = 0;
+            br_win_ = 0;
+#endif
+#if HP_AMPNBSP_MOD
+            ampnbsp_ = 0;
+            ampnbsp_win_ = 0;
+#endif
+#if HP_MDASH_MOD
+            mdash_ = 0;
+            md_st_ = 0;
+#endif
+#if HP_LISTMIX_MOD
+            listmix_ = 0;
+            lm_run_ = 1;
+#endif
+#if HP_MATH_MOD
+            in_math_ = 0;
+            mh_open_ = 0;
+            mh_win_ = 0;
+#endif
+#if HP_PROTOCOL_MOD
+            protocol_ = 0;
+            proto_n_ = 0;
+#endif
+#if HP_HEXRUN_MOD
+            hexval_ = 0;
+            hexrun_ = 0;
+            hex_on_ = 0;
+#endif
+#if HP_SQDEPTH_MOD
+            sqdepth_ = 0;
+#endif
+#if HP_PIPEROLE_MOD
+            piperole_ = 0;
+#endif
+#if HP_AFTERREF_MOD
+            afterref_ = 0;
+            ar_win_ = 0;
+#endif
+#if HP_SENTPOS_MOD
+            sentpos_ = 0;
+            sp_inword_ = 0;
+#endif
+#if HP_ABBREV_MOD
+            abbrev_ = 0;
+            ab_n_ = 0;
+            ab_w_ = 0;
+#endif
+#if HP_THOUSAND_MOD
+            thousand_ = 0;
+            th_st_ = 0;
+            th_n_ = 0;
+#endif
+#if HP_REFPUNCT_MOD
+            refpunct_ = 0;
+            rp_win_ = 0;
+#endif
+#if HP_QPERIOD_MOD
+            qperiod_ = 0;
+#endif
+#if HP_ELLIPSIS_MOD
+            ellipsis_ = 0;
+            ellip_n_ = 0;
+#endif
+#if HP_NUMRANGE_MOD
+            numrange_ = 0;
+            nr_st_ = 0;
+            nr_utf_ = 0;
+#endif
+#if HP_DEG_MOD
+            deg_ = 0;
+            deg_d_ = 0;
+            deg_st_ = 0;
+            deg_win_ = 0;
+#endif
+#if HP_PERCENT_MOD
+            percent_ = 0;
+            pct_d_ = 0;
+#endif
+#if HP_STATETRANS_MOD
+            prev_state_ = 0;
+#endif
+#if HP_LISTPARA_MOD
+            listpara_ = 0;
+            lp_apos_ = 0;
+#endif
+#if HP_SECFRAG_MOD
+            secfrag_ = 0;
+#endif
+#if HP_WIKIVAR_MOD
+            wikivar_ = 0;
+            wv_on_ = 0;
+            wv_n_ = 0;
+#endif
+#if HP_SUBPAGE_MOD
+            subpage_ = 0;
+#endif
+#if HP_LINKNS_MOD
+            linkns_ = 0;
+            ln_on_ = 0;
+            ln_n_ = 0;
+#endif
+#if HP_FCCUR_MOD
+            fccur_ = 0;
+            fccur_set_ = 0;
+#endif
+#if HP_REFGROUP_MOD
+            refgroup_ = 0;
+            rg_slash_ = 0;
+            rg_n_ = 0;
+            rg_name_ = 0;
+            rg_group_ = 0;
+            rg_win_ = 0;
+#endif
+#if HP_REFLIST_MOD
+            reflist_ = 0;
+            rl_from_tpl_ = 0;
+            rl_d_ = 0;
+            rl_slash_ = 0;
+            rl_n_ = 0;
+#endif
+#if HP_SISTER_MOD
+            sister_ = 0;
+            sis_on_ = 0;
+            sis_n_ = 0;
+#endif
+#if HP_CONVERT_MOD
+            convert_ = 0;
+            convert_d_ = 0;
+#endif
+#if HP_CN_MOD
+            cn_ = 0;
+            cn_d_ = 0;
+#endif
+#if HP_CONVERT_MOD || HP_CN_MOD || HP_REFLIST_MOD
+            h39t_depth_ = 0;
+            h39t_n_ = 0;
+            h39t_col_ = 0;
+#endif
+#if HP_BLOCK_MOD
+            block_ = 0;
+            bk_slash_ = 0;
+            bk_n_ = 0;
+#endif
+#if HP_PIPETRICK_MOD
+            pipetrick_ = 0;
+            pt_pipe_ = 0;
+#endif
+#if HP_NOTES_MOD
+            notes_ = 0;
+            notes_d_ = 0;
+#endif
+#if HP_LANGTPL_MOD
+            langtpl_ = 0;
+            langtpl_d_ = 0;
+#endif
+#if HP_FRAC_MOD
+            frac_ = 0;
+            frac_d_ = 0;
+#endif
+#if HP_LISTEN_MOD
+            listen_ = 0;
+            listen_d_ = 0;
+            ls_pre_n_ = 0;
+            ls_pre_on_ = 0;
+            ls_in_file_ = 0;
+            ls_win_ = 0;
+#endif
+#if HP_BIRTH_MOD
+            birth_ = 0;
+            birth_d_ = 0;
+#endif
+#if HP_HLIST_MOD
+            hlist_ = 0;
+            hlist_d_ = 0;
+#endif
+#if HP_MAINART_MOD
+            mainart_ = 0;
+            mainart_d_ = 0;
+            ma_seen_head_ = 0;
+#endif
+#if HP_CHEM_MOD
+            in_chem_ = 0;
+            ch_open_ = 0;
+            ch_win_ = 0;
+#endif
+#if HP_SMALL_MOD
+            in_small_ = 0;
+            sm_open_ = 0;
+            sm_win_ = 0;
+#endif
+#if HP_SUPSUB_MOD
+            supsub_ = 0;
+            ss_open_ = 0;
+            ss_win_ = 0;
+#endif
+#if HP_PRECODE_MOD
+            precode_ = 0;
+            pc_open_ = 0;
+            pc_win_ = 0;
+#endif
+#if HP_NOTES_MOD || HP_LANGTPL_MOD || HP_FRAC_MOD || HP_LISTEN_MOD || \
+    HP_BIRTH_MOD || HP_HLIST_MOD || HP_MAINART_MOD
+            h40t_depth_ = 0;
+            h40t_n_ = 0;
+            h40t_col_ = 0;
+#endif
+#if HP_SFN_MOD
+            sfn_ = 0;
+            sfn_d_ = 0;
+#endif
+#if HP_GEOTEMP_MOD
+            geotemp_ = 0;
+            geotemp_d_ = 0;
+#endif
+#if HP_EPIGRAPH_MOD
+            epigraph_ = 0;
+            epigraph_d_ = 0;
+#endif
+#if HP_TRACKLIST_MOD
+            tracklist_ = 0;
+            tracklist_d_ = 0;
+#endif
+#if HP_SUCCESSION_MOD
+            succession_ = 0;
+            succession_d_ = 0;
+#endif
+#if HP_COLSTART_MOD
+            colstart_ = 0;
+            colstart_d_ = 0;
+#endif
+#if HP_REFBEGIN_MOD
+            refbegin_ = 0;
+#endif
+#if HP_TOC_MOD
+            toc_ = 0;
+            toc_col_ = 0;
+            toc_n_ = 0;
+#endif
+#if HP_SFN_MOD || HP_GEOTEMP_MOD || HP_EPIGRAPH_MOD || HP_TRACKLIST_MOD || \
+    HP_SUCCESSION_MOD || HP_COLSTART_MOD || HP_REFBEGIN_MOD
+            h41t_depth_ = 0;
+            h41t_n_ = 0;
+            h41t_col_ = 0;
+#endif
+#if HP_SHORTDESC_MOD
+            shortdesc_ = 0;
+            shortdesc_d_ = 0;
+#endif
+#if HP_SEEALSO_MOD
+            seealso_ = 0;
+            seealso_d_ = 0;
+#endif
+#if HP_PORTAL_MOD
+            portal_ = 0;
+            portal_d_ = 0;
+#endif
+#if HP_AUTHCTL_MOD
+            authctl_ = 0;
+            authctl_d_ = 0;
+#endif
+#if HP_USEDATE_MOD
+            usedate_ = 0;
+#endif
+#if HP_IPA_MOD
+            ipa_ = 0;
+            ipa_d_ = 0;
+#endif
+#if HP_GOODART_MOD
+            goodart_ = 0;
+#endif
+#if HP_CAPTION_MOD
+            caption_ = 0;
+            caption_d_ = 0;
+            cap_key_on_ = 0;
+            cap_key_n_ = 0;
+            cap_sq_ = 0;
+#endif
+#if HP_SHORTDESC_MOD || HP_SEEALSO_MOD || HP_PORTAL_MOD || HP_AUTHCTL_MOD || \
+    HP_USEDATE_MOD || HP_IPA_MOD || HP_GOODART_MOD || HP_CAPTION_MOD
+            h42t_depth_ = 0;
+            h42t_n_ = 0;
+            h42t_col_ = 0;
+#endif
+#if HP_NAVBOX_MOD
+            navbox_ = 0;
+            navbox_d_ = 0;
+#endif
+#if HP_EFOOT_MOD
+            efoot_ = 0;
+            efoot_d_ = 0;
+#endif
+#if HP_RSHORT_MOD
+            rshort_ = 0;
+            rshort_d_ = 0;
+#endif
+#if HP_ASOF_MOD
+            asof_ = 0;
+            asof_d_ = 0;
+#endif
+#if HP_CLARIFY_MOD
+            clarify_ = 0;
+            clarify_d_ = 0;
+#endif
+#if HP_CURRENCY_MOD
+            currency_ = 0;
+            currency_d_ = 0;
+#endif
+#if HP_DISPLAYTITLE_MOD
+            displaytitle_ = 0;
+#endif
+#if HP_NOWRAP_MOD
+            nowrap_ = 0;
+            nowrap_d_ = 0;
+#endif
+#if HP_STUB_MOD
+            stub_ = 0;
+#endif
+#if HP_PERSONDATA_MOD
+            persondata_ = 0;
+            persondata_d_ = 0;
+#endif
+#if HP_FLAG_MOD
+            flag_ = 0;
+            flag_d_ = 0;
+#endif
+#if HP_QUOTEBOX_MOD
+            quotebox_ = 0;
+            quotebox_d_ = 0;
+#endif
+#if HP_CLEAR_MOD
+            clear_ = 0;
+            h43t_dash_ = 0;
+#endif
+#if HP_IMDB_MOD
+            imdb_ = 0;
+            imdb_d_ = 0;
+#endif
+#if HP_RP_MOD
+            rp_ = 0;
+            rp_d_ = 0;
+#endif
+#if HP_FN_MOD
+            fn_ = 0;
+            fn_d_ = 0;
+#endif
+#if HP_TAXOBOX_MOD
+            taxobox_ = 0;
+            taxobox_d_ = 0;
+#endif
+#if HP_NIHONGO_MOD
+            nihongo_ = 0;
+            nihongo_d_ = 0;
+#endif
+#if HP_DEADLINK_MOD
+            deadlink_ = 0;
+            deadlink_d_ = 0;
+#endif
+#if HP_WAYBACK_MOD
+            wayback_ = 0;
+            wayback_d_ = 0;
+#endif
+#if HP_UNREF_MOD
+            unref_ = 0;
+            unref_d_ = 0;
+#endif
+#if HP_CLEANUP_MOD
+            cleanup_ = 0;
+            cleanup_d_ = 0;
+#endif
+#if HP_NPOV_MOD
+            npov_ = 0;
+            npov_d_ = 0;
+#endif
+#if HP_RFROM_MOD
+            rfrom_ = 0;
+            rfrom_d_ = 0;
+#endif
+#if HP_DOI_MOD
+            doi_ = 0;
+            doi_d_ = 0;
+            doi_win_ = 0;
+#endif
+#if HP_PMID_MOD
+            pmid_ = 0;
+            pmid_d_ = 0;
+            pmid_win_ = 0;
+#endif
+#if HP_ISBN_MOD
+            isbn_ = 0;
+            isbn_win_ = 0;
+#endif
+#if HP_MEDAL_MOD
+            medal_ = 0;
+            medal_d_ = 0;
+#endif
+#if HP_THUMB_MOD
+            thumb_ = 0;
+            thumb_win_ = 0;
+#endif
+#if HP_FURTHER_MOD
+            further_ = 0;
+            further_d_ = 0;
+#endif
+#if HP_DEATH_MOD
+            death_ = 0;
+            death_d_ = 0;
+#endif
+#if HP_HARV_MOD
+            harv_ = 0;
+            harv_d_ = 0;
+#endif
+#if HP_ISSN_MOD
+            issn_ = 0;
+            issn_win_ = 0;
+#endif
+#if HP_OCLC_MOD
+            oclc_ = 0;
+            oclc_win_ = 0;
+#endif
+#if HP_ALIGN_MOD
+            align_ = 0;
+            align_win_ = 0;
+#endif
+#if HP_SYNTAX_MOD
+            syntax_ = 0;
+            sx_open_ = 0;
+            sx_win_ = 0;
+#endif
+#if HP_NAVBOX_MOD || HP_EFOOT_MOD || HP_RSHORT_MOD || HP_ASOF_MOD || \
+    HP_CLARIFY_MOD || HP_CURRENCY_MOD || HP_DISPLAYTITLE_MOD || HP_NOWRAP_MOD || \
+    HP_STUB_MOD || HP_PERSONDATA_MOD || HP_FLAG_MOD || HP_QUOTEBOX_MOD || \
+    HP_CLEAR_MOD || HP_IMDB_MOD || HP_RP_MOD || HP_FN_MOD || \
+    HP_TAXOBOX_MOD || HP_NIHONGO_MOD || HP_DEADLINK_MOD || HP_WAYBACK_MOD || \
+    HP_UNREF_MOD || HP_CLEANUP_MOD || HP_NPOV_MOD || HP_RFROM_MOD || \
+    HP_DOI_MOD || HP_PMID_MOD || HP_MEDAL_MOD || \
+    HP_FURTHER_MOD || HP_DEATH_MOD || HP_HARV_MOD
+            h43t_depth_ = 0;
+            h43t_n_ = 0;
+            h43t_col_ = 0;
+#endif
         }
 #endif
     }
@@ -3765,7 +7697,7 @@ class WikiMachine {
     int tp_done_ = 0;
     std::uint64_t tp_hash_ = 0;
 #endif
-#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD
+#if HP_TABLE_ABOVE || HP_FCCXT_MOD || HP_WIKISTACK_MOD || HP_COLRING_MOD
     void table_reset() {
         for (int r = 0; r < 4; ++r)
             for (int c = 0; c < 32; ++c) tbl_cells_[r][c] = 0;
@@ -3791,6 +7723,94 @@ class WikiMachine {
     int tbl_row_ = 0;
     int tbl_cell_ = 0;
     int tbl_started_ = 0;
+#endif
+#if HP_FCCUR_MOD
+    static int fccur_token_(int c) {
+        if (c >= 'A' && c <= 'Z') return 1;
+        if (c == ':') return 2;
+        if (c == '<') return 3;
+        if (c == '=') return 4;
+        if (c == '*') return 5;
+        if (c == '#') return 6;
+        if (c == '|') return 7;
+        if (c == '[') return 8;
+        if (c == '{') return 9;
+        if (c == '>') return 10;
+        if (c == ';') return 11;
+        if (c == '\'') return 12;
+        return 13;
+    }
+#endif
+#if HP_LINKNS_MOD
+    static int link_ns_id_(const char* s, int n) {
+        auto eq = [&](const char* w, int wn) {
+            if (n != wn) return 0;
+            for (int i = 0; i < wn; ++i)
+                if (s[i] != w[i]) return 0;
+            return 1;
+        };
+        auto st = [&](const char* w, int wn) {
+            if (n < wn) return 0;
+            for (int i = 0; i < wn; ++i)
+                if (s[i] != w[i]) return 0;
+            return 1;
+        };
+        if (n == 0) return 12;
+        if (eq("file", 4) || eq("image", 5) || eq("media", 5)) return 1;
+        if (eq("category", 8) || eq("cat", 3)) return 2;
+        if (eq("template", 8)) return 3;
+        if (eq("user", 4) || st("user ", 5)) return 4;
+        if (eq("wikipedia", 9) || eq("wp", 2) || eq("project", 7)) return 5;
+        if (eq("help", 4)) return 6;
+        if (eq("portal", 6)) return 7;
+        if (eq("talk", 4) || st("talk ", 5)) return 8;
+        if (eq("wiktionary", 10) || eq("wikt", 4)) return 9;
+        if (eq("commons", 7)) return 10;
+        return 11;
+    }
+#endif
+#if HP_SISTER_MOD
+    static int sister_id_(const char* s, int n) {
+        auto eq = [&](const char* w, int wn) {
+            if (n != wn) return 0;
+            for (int i = 0; i < wn; ++i)
+                if (s[i] != w[i]) return 0;
+            return 1;
+        };
+        if (eq("wikt", 4) || eq("wiktionary", 10)) return 1;
+        if (eq("commons", 7) || eq("c", 1)) return 2;
+        if (eq("n", 1) || eq("wikinews", 8)) return 3;
+        if (eq("s", 1) || eq("wikisource", 10)) return 4;
+        if (eq("b", 1) || eq("wikibooks", 9)) return 5;
+        if (eq("v", 1) || eq("wikiversity", 11)) return 6;
+        if (eq("q", 1) || eq("wikiquote", 9)) return 7;
+        return 0;
+    }
+#endif
+#if HP_WIKIVAR_MOD
+    static int wiki_var_id_(const char* s, int n) {
+        auto st = [&](const char* w, int wn) {
+            if (n < wn) return 0;
+            for (int i = 0; i < wn; ++i)
+                if (s[i] != w[i]) return 0;
+            return 1;
+        };
+        if (st("CURRENT", 7)) return 1;
+        if (st("LOCAL", 5)) return 2;
+        if (st("REVISION", 8)) return 3;
+        if (st("PAGENAME", 8) || st("BASEPAGE", 8) || st("SUBPAGE", 7) ||
+            st("FULLPAGE", 8) || st("PAGEID", 6) || st("PAGESIZE", 8))
+            return 4;
+        if (st("NAMESPACE", 9) || st("TALKSPACE", 9) || st("SUBJECT", 7) ||
+            st("ARTICLE", 7) || st("TALKPAGE", 8))
+            return 5;
+        if (st("NUMBEROF", 8)) return 6;
+        if (st("SITENAME", 8) || st("SERVER", 6)) return 7;
+        if (st("DISPLAYT", 8) || st("DEFAULTS", 8) || st("DIRMARK", 7) ||
+            st("CONTENTL", 8) || st("PROTECT", 7) || st("CASCADING", 9))
+            return 8;
+        return 0;
+    }
 #endif
 #if HP_WIKISTACK_MOD
     static int fc_token(int c) {

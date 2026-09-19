@@ -2015,9 +2015,423 @@ Flags default off: `HP_SECLEVEL_MOD` (sticky heading level of section body), `HP
 
 `HP_SIG_MOD` `~~~~` tilde run. Twin of RUNLEN/MAGIC. No RT.
 
-### v82wikibold → v83 - **1,687,899 / 1.609 bpc, −1,258 vs v82 (RT pending)**
+### v82wikibold → v83 - **1,687,899 / 1.609 bpc, RT PASS −1,258 vs v82**
 
-`HP_WIKIBOLD_MOD` wiki `''`/`'''`/`'''''` bold-italic state.
+`HP_WIKIBOLD_MOD` wiki `''`/`'''`/`'''''` bold-italic state. Decode SHA matches
+`data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v83.exe`. Did not overwrite `hp_v82.exe`.
+fx2-manual **1,684,337** (−1,305 vs v82 fx2 1,685,642). Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+
+### v83urlpart - **1,688,185 / 1.609 bpc, REJECT +286 vs v83**
+
+`HP_URLPART_MOD` URL host/path/query/fragment. Twin of HTLINK/EXTLINK. No RT.
+
+### v83refidx - **1,688,044 / 1.609 bpc, REJECT +145 vs v83**
+
+`HP_REFIDX_MOD` nth `<ref>` on the page. Twin of CITE/REFNAME. No RT.
+
+H32 leftover queue empty. seclevel **+379**; brace3 **+285**; namedarg **+470**; include **+283**; sig **+275**; wikibold **−1,258**; urlpart **+286**; refidx **+145**. Do not reopen those seven (wikibold stays on champ). 8 MB champ stays v83. Do not run mem 26.
+
+### H33 leftovers on v83 (queued)
+
+Flags default off: `HP_PRESPACE_MOD` (leading-space preformatted line), `HP_EXTDISP_MOD` (`[http url display]` display text), `HP_PXSIZE_MOD` (`NNpx` size bucket), `HP_ENTNUM_MOD` (`&#` / `&#x` numeric entity), `HP_WIKIHR_MOD` (`----` line-start rule), `HP_FONTCOL_MOD` (`<font color=` / `size=` region), `HP_TBLDEPTH_MOD` (nested `{|` depth), `HP_UTF8ST_MOD` (UTF-8 lead/continuation). One at a time, mem 22, RSS cap 30 GB. Do not reopen H32.
+
+### v83prespace - **1,688,511 / 1.610 bpc, REJECT +612 vs v83**
+
+`HP_PRESPACE_MOD` leading-space preformatted line. Twin of LINE. No RT.
+
+### v83extdisp - **1,688,480 / 1.610 bpc, REJECT +581 vs v83**
+
+`HP_EXTDISP_MOD` `[http url display]` display text. Twin of EXTLINK/HTLINK. No RT.
+
+### v83pxsize - **1,688,377 / 1.610 bpc, REJECT +478 vs v83**
+
+`HP_PXSIZE_MOD` `NNpx` size bucket. Twin of FILEOPT/UNIT. No RT.
+
+### v83entnum - **1,688,048 / 1.609 bpc, REJECT +149 vs v83**
+
+`HP_ENTNUM_MOD` `&#` / `&#x` numeric entity. Twin of ENTITY/AMP. No RT.
+
+### v83wikihr - **1,688,067 / 1.609 bpc, REJECT +168 vs v83**
+
+`HP_WIKIHR_MOD` `----` line-start rule. Twin of LINE/RUNLEN. No RT.
+
+### v83fontcol - **1,688,453 / 1.610 bpc, REJECT +554 vs v83**
+
+`HP_FONTCOL_MOD` `<font color=` / `size=` region. Twin of STYLE/HTMLFMT. No RT.
+
+### v83tbldepth - **1,688,402 / 1.610 bpc, REJECT +503 vs v83**
+
+`HP_TBLDEPTH_MOD` nested `{|` depth. Twin of NEST/DEPTH. No RT.
+
+### v83utf8st - **1,688,025 / 1.609 bpc, REJECT +126 vs v83**
+
+`HP_UTF8ST_MOD` UTF-8 lead/continuation. Twin of SPARSE_UTF8. No RT.
+
+H33 leftover queue empty. prespace **+612**; extdisp **+581**; pxsize **+478**; entnum **+149**; wikihr **+168**; fontcol **+554**; tbldepth **+503**; utf8st **+126**. Do not reopen. 8 MB champ stays v83. Do not run mem 26.
+
+### H34 leftovers on v83 (queued)
+
+Flags default off: `HP_DLTERM_MOD` (`;term : def` split), `HP_HEADCLOSE_MOD` (trailing heading `=`), `HP_WIKITIME_MOD` (`HH:MM` clock), `HP_LINKCOMMA_MOD` (comma in `[[` target), `HP_CATBLOCK_MOD` (consecutive `[[Category:` burst), `HP_BR_MOD` (`<br` tag), `HP_AMPNBSP_MOD` (`&nbsp;`), `HP_MDASH_MOD` (UTF-8 en/em dash). One at a time, mem 22, RSS cap 30 GB. Do not reopen H33.
+
+### v83dlterm - **1,688,163 / 1.609 bpc, REJECT +264 vs v83**
+
+`HP_DLTERM_MOD` `;term : def` split. Twin of LINE/INDENT. No RT.
+
+### v83headclose - **1,688,229 / 1.610 bpc, REJECT +330 vs v83**
+
+`HP_HEADCLOSE_MOD` trailing heading `=`. Twin of HEADING. No RT.
+
+### v83wikitime - **1,688,051 / 1.609 bpc, REJECT +152 vs v83**
+
+`HP_WIKITIME_MOD` `HH:MM` clock. Twin of DECIMAL/DIGITPOS. No RT.
+
+### v83linkcomma - **1,688,355 / 1.610 bpc, REJECT +456 vs v83**
+
+`HP_LINKCOMMA_MOD` comma in `[[` target. Twin of DAB/COMMAGAP. No RT.
+
+### v83catblock - **1,688,366 / 1.610 bpc, REJECT +467 vs v83**
+
+`HP_CATBLOCK_MOD` consecutive `[[Category:` burst. Twin of CAT. No RT.
+
+### v83br - **1,688,060 / 1.609 bpc, REJECT +161 vs v83**
+
+`HP_BR_MOD` `<br` tag. Twin of TAGNAME. No RT.
+
+### v83ampnbsp - **1,688,038 / 1.609 bpc, REJECT +139 vs v83**
+
+`HP_AMPNBSP_MOD` `&nbsp;`. Twin of ENTITY. No RT.
+
+### v83mdash - **1,688,039 / 1.609 bpc, REJECT +140 vs v83**
+
+`HP_MDASH_MOD` UTF-8 en/em dash. Twin of HYPHEN/UTF8ST. No RT.
+
+H34 leftover queue empty. dlterm **+264**; headclose **+330**; wikitime **+152**; linkcomma **+456**; catblock **+467**; br **+161**; ampnbsp **+139**; mdash **+140**. Do not reopen. 8 MB champ stays v83. Do not run mem 26.
+
+### H35 leftovers on v83 (queued)
+
+Flags default off: `HP_MATH_MOD` (`<math>` TeX region), `HP_LISTMIX_MOD` (mixed `*#:;` line-prefix bitmask), `HP_PROTOCOL_MOD` (URL scheme class), `HP_HEXRUN_MOD` (`#` hex color/fragment), `HP_SQDEPTH_MOD` (nested `[[` depth), `HP_PIPEROLE_MOD` (`|` table/template/link role), `HP_AFTERREF_MOD` (just-closed `</ref>`), `HP_SENTPOS_MOD` (nth word in sentence). One at a time, mem 22, RSS cap 30 GB. Do not reopen H34.
+
+### v83math - **1,688,028 / 1.609 bpc, REJECT +129 vs v83**
+
+`HP_MATH_MOD` `<math>` TeX region. Twin of NOWIKI. No RT.
+
+### v83listmix - **1,688,366 / 1.610 bpc, REJECT +467 vs v83**
+
+`HP_LISTMIX_MOD` mixed `*#:;` line-prefix bitmask. Twin of LINE/INDENT/LISTLEVEL. No RT.
+
+### v83protocol - **1,688,361 / 1.610 bpc, REJECT +462 vs v83**
+
+`HP_PROTOCOL_MOD` URL scheme class. Twin of HTLINK. No RT.
+
+### v83hexrun - **1,688,356 / 1.610 bpc, REJECT +457 vs v83**
+
+`HP_HEXRUN_MOD` `#` hex color/fragment. Twin of ANCHOR/DIGITPOS. No RT.
+
+### v83sqdepth - **1,688,119 / 1.609 bpc, REJECT +220 vs v83**
+
+`HP_SQDEPTH_MOD` nested `[[` depth. Twin of NEST/STATE. No RT.
+
+### v83piperole - **1,688,514 / 1.610 bpc, REJECT +615 vs v83**
+
+`HP_PIPEROLE_MOD` `|` table/template/link role. Twin of STATE/BARIDX. No RT.
+
+### v83afterref - **1,688,033 / 1.609 bpc, REJECT +134 vs v83**
+
+`HP_AFTERREF_MOD` just-closed `</ref>`. Twin of CITE. No RT.
+
+### v83sentpos - **1,687,931 / 1.609 bpc, REJECT +32 vs v83**
+
+`HP_SENTPOS_MOD` nth word in sentence. Twin of WPOS/SENTLEN. No RT.
+
+H35 leftover queue empty. math **+129**; listmix **+467**; protocol **+462**; hexrun **+457**; sqdepth **+220**; piperole **+615**; afterref **+134**; sentpos **+32**. Do not reopen. 8 MB champ stays v83. Do not run mem 26.
+
+### H36 leftovers on v83 (queued)
+
+Flags default off: `HP_ABBREV_MOD` (abbrev vs sentence-end after `.`), `HP_THOUSAND_MOD` (`1,234` grouping), `HP_REFPUNCT_MOD` (`.` glued to `<ref>`), `HP_QPERIOD_MOD` (`."` vs `".`), `HP_ELLIPSIS_MOD` (`...`), `HP_NUMRANGE_MOD` (digit-dash-digit), `HP_DEG_MOD` (degree after number), `HP_PERCENT_MOD` (digits then `%`). One at a time, mem 22, RSS cap 30 GB. Do not reopen H35.
+
+### v83abbrev - **1,688,540 / 1.610 bpc, REJECT +641 vs v83**
+
+`HP_ABBREV_MOD` abbrev vs sentence-end after `.`. Twin of INIT/DOTGAP. No RT.
+
+### v83thousand - **1,688,092 / 1.609 bpc, REJECT +193 vs v83**
+
+`HP_THOUSAND_MOD` `1,234` grouping. Twin of COMMAGAP/DECIMAL. No RT.
+
+### v83refpunct - **1,688,054 / 1.609 bpc, REJECT +155 vs v83**
+
+`HP_REFPUNCT_MOD` `.` glued to `<ref>`. Twin of CITE/AFTERREF. No RT.
+
+### v83qperiod - **1,688,515 / 1.610 bpc, REJECT +616 vs v83**
+
+`HP_QPERIOD_MOD` `."` vs `".`. Twin of QOCXT/WIKIBOLD. No RT.
+
+### v83ellipsis - **1,688,040 / 1.609 bpc, REJECT +141 vs v83**
+
+`HP_ELLIPSIS_MOD` `...`. Twin of DOTGAP/RUNLEN. No RT.
+
+### v83numrange - **1,688,161 / 1.609 bpc, REJECT +262 vs v83**
+
+`HP_NUMRANGE_MOD` digit-dash-digit. Twin of YEAR/HYPHEN. No RT.
+
+### v83deg - **1,688,050 / 1.609 bpc, REJECT +151 vs v83**
+
+`HP_DEG_MOD` degree after number. Twin of UNIT/COORD. No RT.
+
+### v83percent - **1,688,041 / 1.609 bpc, REJECT +142 vs v83**
+
+`HP_PERCENT_MOD` digits then `%`. Twin of UNIT. No RT.
+
+H36 leftover queue empty. abbrev **+641**; thousand **+193**; refpunct **+155**; qperiod **+616**; ellipsis **+141**; numrange **+262**; deg **+151**; percent **+142**. Do not reopen. 8 MB champ stays v83. Do not run mem 26.
+
+### H37 leftovers on v83 (queued)
+
+Flags default off: `HP_STATETRANS_MOD` (prev wiki.state × current), `HP_COLRING_MOD` (4-row cell ring), `HP_LISTPARA_MOD` (list/quote-to-paragraph), `HP_SECFRAG_MOD` (`[[page#section]]`), `HP_WIKIVAR_MOD` (`{{PAGENAME}}` / `{{CURRENTYEAR}}`), `HP_SUBPAGE_MOD` (`[[Foo/Bar]]`), `HP_LINKNS_MOD` (`[[Namespace:` class), `HP_FCCUR_MOD` (mid-line fccxt first-char). One at a time, mem 22, RSS cap 30 GB. Do not reopen H36.
+
+### v83statetrans - **1,688,074 / 1.609 bpc, REJECT +175 vs v83**
+
+`HP_STATETRANS_MOD` prev wiki.state × current. Twin of STATE. No RT.
+
+### v83colring - **1,688,385 / 1.610 bpc, REJECT +486 vs v83**
+
+`HP_COLRING_MOD` 4-row cell ring. Twin of WIKISTACK/FCCXT. No RT.
+
+### v83listpara - **1,688,492 / 1.610 bpc, REJECT +593 vs v83**
+
+`HP_LISTPARA_MOD` list/quote-to-paragraph. Twin of PARA/LINE. No RT.
+
+### v83secfrag - **1,688,148 / 1.609 bpc, REJECT +249 vs v83**
+
+`HP_SECFRAG_MOD` `[[page#section]]`. Twin of ANCHOR/HEXRUN. No RT.
+
+### v83wikivar - **1,688,017 / 1.609 bpc, REJECT +118 vs v83**
+
+`HP_WIKIVAR_MOD` `{{PAGENAME}}` / `{{CURRENTYEAR}}`. Twin of MAGIC/TPLNAME. No RT.
+
+### v83subpage - **1,688,085 / 1.609 bpc, REJECT +186 vs v83**
+
+`HP_SUBPAGE_MOD` `[[Foo/Bar]]`. Twin of SLASHGAP. No RT.
+
+### v83linkns - **1,688,496 / 1.610 bpc, REJECT +597 vs v83**
+
+`HP_LINKNS_MOD` `[[Namespace:` class. Twin of CAT/LANG. No RT.
+
+### v83fccur - **1,688,141 / 1.609 bpc, REJECT +242 vs v83**
+
+`HP_FCCUR_MOD` mid-line fccxt first-char. Twin of LINE/WIKISTACK. No RT.
+
+H37 leftover queue empty. statetrans **+175**; colring **+486**; listpara **+593**; secfrag **+249**; wikivar **+118**; subpage **+186**; linkns **+597**; fccur **+242**. Do not reopen. 8 MB champ stays v83. Do not run mem 26.
+
+### H38 leftovers on v83 (closed)
+
+Flags default off: `HP_PARAST_MOD` (is_paragraph × wiki.state), `HP_BOLDST_MOD` (wikibold × state), `HP_HEADBOLD_MOD` (heading × wikibold), `HP_BOLDLINE_MOD` (wikibold × line_kind), `HP_CAPPARA_MOD` (capmask × paragraph), `HP_NESTPARA_MOD` (nest × paragraph), `HP_CATPIPE_MOD` (in-Category × after-pipe), `HP_HEADPARA_MOD` (heading × paragraph). Joints of paying leftover CMs, not H11–H37 unaries. Five rejected vs v83; remaining three rejected vs v84. Do not reopen.
+
+### v83parast - **1,688,198 / 1.609 bpc, REJECT +299 vs v83**
+
+`HP_PARAST_MOD` is_paragraph × wiki.state. Twin of mixer wiki-gate / STATE/PARA. No RT.
+
+### v83boldst - **1,688,077 / 1.609 bpc, REJECT +178 vs v83**
+
+`HP_BOLDST_MOD` wikibold × wiki.state. Twin of WIKIBOLD/STATE. No RT.
+
+### v83headbold - **1,688,151 / 1.609 bpc, REJECT +252 vs v83**
+
+`HP_HEADBOLD_MOD` heading × wikibold. Twin of HEADING/WIKIBOLD. No RT.
+
+### v83boldline - **1,688,121 / 1.609 bpc, REJECT +222 vs v83**
+
+`HP_BOLDLINE_MOD` wikibold × line_kind. Twin of WIKIBOLD/LINE. No RT.
+
+### v83cappara - **1,688,008 / 1.609 bpc, REJECT +109 vs v83**
+
+`HP_CAPPARA_MOD` capmask × is_paragraph. Twin of CAPMASK/PARA. No RT.
+
+### v83 SLOT_MAX=35 + HP_LR1_SCALE=40 → v84 - **1,680,397 / 1.602 bpc, RT PASS −7,502 vs v83**
+
+Pulled mixer-rate work (`24bfcce`) onto the v83 leftover tree. Leftover CMs stay default-off. `hp_g_v83_lr40.exe` v83 flags + `HP_LR1_SCALE=40` `SLOT_MAX=35` mem 22: **1,680,397**. Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v84.exe`. Did not overwrite `hp_v83.exe`.
+
+### v84 fx2 - **1,677,124 / 1.599 bpc, RT PASS −7,213 vs v83 fx2**
+
+`hp_g_v83_lr40.exe` on `data/enwik8.8mb.fx2man`: **1,677,124**. Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+New 8 MB champ is v84. Do not run mem 26.
+
+### H38 remaining on v84
+
+Recompile remaining joints on v84 flags (`HP_LR1_SCALE=40`). Champ **1,680,397**. One at a time, mem 22, RSS cap 30 GB. Do not reopen H37. Do not overwrite `hp_v84.exe` / `hp_v83.exe`.
+
+| leftover | bytes | Δ vs v84 | RSS | wall | verdict |
+|---|---:|---:|---:|---:|---|
+| nestpara | 1,680,448 | **+51** | ~27.1 GB | 1093 s | **REJECT** |
+| catpipe | 1,680,495 | **+98** | ~27 GB | 1115 s | **REJECT** |
+| headpara | 1,680,504 | **+107** | ~27.1 GB | 1605 s | **REJECT** |
+
+H38 **closed**. All eight joints reject (v83 five + v84 three). Do not reopen. Do not coarsen. Next: H39 on v84.
+
+### H39 leftovers on v84
+
+Flags default off: `HP_EXPECTCL_MOD` (dedicated `brackets_.closer()` CM, not BRK_CLOSE fold), `HP_REFGROUP_MOD` (`<ref>` anonymous / `name=` / `group=`), `HP_REFLIST_MOD` (`{{reflist}}` / `<references>` block), `HP_SISTER_MOD` (sister-project `[[wikt:` / `commons:` / `n:` / `s:` / `b:` / `v:` / `q:`), `HP_CONVERT_MOD` (`{{convert|` region), `HP_CN_MOD` (`{{cn}}` / `{{citation needed}}` / `{{fact}}` / `{{clarify}}`), `HP_BLOCK_MOD` (`<blockquote>` / `<center>` / `<div>` / `<span>` kind), `HP_PIPETRICK_MOD` (`[[target|]]` empty display). One at a time, mem 22, RSS cap 30 GB. Champ **1,680,397**. Do not reopen H11–H38. Do not overwrite `hp_v84.exe` / `hp_v83.exe`.
+
+| leftover | bytes | Δ vs v84 | wall | verdict |
+|---|---:|---:|---:|---|
+| expectcl | 1,680,499 | **+102** | 1717 s | **REJECT** |
+| refgroup | 1,680,191 | **−206** | 1676 s | **v85 RT PASS** |
+
+### v85 identity - **1,680,191 / 1.602 bpc, RT PASS −206 vs v84**
+
+`HP_REFGROUP_MOD` `<ref>` anonymous / `name=` / `group=`. Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v85.exe`. Did not overwrite `hp_v84.exe`.
+fx2-manual **1,676,908** (−216 vs v84 fx2 1,677,124). Decode SHA matches
+`data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+New 8 MB champ is v85. Do not run mem 26.
+
+### H40 Claude cheap protocol on v85
+
+`SLOT_MAX=24` is the cheap compressor Claude calibrated: same v85 flags, smaller tables.
+
+| cfg | 8 MiB bytes | Δ vs v85-35 | RSS | wall | bpc |
+|---|---:|---:|---:|---:|---|
+| v85 `SLOT_MAX=35` | 1,680,191 | — | ~27 GB | ~1676 s | 1.602 |
+| v85 `SLOT_MAX=24` | **1,681,094** | **+903** | **1.53 GB** | 1440 s (CPU-shared) | 1.603 |
+
+### H40 2 MiB screens on v85
+
+Recompiled `hp_s_base.exe` from `v78_flags.ps1` (v85: `HP_LR1_SCALE=40`, `HP_REFGROUP_MOD=1`) with `SLOT_MAX=24`. Encoded `data/enwik8.2mb` `--mem 22` one at a time via `hp/tools/screen_rejects.ps1 -Name`. Did not overwrite `hp_v83.exe` / `hp_v84.exe` / `hp_v85.exe`. No mem 26. No `SLOT_MAX=35`. `hp_c_*` 8 MiB s24 jobs were allowed to share CPU; Get-HpBusy did not skip.
+
+**Baseline** `%LOCALAPPDATA%\hp_lab\s_base.hp` (copied `hp/build/s_base.hp`): **439,496** / 1.676 bpc, 272 s.
+
+H39 remaining leftover CMs (default-off, already in tree):
+
+| leftover | flag | 2 MiB | Δ vs 439,496 | wall | verdict |
+|---|---|---:|---:|---:|---|
+| reflist | `HP_REFLIST_MOD` | 439,557 | **+61** | 358 s | kill |
+| sister | `HP_SISTER_MOD` | 439,553 | **+57** | 252 s | kill |
+| convert | `HP_CONVERT_MOD` | 439,553 | **+57** | 315 s | kill |
+| cn | `HP_CN_MOD` | 439,558 | **+62** | 213 s | kill |
+| block | `HP_BLOCK_MOD` | 439,552 | **+56** | 299 s | kill |
+| pipetrick | `HP_PIPETRICK_MOD` | 439,558 | **+62** | 215 s | kill |
+| expectcl | `HP_EXPECTCL_MOD` | 439,527 | **+31** | 321 s | kill |
+
+None bytes-down. Closest is expectcl +31. No 8 MiB gate.
+
+### H40 2 MiB historical re-screen
+
+Closest historical 8 MB rejects at `HP_LR1_SCALE=40`, `SLOT_MAX=24`, `data/enwik8.2mb`. Archives stay in `%LOCALAPPDATA%\hp_lab\s_*.hp`. No mem 26. This pass did not run `SLOT_MAX=35`.
+
+| leftover | 2 MiB bytes | Δ vs 439,496 | verdict |
+|---|---:|---:|---|
+| dmcgrow | 439,496 | **0** | tie — no 8 MiB |
+| period | 439,570 | **+74** | kill |
+| skip5 | 439,490 | **−6** | bytes-down (marginal) |
+| sentpos | 439,378 | **−118** | bytes-down |
+| skip40 | 439,433 | **−63** | bytes-down |
+| cappara | 439,461 | **−35** | bytes-down |
+| wikivar | 439,551 | **+55** | kill |
+| pron | 439,438 | **−58** | bytes-down |
+| utf8st | 439,547 | **+51** | kill |
+| math | 439,555 | **+59** | kill |
+| afterref | 439,551 | **+55** | kill |
+| ampnbsp | 439,555 | **+59** | kill |
+| mdash | 439,556 | **+60** | kill |
+| ellipsis | 439,558 | **+62** | kill |
+| percent | 439,435 | **−61** | bytes-down |
+
+| leftover | flag | old 8 MB Δ | wall |
+|---|---|---:|---:|
+| dmcgrow | `HP_DMC_GROW` | +1 | 306 s |
+| period | `HP_PERIOD_MOD` | +6 | 314 s |
+| skip5 | `HP_SKIP5_MOD` | +8 | 211 s |
+| sentpos | `HP_SENTPOS_MOD` | +32 | 308 s |
+| skip40 | `HP_MIXER_SKIP=40` (replaces 32) | +52 | 323 s |
+| cappara | `HP_CAPPARA_MOD` | +109 | 208 s |
+| wikivar | `HP_WIKIVAR_MOD` | +118 | 346 s |
+| pron | `HP_PRONOUN_MOD` | +122 | 495 s |
+| utf8st | `HP_UTF8ST_MOD` | +126 | 509 s |
+| math | `HP_MATH_MOD` | +129 | 222 s |
+| afterref | `HP_AFTERREF_MOD` | +134 | 533 s |
+| ampnbsp | `HP_AMPNBSP_MOD` | +139 | 232 s |
+| mdash | `HP_MDASH_MOD` | +140 | 489 s |
+| ellipsis | `HP_ELLIPSIS_MOD` | +141 | 536 s |
+| percent | `HP_PERCENT_MOD` | +142 | 492 s |
+
+6/15 flipped bytes-down on the 2 MiB screen (sentpos −118, skip40 −63, percent −61, pron −58, cappara −35, skip5 −6). dmcgrow identity. v86 continuation (SENTPOS in champ) screened sr…boldst below.
+
+v86 2 MiB `SLOT_MAX=24` baseline **439,378** (SENTPOS in champ; old v85 baseline 439,496 kept as `s_base_v85.hp`). skip40 on that screen **439,311 (−67)**; 8 MiB s24 **1,680,231 (−402 vs v86 s24 1,680,633)**. Champ confirm `HP_MIXER_SKIP=40` at `SLOT_MAX=35`: **1,679,351 (−401 vs v86)**, identity RT PASS. Copied `hp_v87.exe`. Did not overwrite `hp_v86.exe`. fx2-manual **1,676,003** (−378 vs v86 fx2 1,676,381), RT PASS.
+
+### H40 2 MiB historical re-screen on v86
+
+Recompiled leftovers from current `v78_flags.ps1` (v86: `HP_LR1_SCALE=40`, `HP_REFGROUP_MOD=1`, `HP_SENTPOS_MOD=1`) with `SLOT_MAX=24`. Encoded `data/enwik8.2mb` `--mem 22` via `hp/tools/screen_rejects.ps1 -Name`. Did not overwrite `hp_v83.exe` / `hp_v84.exe` / `hp_v85.exe` / `hp_v86.exe`. No mem 26. No `SLOT_MAX=35`. One historical at a time while skip40 35-cap / `hp_v87` and H40 CM screens ran.
+
+**Baseline** at encode time: **439,378** (v86 identity s24). Names after percent that were not yet on the v85 `screen_rejects.csv`.
+
+| leftover | flag | old 8 MB Δ | 2 MiB | Δ vs 439,378 | wall | verdict |
+|---|---|---:|---:|---:|---:|---|
+| sr | `HP_SR_MOD` | +143 | 439,434 | **+56** | 202 s | kill |
+| refidx | `HP_REFIDX_MOD` | +145 | 439,435 | **+57** | 192 s | kill |
+| vowel | `HP_VOWEL_MOD` | +145 | 439,349 | **−29** | 202 s | bytes-down — no 8 MiB |
+| fccxt | `HP_FCCXT_MOD` | +146 | 439,400 | **+22** | 201 s | kill |
+| dotgap | `HP_DOTGAP_MOD` | +149 | 439,388 | **+10** | 212 s | kill |
+| entnum | `HP_ENTNUM_MOD` | +149 | 439,440 | **+62** | 201 s | kill |
+| deg | `HP_DEG_MOD` | +151 | 439,438 | **+60** | 212 s | kill |
+| wikitime | `HP_WIKITIME_MOD` | +152 | 439,436 | **+58** | 212 s | kill |
+| refpunct | `HP_REFPUNCT_MOD` | +155 | 439,433 | **+55** | 201 s | kill |
+| br | `HP_BR_MOD` | +161 | 439,373 | **−5** | 201 s | bytes-down — no 8 MiB |
+| year | `HP_YEAR_MOD` | +168 | 439,339 | **−39** | 201 s | bytes-down — no 8 MiB (−39 not < −40) |
+| wikihr | `HP_WIKIHR_MOD` | +168 | 439,372 | **−6** | 202 s | bytes-down — no 8 MiB |
+| statetrans | `HP_STATETRANS_MOD` | +175 | 439,288 | **−90** | 202 s | bytes-down → 8 MiB s24 |
+| boldst | `HP_BOLDST_MOD` | +178 | 439,301 | **−77** | ~200 s | bytes-down → 8 MiB s24 |
+
+8 MiB `SLOT_MAX=24` leftover gates vs v86 s24 **1,680,633** (`e8_8mb_v86s24.hp`). Archives `%LOCALAPPDATA%\hp_lab\e8_8mb_s24_{statetrans,boldst}.hp`. Binaries `hp_c_v86s24_statetrans.exe` / `hp_c_v86s24_boldst.exe`. Did not overwrite `hp_v86.exe`.
+
+| leftover | 8 MiB s24 | Δ vs 1,680,633 | Δ vs v86-35 1,679,752 | Δ vs v87 1,679,351 | wall |
+|---|---:|---:|---:|---:|---:|
+| statetrans | **1,680,018** | **−615** | +266 | +667 | 767 s |
+| boldst | **1,680,191** | **−442** | +439 | +840 | 947 s |
+
+Both pay at s24 vs v86 s24. Neither is bytes-down vs v86-35 or v87. No `SLOT_MAX=35`. Next unscreened: subpage, cite, sentlen, thousand, …
+
+Rank-8 sign-fix 2 MiB **599,778 (+160,282)** — still dead. Do not overwrite `hp_v85.exe`.
+
+### H40 per-mixer rates (2 MiB SLOT_MAX=24)
+
+Compile overrides `HP_LR1_R0`…`HP_LR1_R5` (default 0 = keep scaled value) applied **after** `HP_LR1_SCALE` to the first six mixer rates only. Extra-gate rates stay the scaled defaults. Not added to `v78_flags.ps1`. Integer-exact. Did not overwrite `hp_v83.exe` / `hp_v84.exe` / `hp_v85.exe`. Did not run `SLOT_MAX=35` or mem 26.
+
+Cheap protocol: v85 flags (`HP_LR1_SCALE=40`, `HP_REFGROUP_MOD=1`), `SLOT_MAX=24`, `--mem 22`. Baseline `hp_s_base.exe` → `%LOCALAPPDATA%\hp_lab\s_base.hp` **439,496**. Scale-40 current `{1,1,1,2,1,2}` skipped. Trials `{1,2,3}` per mixer (12 jobs) plus R3=4 because 1/2/3 were all worse. R5=4 skipped (R5=1 paid). Archives `s_r{i}v{v}.hp`.
+
+| i | current | v | 2 MiB | Δ | wall |
+|---:|---:|---:|---:|---:|---:|
+| 0 | 1 | 2 | 439,373 | **−123** | 248 s |
+| 0 | 1 | 3 | 439,461 | **−35** | 221 s |
+| 1 | 1 | 2 | 439,532 | +36 | 304 s |
+| 1 | 1 | 3 | 439,563 | +67 | 292 s |
+| 2 | 1 | 2 | 439,530 | +34 | 214 s |
+| 2 | 1 | 3 | 439,708 | +212 | 208 s |
+| 3 | 2 | 1 | 439,531 | +35 | 216 s |
+| 3 | 2 | 3 | 439,590 | +94 | 213 s |
+| 3 | 2 | 4 | 439,715 | +219 | 235 s |
+| 4 | 1 | 2 | 439,571 | +75 | 319 s |
+| 4 | 1 | 3 | 439,575 | +79 | 313 s |
+| 5 | 2 | 1 | 439,474 | **−22** | 211 s |
+| 5 | 2 | 3 | 439,515 | +19 | 220 s |
+
+2 MiB paid: **R0=2 −123**, **R0=3 −35**, **R5=1 −22**. Those three compiled at `SLOT_MAX=24` and encoded `data/enwik8.8mb` → `%LOCALAPPDATA%\hp_lab\e8_8mb_s24_r*.hp`. Compare vs s24 v85 **1,681,094** (`e8_8mb_v85s24.hp`), not vs unmatched 35-cap champ unless an s24 job is bytes-down vs **1,680,191**.
+
+| cfg | 8 MiB s24 | Δ vs 1,681,094 | Δ vs v85-35 | wall |
+|---|---:|---:|---:|---:|
+| R0=2 | **1,681,067** | **−27** | +876 | (sibling job) |
+| R0=3 | 1,681,660 | **+566** | +1,469 | 890 s |
+| R5=1 | **1,680,942** | **−152** | +751 | 1717 s |
+| R0=2+R5=1 (sibling stack) | **1,680,890** | **−204** | +699 | — |
+
+**Call.** A single scalar is not elementwise-optimal: 2 MiB wants R0=2 and R5=1. Transfer to 8 MiB s24 is noisy — R0=3 −35 on 2 MiB flipped to **+566**; R5=1 −22 grew to **−152** (best single at s24); R0=2 −123 shrank to **−27**. None of the s24 archives beat v85-35 **1,680,191**, so `SLOT_MAX=35` was not run. Do not land `{2,1,1,2,1,1}` on the champ without a 35-cap encode. Overrides stay default-0.
 
 ### H22 preprocess / richer stacks on v78
 
@@ -2173,3 +2587,1116 @@ closed; they deserve re-screening at the corrected rate.
    *rate* (`mixer.hpp:131-136`) and then clamps to `[1, 4095]`, which
    **discards the sign** when `U[f] < 0`; `ufac_` is also initialised
    exactly at `kMixerClamp`. Unfixed bug — likely why rank never paid.
+
+## H33 hygiene #3
+
+Code-fixed in `mixer.hpp` (rank path still default-off, `HP_MIXER_RANK=0`).
+V-factor `l1k` keeps the sign of `U[f]`: magnitude is the old
+`(l1 * (|Uk| >> 8) + 128) >> 8` with floor 1 and cap 4095, then negated
+if `Uk < 0` — a negative factor no longer forces `l1k = +1`. `ufac_`
+init is the same packed `w0 = (1<<16)/n_inputs` as full-rank `W`, not
+`kMixerClamp` / `(1<<16)`. Sign-fix 2 MiB retest: H40 below, REJECT
++160,282; 8 MB not run.
+
+## Next-test #2 — 2 MiB leftover-reject screen harness (2026-09-18)
+
+Added `hp/tools/screen_rejects.ps1`. Dotsources `v78_flags.ps1` (already
+`HP_LR1_SCALE=40`), forces `SLOT_MAX=24`, compiles `hp/build/hp_s_<name>.exe`
+one flag at a time, encodes `data/enwik8.2mb` → `%LOCALAPPDATA%\hp_lab\s_<name>.hp`.
+Does not overwrite `hp_v83.exe` / `hp_v84.exe`. Default path is baseline only;
+`-RunQueue` is the explicit leftover marathon.
+
+`data/enwik8.2mb` created as the first **2,097,152** bytes of `data/enwik8.8mb`.
+
+Baseline binary `hp/build/hp_s_base.exe` recompiled on v85 flags (scale 40,
+`HP_REFGROUP_MOD`, `SLOT_MAX=24`) and encoded: **439,496**. See **H40 2 MiB
+screens on v85**.
+
+Queue **158** leftover flags (H11–H38, all already in `features.hpp`).
+Priority: H38 remaining joints (`nestpara` / `catpipe` / `headpara`), then
+closest historical 8 MB misses (`dmcgrow +1`, `period +6`, `skip5 +8`,
+`sentpos +32`, `skip40 +52`, `cappara +109`, …). H22 reorder / payload_lex /
+dict omitted (preprocess). Closest after the joints: dmcgrow, period, skip5,
+sentpos, skip40, cappara, wikivar, pron, utf8st, math, afterref, ampnbsp,
+mdash, ellipsis, percent, sr, refidx, vowel, fccxt, dotgap, entnum, deg,
+wikitime, refpunct, br, year, wikihr, statetrans, boldst, subpage, cite,
+sentlen, thousand. Full list via `screen_rejects.ps1 -List`.
+
+## H40 MIXER_RANK=8 sign-fix retest (SLOT_MAX=24)
+
+Cheap protocol only. Did not overwrite `hp_v83.exe` / `hp_v84.exe` /
+`hp_v85.exe`. Did not run `SLOT_MAX=35` or mem 26. Rank remains default-off.
+
+Compiled `hp/build/hp_c_v85rank8s24.exe` from `v78_flags.ps1` (v85:
+`HP_LR1_SCALE=40`, `HP_REFGROUP_MOD=1`) with `-DHP_SLOT_MAX=24`
+`-DHP_MIXER_RANK=8`. Compile OK (268,299 B, 7.5 s). Champ binaries
+untouched (`hp_v83.exe` 265,457 / `hp_v84.exe` 266,575 / `hp_v85.exe`
+266,993).
+
+**2 MiB** `data/enwik8.2mb` `--mem 22` → `%LOCALAPPDATA%\hp_lab\s_rank8.hp`:
+**599,778** / 2.287 bpc, 632 s, RSS 1.52 GB.
+
+vs `s_base.hp` **439,496**: **+160,282**. Worse than the +20 k blow-up
+stop. **REJECT.** 8 MiB not run (`e8_8mb_v85rank8s24.hp` not written).
+`hp_c_v85s24` 8 MB identity was already in flight; rank-8 8 MB would
+have waited anyway.
+
+This is not the unfixed H6 result (`+702,383` at `SLOT_MAX=35`,
+2,407,863). Sign-preserving `l1k` + `ufac_` init-to-w0 did not recover
+rank-8 on the 2 MiB screen. Do not claim champ accept (no 8 MB @35
+bytes-down vs **1,680,191**). Do not sweep rank 4/16.
+
+### H40 leftover CMs on v86 (closed)
+
+Eight new default-off wiki-domain ContextModels. Not in `v78_flags.ps1`.
+Recompiled after `HP_SENTPOS_MOD` landed in champ flags (old `hp_s_notes.exe`
+etc. were pre-SENTPOS). Did not overwrite `hp_v83.exe` / `hp_v84.exe` /
+`hp_v85.exe` / `hp_v86.exe`. Did not run `SLOT_MAX=35` or mem 26. Screen:
+v86 flags + `SLOT_MAX=24` + one `-D`, `hp/tools/screen_rejects.ps1 -Name`,
+`data/enwik8.2mb` vs v86 base **439,378** (`s_base.hp` rewritten 14:26 UTC,
+not 439,496).
+
+| leftover | flag | salt | scanner | 2 MiB bytes | Δ vs 439,378 | verdict |
+|---|---|---:|---|---:|---:|---|
+| notes | `HP_NOTES_MOD` | 218 | `{{notelist}}` / `{{notes}}` / `{{notefoot}}` region (not reflist) | 439,434 | **+56** | kill |
+| langtpl | `HP_LANGTPL_MOD` | 219 | `{{lang\|` / `{{lang-xx\|` (not LANG 2-letter link prefix) | 439,439 | **+61** | kill |
+| frac | `HP_FRAC_MOD` | 220 | `{{frac\|` / `{{sfrac\|` | 439,435 | **+57** | kill |
+| listen | `HP_LISTEN_MOD` | 221 | `{{listen\|` / `{{audio\|` / `[[File:… .ogg/.oga/.mp3]]` | 439,446 | **+68** | kill |
+| birth | `HP_BIRTH_MOD` | 222 | `{{birth date` / `{{death date` / `{{birth-date` / `{{death-date` | 439,437 | **+59** | kill |
+| hlist | `HP_HLIST_MOD` | 223 | `{{hlist` / `{{plainlist` / `{{unbulleted list` | 439,429 | **+51** | kill |
+| mainart | `HP_MAINART_MOD` | 224 | `{{main\|` / `{{see also\|` / `{{further\|` after a heading | 439,438 | **+60** | kill |
+| chem | `HP_CHEM_MOD` | 225 | `<chem>` region (not MATH `<math>`) | 439,430 | **+52** | kill |
+
+ISBN13 skipped (PUBID reject). WIKITABLE skipped (TABLECLASS reject).
+Replaced slot 8 with CHEM.
+
+Wall: notes 189 s, langtpl 211 s, frac 226 s, listen 219 s, birth 188 s,
+hlist 191 s, mainart 192 s, chem 186 s. Archives `%LOCALAPPDATA%\hp_lab\s_*.hp`.
+All eight bytes-up. Closest: hlist +51, chem +52. **No 8 MiB gate** (v86
+s24 8 MiB `e8_8mb_v86s24.hp` **1,680,633** exists; unused). Champ binaries
+untouched (`hp_v83.exe` 265,457 / `hp_v84.exe` 266,575 / `hp_v85.exe`
+266,993 / `hp_v86.exe` 267,599).
+
+### H40 v86 re-screen
+
+v85 2 MiB bytes-down leftovers re-screened on **v86** (`HP_SENTPOS_MOD` +
+`HP_REFGROUP_MOD` + `HP_LR1_SCALE=40`). Cheap protocol: `SLOT_MAX=24`,
+`--mem 22`, `hp/tools/screen_rejects.ps1 -Name`. Recompiled `hp_s_*`
+(pre-SENTPOS binaries were stale). Did not overwrite `hp_v83.exe` /
+`hp_v84.exe` / `hp_v85.exe` / `hp_v86.exe`. No mem 26.
+
+**2 MiB baseline** `%LOCALAPPDATA%\hp_lab\s_base.hp` (v86 flags, rewritten
+after 14:20 UTC): **439,378** (old v85-no-SENTPOS 439,496 saved as
+`s_base_v85.hp`). Matches the v85 sentpos leftover.
+
+| leftover | 2 MiB | Δ vs 439,378 | v85 Δ | 8 MiB s24 | Δ vs 1,680,633 | Δ vs v86-35 | call |
+|---|---:|---:|---:|---:|---:|---:|---|
+| skip40 | 439,311 | **−67** | −63 | **1,680,231** | **−402** | +479 vs v86-35; **−401 at 35-cap** | **v87** |
+| percent | 439,435 | **+57** | −61 | — | | | **kill** (flipped) |
+| pron | 439,317 | **−61** | −58 | **1,680,412** | **−221** | +660 | s24 paid; no 35 |
+| cappara | 439,343 | **−35** | −35 | **1,680,391** | **−242** | +639 | s24 paid; no 35 |
+| skip5 | 439,370 | **−8** | −6 | **1,680,603** | **−30** | +851 | s24 paid; no 35 (<200 vs s24) |
+
+v86 s24 8 MiB champ compiled `hp_c_v86s24.exe` (v78 flags, `SLOT_MAX=24`,
+no extra leftover) → `%LOCALAPPDATA%\hp_lab\e8_8mb_v86s24.hp`:
+**1,680,633** (same as v85s24+sentpos), 867 s, RSS 1.54 GB. Leftover
+archives `e8_8mb_v86s24_<n>.hp`. skip40 s24 was already in flight when
+the champ encode started.
+
+skip40 35-cap later paid **1,679,351 (−401)** and landed **v87**. pron /
+cappara / skip5 beat v86 s24 but stayed above the 35-cap champ. No
+`SLOT_MAX=35` for those.
+
+### H40 v87 2 MiB re-screen
+
+Champ is **v87** (`HP_MIXER_SKIP=40` + SENTPOS + REFGROUP + LR1_SCALE=40).
+Rewrote `%LOCALAPPDATA%\hp_lab\s_base.hp` from current `v78_flags.ps1`
+`SLOT_MAX=24`: **439,311** (198 s). Same bytes as the v86 skip40 2 MiB
+leftover. Copy `s_base_v87.hp`. `hp_s_base.exe` rebuilt 16:08 UTC. Did
+not overwrite `hp_v83.exe`–`hp_v87.exe`. No mem 26.
+
+v86-flag 8 MiB s24 leftover gates (SKIP still 32) vs v86 s24 **1,680,633**:
+statetrans **1,680,018 (−615)**; boldst **1,680,191 (−442)**. Both still
+above v87 35-cap **1,679,351**.
+
+v87 s24 8 MiB champ `hp_c_v87s24.exe` → `e8_8mb_v87s24.hp` **1,680,231**
+(matches v86 skip40 s24). Copied to `hp/build`. 35-cap only if a v87
+leftover s24 is **>200 B** under that archive.
+
+8 MiB leftover s24 vs **1,680,231** (`e8_8mb_v87s24_{n}.hp`):
+
+| leftover | 8 MiB s24 | Δ vs 1,680,231 | vs v87-35 1,679,351 | verdict |
+|---|---:|---:|---:|---|
+| cappara | **1,679,989** | **−242** | +638 | s24 paid; 35-cap bytes-ok but RSS abort |
+| statetrans | **1,680,018** | **−213** | +667 | s24 paid; 35-cap bytes-ok but RSS abort |
+| fccur | **1,680,044** | **−187** | +693 | s24 paid; no 35 (<200) |
+| pron | **1,680,049** | **−182** | +698 | s24 paid; no 35 (<200) |
+
+suffix 8 MiB s24 in flight (`hp_c_v87s24_suffix.exe`). No third concurrent
+8 MiB. Two 35-cap attempts (`hp_c_v87s35_statetrans` / `hp_c_v87_statetrans`)
+**aborted**: RSS **27 GB > 20 GB**. No mem 26. Did not overwrite
+`hp_v83.exe`–`hp_v87.exe`.
+
+2 MiB leftover screens vs `s_base.hp` **439,311**. Cheap protocol:
+`SLOT_MAX=24`, `--mem 22`, `hp/tools/screen_rejects.ps1 -Name`. Max two
+2 MiB. Did not overwrite `hp_v83.exe`–`hp_v87.exe`. Gate 8 MiB s24 only
+if Δ < **−20**.
+
+| leftover | 2 MiB | Δ vs 439,311 | v86 Δ | verdict |
+|---|---:|---:|---:|---|
+| base | 439,311 | 0 | — | baseline |
+| statetrans | 439,288 | **−23** | −90 | bytes-down → 8 MiB s24 **1,680,018 (−213)**; 35-cap RSS abort |
+| boldst | 439,301 | **−10** | −77 | bytes-down; no 8 MiB |
+| cite | 439,372 | **+61** | — | **kill** |
+| subpage | 439,376 | **+65** | — | **kill** |
+| sentlen | 439,324 | **+13** | — | **kill** |
+| thousand | 439,369 | **+58** | — | **kill** |
+| pron | 439,273 | **−38** | −61 | bytes-down → 8 MiB s24 **1,680,049 (−182)**; no 35 |
+| year | 439,339 | **+28** | −39 | **kill** (flipped) |
+| sqdepth | 439,315 | **+4** | — | **kill** |
+| boldline | 439,322 | **+11** | — | **kill** |
+| suffix | 439,283 | **−28** | +230 | bytes-down → 8 MiB s24 in flight |
+| markdist | 439,319 | **+8** | — | **kill** |
+| sfn | 439,374 | **+63** | — | **kill** |
+| geotemp | 439,369 | **+58** | — | **kill** |
+| epigraph | 439,369 | **+58** | — | **kill** |
+| redir | 439,378 | **+67** | — | **kill** |
+| fccur | 439,268 | **−43** | +242 | bytes-down → 8 MiB s24 **1,680,044 (−187)**; no 35 |
+| cappara | 439,272 | **−39** | −35 | bytes-down → 8 MiB s24 **1,679,989 (−242)**; 35-cap RSS abort |
+| vowel | 439,292 | **−19** | −29 | bytes-down; no 8 MiB |
+| skip5 | 439,321 | **+10** | −8 | **kill** (flipped) |
+| br | 439,373 | **+62** | −5 | **kill** (flipped) |
+| wikihr | 439,372 | **+61** | −6 | **kill** (flipped) |
+| tracklist | 439,363 | **+52** | — | **kill** |
+| succession | 439,365 | **+54** | — | **kill** |
+| colstart | 439,360 | **+49** | — | **kill** |
+| toc | 439,383 | **+72** | — | **kill** |
+| headbold | 439,338 | **+27** | — | **kill** |
+| month | 439,348 | **+37** | — | **kill** |
+| refbegin | 439,368 | **+57** | — | **kill** |
+| headidx | 439,316 | **+5** | — | **kill** |
+| secfrag | 439,377 | **+66** | — | **kill** |
+| commagap | 439,344 | **+33** | — | **kill** |
+| dlterm | 439,371 | **+60** | — | **kill** |
+
+H41 leftover CMs implemented default-off salts 226–233: `HP_SFN_MOD`,
+`HP_GEOTEMP_MOD`, `HP_EPIGRAPH_MOD`, `HP_TRACKLIST_MOD`,
+`HP_SUCCESSION_MOD`, `HP_COLSTART_MOD`, `HP_TOC_MOD`, `HP_REFBEGIN_MOD`.
+Not in `v78_flags.ps1`. Not CITE / COORD / BLOCK / TABLECLASS / ANCHOR /
+MAGIC / REFLIST twins.
+
+### H41 leftover CMs on v87 (closed)
+
+Eight new default-off wiki-domain ContextModels. Not in `v78_flags.ps1`.
+Did not overwrite `hp_v83.exe` / `hp_v84.exe` / `hp_v85.exe` / `hp_v86.exe`
+/ `hp_v87.exe`. Did not run a completed `SLOT_MAX=35` leftover (35-cap
+statetrans aborted at 27 GB RSS). Not CITE / COORD / BLOCK / TABLECLASS /
+ANCHOR / MAGIC / REFLIST twins. Do not reopen H11–H40. All eight 2 MiB
+screens **kill**.
+
+Compiled `hp_s_{sfn,geotemp,epigraph,tracklist,succession,colstart,toc,refbegin}.exe`
+from v87 flags + `SLOT_MAX=24` + one `-D`. Screen vs rewritten
+`s_base.hp` **439,311** (v87 / `HP_MIXER_SKIP=40`, also `s_base_v87.hp`).
+
+| leftover | flag | salt | scanner | 2 MiB bytes | Δ vs 439,311 | verdict |
+|---|---|---:|---|---:|---:|---|
+| sfn | `HP_SFN_MOD` | 226 | `{{sfn\|` / `{{harvnb\|` / `{{harv\|` (not CITE `<ref>`, not REFGROUP) | 439,374 | **+63** | **kill** |
+| geotemp | `HP_GEOTEMP_MOD` | 227 | `{{coord\|` 1-bit IN-template (not COORD lat/lon unary) | 439,369 | **+58** | **kill** |
+| epigraph | `HP_EPIGRAPH_MOD` | 228 | `{{quote box` / `{{quotebox` / `{{cquote` / `{{blockquote` (not BLOCK html) | 439,369 | **+58** | **kill** |
+| tracklist | `HP_TRACKLIST_MOD` | 229 | `{{tracklist` / `{{Track listing` | 439,363 | **+52** | **kill** |
+| succession | `HP_SUCCESSION_MOD` | 230 | `{{s-start` / `{{succession box` / `{{s-bef` / `{{s-ttl` | 439,365 | **+54** | **kill** |
+| colstart | `HP_COLSTART_MOD` | 231 | `{{col-begin` / `{{div col` / `{{columns-list` (not TABLECLASS) | 439,360 | **+49** | **kill** |
+| toc | `HP_TOC_MOD` | 232 | `__TOC__` / `__NOTOC__` / `__FORCETOC__` 2-bit sticky (not MAGIC hash) | 439,383 | **+72** | **kill** |
+| refbegin | `HP_REFBEGIN_MOD` | 233 | `{{refbegin` / `{{refend}}` block (not REFLIST / `<references>`) | 439,368 | **+57** | **kill** |
+
+CITEWEB / WIKITABLEID / ANCHORID skipped (CITE / TABLECLASS / ANCHOR rejects).
+Replaced with SFN / COLSTART / TOC. Wall ~190–210 s. All eight bytes-up.
+Closest: colstart +49, tracklist +52. **No 8 MiB gate.** Champ binaries
+untouched (`hp_v83.exe` 265,457 / `hp_v84.exe` 266,575 / `hp_v85.exe`
+266,993 / `hp_v86.exe` 267,599 / `hp_v87.exe` 267,599).
+
+### H40 v87 historical leftovers after boldst
+
+Queue after year/wikihr/statetrans/boldst on **v87** flags
+(`HP_MIXER_SKIP=40` + SENTPOS), `SLOT_MAX=24`, `--mem 22`,
+`data/enwik8.2mb`. Recompiled `hp_s_*` from current `v78_flags.ps1`.
+Waited for parent `s_base.hp` rewrite after 16:04 UTC: **439,311**
+(16:08:48 UTC; not v86 439,378). Did not overwrite `hp_v83.exe`–
+`hp_v87.exe`. No mem 26. No `SLOT_MAX=35`. Did not rerun H40 CMs
+notes…chem. 2 MiB only, two max. Gate 8 MiB s24 if Δ < **−40**.
+
+| leftover | 2 MiB | Δ vs 439,311 | old 8 MB Δ | verdict |
+|---|---:|---:|---:|---|
+| subpage | 439,376 | **+65** | +186 | **kill** |
+| cite | 439,372 | **+61** | +187 | **kill** |
+| sentlen | 439,324 | **+13** | +187 | **kill** |
+| thousand | 439,369 | **+58** | +193 | **kill** |
+| sqdepth | 439,315 | **+4** | +220 | **kill** |
+| boldline | 439,322 | **+11** | +222 | **kill** |
+| suffix | 439,283 | **−28** | +230 | bytes-down; no 8 MiB (not >40) |
+| markdist | 439,319 | **+8** | +233 | **kill** |
+| redir | 439,378 | **+67** | +234 | **kill** |
+| fccur | 439,268 | **−43** | +242 | bytes-down → 8 MiB s24 left to flip-candidate (`hp_c_v87s24_fccur` in flight) |
+| headidx | 439,316 | **+5** | +246 | **kill** |
+| secfrag | 439,377 | **+66** | +249 | **kill** |
+| headbold | 439,338 | **+27** | +252 | **kill** |
+| month | 439,348 | **+37** | +254 | **kill** |
+| commagap | 439,344 | **+33** | +256 | **kill** |
+
+revcomment not finished (slot contention; incomplete `s_revcomment.hp`).
+Next unscreened after this wave: numrange, dlterm, isse, baridx, …
+
+### H40 v87 re-screen
+
+v86 2 MiB bytes-down leftovers re-screened on **v87** (`HP_MIXER_SKIP=40`
++ SENTPOS + REFGROUP + `HP_LR1_SCALE=40`). Waited for parent
+`s_base.hp` rewrite after 16:04 UTC (`hp_s_base` idle). Cheap protocol:
+`SLOT_MAX=24`, `--mem 22`, `hp/tools/screen_rejects.ps1 -Name`.
+Recompiled each leftover (old `hp_s_pron.exe` was SKIP=32). Did not
+overwrite `hp_v83.exe` / `hp_v84.exe` / `hp_v85.exe` / `hp_v86.exe` /
+`hp_v87.exe`. No mem 26.
+
+**2 MiB baseline** `%LOCALAPPDATA%\hp_lab\s_base.hp` (16:08:48 UTC):
+**439,311** (copy `s_base_v87.hp`). Same bytes as the v86 skip40 leftover.
+
+**8 MiB s24 champ** `hp_c_v87s24.exe` (v78 flags, `SLOT_MAX=24`, no extra)
+→ `e8_8mb_v87s24.hp`: **1,680,231** (matches v86 skip40 s24), 766 s.
+
+| leftover | 2 MiB | Δ vs 439,311 | v86 Δ | 8 MiB s24 | Δ vs 1,680,231 | call |
+|---|---:|---:|---:|---:|---:|---|
+| pron | 439,273 | **−38** | −61 | **1,680,049** | **−182** | s24 paid; no 35 (<200) |
+| year | 439,339 | **+28** | −39 | — | | **kill** (flipped) |
+| cappara | 439,272 | **−39** | −35 | **1,679,989** | **−242** | s24 paid; 35-cap bytes-ok |
+| vowel | 439,292 | **−19** | −29 | — | | bytes-down; no 8 MiB (≤20) |
+| skip5 | 439,321 | **+10** | −8 | — | | **kill** (flipped) |
+| wikihr | 439,372 | **+61** | −6 | — | | **kill** (flipped) |
+| br | 439,373 | **+62** | −5 | — | | **kill** (flipped) |
+| statetrans | 439,288 | **−23** | −90 | **1,680,018** | **−213** | s24 paid; 35-cap bytes-ok |
+| boldst | 439,301 | **−10** | −77 | — | | bytes-down; no 8 MiB |
+
+Stopped on request: no further `hp_s_*` / `hp_c_*` encodes. Own leftovers
+were already idle. **35-cap runs alone** (`hp_g_v87statetrans` →
+`e8_8mb_v87statetrans.hp`). Did not start cappara 35.
+
+### v87statetrans → v88 - **1,679,112 / 1.601 bpc, RT PASS −239 vs v87**
+
+`HP_STATETRANS_MOD` on v87 flags, `SLOT_MAX=35`, mem 22. Waited for
+existing `hp_g_v87statetrans` pid 12404 (did not start a second encode).
+Archive `%LOCALAPPDATA%\hp_lab\e8_8mb_v87statetrans.hp` **1,679,112**
+(−239 vs v87 1,679,351). Copied `hp/build/e8_8mb_v87statetrans.hp`.
+Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v88.exe` from `hp_g_v87statetrans.exe`. Did not overwrite
+`hp_v87.exe`.
+
+### v88 fx2 - **1,675,790 / 1.598 bpc, RT PASS −213 vs v87 fx2**
+
+`hp_g_v87statetrans.exe` on `data/enwik8.8mb.fx2man`: **1,675,790**.
+Decode SHA matches `data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+Copied `hp/build/e8_8mb_v87statetrans_fx2.hp`. New 8 MB champ is v88.
+Did not run mem 26. Did not overwrite `hp_v87.exe`.
+
+v88 2 MiB `SLOT_MAX=24` baseline `s_base.hp` **439,288** (192 s). Matches the
+v87 statetrans leftover. Old v87 baseline 439,311 saved as `s_base_v87.hp`.
+`HP_STATETRANS_MOD=1` added to `v78_flags.ps1`. `hp_v88.exe` protected in
+`screen_rejects.ps1`.
+
+8 MiB leftover s24 vs **1,680,018**:
+
+Closed numbers: **H42 v88 re-screen** below. In-flight stub kept only as a pointer.
+
+| leftover | 2 MiB | Δ vs 439,288 | 8 MiB s24 | Δ vs 1,680,018 |
+|---|---:|---:|---:|---:|
+| cappara | 439,253 | **−35** | **1,679,762** | **−256** |
+| fccur | 439,261 | **−27** | **1,679,691** | **−327** |
+| pron | 439,247 | **−41** | **1,679,829** | **−189** |
+| suffix | 439,269 | **−19** | — | no 8 |
+| vowel | 439,268 | **−20** | — | no 8 |
+| boldst | 439,294 | **+6** | — | kill |
+
+### H40 v88 historical leftovers after isse
+
+Queue after dlterm/isse/numrange/commagap/headbold/month (v87 decisions,
+not recompiled). **v88** flags (`HP_STATETRANS_MOD` + SKIP=40 + SENTPOS),
+`SLOT_MAX=24`, `--mem 22`, `data/enwik8.2mb`. Recompiled `hp_s_baridx.exe`
+/ `hp_s_temppos.exe` from current `v78_flags.ps1`. Waited for parent
+`s_base.hp` rewrite: **439,288** (4:11:32; not v87 439,311). Did not
+overwrite `hp_v83.exe`–`hp_v88.exe`. No mem 26. No `SLOT_MAX=35`. Did
+not rerun H40 CMs / H41 / cappara/fccur/pron/suffix. Two 2 MiB. Waited
+out other-agent cappara/fccur slots. `hp_c_v88s24` still in flight;
+no 8 MiB leftover (both bytes-up).
+
+| leftover | 2 MiB | Δ vs 439,288 | old 8 MB Δ | verdict |
+|---|---:|---:|---:|---|
+| baridx | 439,336 | **+48** | +266 | **kill** |
+| temppos | 439,349 | **+61** | +266 | **kill** |
+
+Wall: baridx 206 s, temppos 208 s. Archives `%LOCALAPPDATA%\hp_lab\s_{baridx,temppos}.hp`.
+Next unscreened: user, defaultsort, coord, …
+
+### H40 v88 leftovers after temppos (stopped)
+
+Queue after baridx/temppos on **v88** flags, `SLOT_MAX=24`, `--mem 22`,
+`data/enwik8.2mb`. Recompiled via `hp/tools/screen_rejects.ps1 -Name`.
+Baseline `s_base.hp` **439,288**. Did not overwrite `hp_v83.exe`–`hp_v88.exe`.
+No mem 26. No `SLOT_MAX=35`. No leftover 8 MiB (all bytes-up; parent
+35-cap cappara next). Stopped: no further `hp_s_*` / `hp_c_*`.
+
+| leftover | 2 MiB | Δ vs 439,288 | old 8 MB Δ | verdict |
+|---|---:|---:|---:|---|
+| user | 439,333 | **+45** | +267 | **kill** |
+| defaultsort | 439,352 | **+64** | +271 | **kill** |
+| coord | 439,351 | **+63** | +271 | **kill** |
+| digitgap | 439,339 | **+51** | +274 | **kill** |
+| sig | 439,347 | **+59** | +275 | **kill** |
+| seckind | 439,295 | **+7** | +276 | **kill** |
+
+Wall ~184–203 s. Archives `%LOCALAPPDATA%\hp_lab\s_{user,defaultsort,coord,digitgap,sig,seckind}.hp`.
+Closest: seckind +7. **No 8 MiB gate.** Next unscreened: linelen, linktrail, dumpredir, …
+
+### H42 leftover CMs on v88 (compiled)
+
+Eight new default-off wiki-domain ContextModels. Not in `v78_flags.ps1`.
+Did not overwrite `hp_v83.exe`–`hp_v88.exe`. No mem 26. No `SLOT_MAX=35`.
+No 8 MiB encode. Integer-exact scanners. Not CITE / COORD / BLOCK /
+TABLECLASS / ANCHOR / MAGIC / REFLIST / SFN / GEOTEMP / EPIGRAPH /
+TRACKLIST / SUCCESSION / COLSTART / TOC / REFBEGIN / NOTES / LANGTPL /
+FRAC / LISTEN / BIRTH / HLIST / MAINART / CHEM. Do not reopen H11–H41.
+SENTPOS / skip40 / STATETRANS / REFGROUP stay ON.
+
+Compiled `hp_s_{shortdesc,seealso,portal,authctl,usedate,ipa,goodart,caption}.exe`
+from v88 flags + `SLOT_MAX=24` + one `-D`. 2 MiB screen vs `s_base.hp`
+**439,288** skipped: two `hp_s_*` already running (`hp_s_coord`,
+`hp_s_digitgap`).
+
+| leftover | flag | salt | scanner | 2 MiB | Δ vs 439,288 |
+|---|---|---:|---|---:|---:|
+| shortdesc | `HP_SHORTDESC_MOD` | 234 | `{{short description` / `{{shortdesc` in-template | 439,352 | **+64** | **kill** |
+| seealso | `HP_SEEALSO_MOD` | 235 | `{{see also` / `{{further` (not MAINART `{{Main}}`) | 439,350 | **+62** | **kill** |
+| portal | `HP_PORTAL_MOD` | 236 | `{{portal` / `{{portal bar` | — | not run |
+| authctl | `HP_AUTHCTL_MOD` | 237 | `{{authority control` | — | not run |
+| usedate | `HP_USEDATE_MOD` | 238 | `{{use dmy` / `{{use mdy` / `{{use ymd` page-sticky | — | not run |
+| ipa | `HP_IPA_MOD` | 239 | `{{IPA` / `{{IPAc-en` / `{{pron-en` templates (not PRONOUN) | — | not run |
+| goodart | `HP_GOODART_MOD` | 240 | `{{good article` / `{{GA` / `{{featured article` page class | — | not run |
+| caption | `HP_CAPTION_MOD` | 241 | sticky after `\|caption=` / `\|image_caption=` (not INFOBOX) | — | not run |
+
+### v88cappara → v89 - **1,678,872 / 1.601 bpc, RT PASS −240 vs v88**
+
+`HP_CAPPARA_MOD` on v88 flags, `SLOT_MAX=35`, mem 22. Waited for
+existing `hp_g_v88cappara` pid 40008 (did not start a second encode).
+Killed leftover `hp_s_*` / `hp_c_*` (30 GB cap). Archive
+`%LOCALAPPDATA%\hp_lab\e8_8mb_v88cappara.hp` **1,678,872**
+(−240 vs v88 1,679,112). Copied `hp/build/e8_8mb_v88cappara.hp` and
+`hp/build/e8_8mb_v89.hp`. Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v89.exe` from `hp_g_v88cappara.exe`. Did not overwrite
+`hp_v88.exe`.
+
+### v89 fx2 - **1,675,542 / 1.598 bpc, RT PASS −248 vs v88 fx2**
+
+`hp_v89.exe` on `data/enwik8.8mb.fx2man`: **1,675,542**.
+Decode SHA matches `data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+Copied `hp/build/e8_8mb_v88cappara_fx2.hp` and `hp/build/e8_8mb_v89_fx2.hp`.
+New 8 MB champ is v89. Did not run mem 26. Did not overwrite `hp_v88.exe`.
+
+v89 2 MiB baseline **439,253**. fccur re-screen **439,229 (−24)** → 8 MiB s24
+**1,679,691 (−71 vs 1,679,762)**. Not >200; **no 35-cap**. pron re-screen
+**439,194 (−59)** → 8 MiB s24 **1,679,566 (−196 vs 1,679,762)**. Not >200;
+**no 35-cap**. suffix re-screen **439,224 (−29)** → 8 MiB s24 **1,679,583
+(−179 vs 1,679,762)**. Not >200; **no 35-cap**. entity **439,298 (+45)**
+kill.
+
+### H42 v88 re-screen
+
+v87 2 MiB bytes-down leftovers recompiled on **v88** flags (`HP_STATETRANS_MOD`
+in `v78_flags.ps1`, SKIP=40, SENTPOS, REFGROUP, `HP_LR1_SCALE=40`). Cheap
+protocol: `SLOT_MAX=24`, `--mem 22`, `data/enwik8.2mb`. Did not overwrite
+`hp_v83.exe`–`hp_v88.exe`. No mem 26. Did not rerun H41. Did not rerun
+statetrans (now in champ). Two 2 MiB max. Gate 8 MiB s24 if Δ < **−20**.
+35-cap only if leftover s24 is **>200** under the v88 s24 champ **and** no
+process RSS >20 GB.
+
+**2 MiB baseline** `%LOCALAPPDATA%\hp_lab\s_base.hp` (18:11:32 UTC, copy
+`s_base_v88.hp`): **439,288** (not v87 439,311). Matches the v87
+statetrans leftover.
+
+**8 MiB s24 champ** `hp_c_v88s24.exe` (v78 flags, `SLOT_MAX=24`, no extra)
+→ `e8_8mb_v88s24.hp`: **1,680,018** (matches v87 statetrans s24), 761 s.
+
+| leftover | 2 MiB | Δ vs 439,288 | v87 Δ | 8 MiB s24 | Δ vs 1,680,018 | vs v88-35 1,679,112 | call |
+|---|---:|---:|---:|---:|---:|---:|---|
+| cappara | 439,253 | **−35** | −39 | **1,679,762** | **−256** | +650 | s24 paid; 35-cap bytes-ok |
+| fccur | 439,261 | **−27** | −43 | **1,679,691** | **−327** | +579 | s24 paid; 35-cap bytes-ok |
+| pron | 439,247 | **−41** | −38 | **1,679,829** | **−189** | +717 | s24 paid; no 35 (<200) |
+| suffix | 439,269 | **−19** | −28 | — | | | bytes-down; no 8 MiB (not < −20) |
+| vowel | 439,268 | **−20** | −19 | — | | | bytes-down; no 8 MiB (not < −20) |
+| boldst | 439,294 | **+6** | −10 | — | | | **kill** (flipped) |
+
+fccur s24 is the strongest leftover (−327). cappara s24 −256. Both >200
+under 1,680,018. **Did not start `SLOT_MAX=35`**: leftover 35-cap RSS is
+~27 GB (v87 abort; sibling `hp_g_v88cappara` later ran at **27.16 GB** and
+landed **v89** 1,678,872 / fx2 1,675,542 both RT PASS). No process RSS
+>20 GB on this agent's leftover jobs. No fccur 35-cap (champ already
+moved to v89 cappara; RSS would exceed 20 GB).
+
+Wall: 2 MiB 184–209 s; s24 champ 761 s; cappara s24 809 s; fccur s24
+801 s (TEMP then copied). Archives
+`%LOCALAPPDATA%\hp_lab\e8_8mb_v88s24_{cappara,fccur,pron}.hp` and
+`hp/build`. Champ binaries untouched (`hp_v83.exe` 265,457 /
+`hp_v84.exe` 266,575 / `hp_v85.exe` 266,993 / `hp_v86.exe` 267,599 /
+`hp_v87.exe` 267,599 / `hp_v88.exe` 268,111).
+
+### H42 leftover CMs on v89 (closed)
+
+Waited out `hp_g_v88cappara` 35-cap and parent identity/fx2 RT. Champ is
+**v89** (`hp_v89.exe` exists; `HP_CAPPARA_MOD` in `v78_flags.ps1`).
+Saved `s_base.hp` as `s_base_v88.hp` (439,288). Rewrote 2 MiB
+`SLOT_MAX=24` baseline via `hp_c_v88s24_cappara.exe` (v89 flags;
+new `hp_s_base.exe` from `screen_rejects.ps1` crashed under `&` while
+fx2 held 27 GB). New Length **439,253**. Did not overwrite
+`hp_v83.exe`–`hp_v89.exe`. No mem 26. No leftover `SLOT_MAX=35`.
+Did not rerun shortdesc/seealso (v88 kill +64/+62). Did not run fccur
+8 MiB (champ no longer v88). Two 2 MiB max. Gate 8 MiB s24 if Δ < **−20**
+vs 439,253; 35-cap only if leftover s24 is **>200** under v89 s24
+`e8_8mb_v88s24_cappara.hp` **1,679,762**. `hp_v89.exe` protected in
+`screen_rejects.ps1`.
+
+| leftover | 2 MiB | Δ vs 439,253 | old 8 MB Δ | verdict |
+|---|---:|---:|---:|---|
+| shortdesc | 439,352 | **+64** | | **kill** (v88; not rerun) |
+| seealso | 439,350 | **+62** | | **kill** (v88; not rerun) |
+| portal | 439,314 | **+61** | | **kill** |
+| authctl | 439,316 | **+63** | | **kill** |
+| usedate | 439,314 | **+61** | | **kill** |
+| ipa | 439,313 | **+60** | | **kill** |
+| goodart | 439,322 | **+69** | | **kill** |
+| caption | 439,312 | **+59** | | **kill** |
+
+H42 closed. No 8 MiB. Wall ~200 s. Archives
+`%LOCALAPPDATA%\hp_lab\s_{portal,authctl,usedate,ipa,goodart,caption}.hp`.
+
+### Historical leftovers after seckind on v89
+
+Queue after seckind on **v89** flags (`HP_CAPPARA_MOD` + STATETRANS +
+SKIP=40 + SENTPOS), `SLOT_MAX=24`, `--mem 22`, `data/enwik8.2mb`.
+Recompiled via `screen_rejects.ps1 -Name`. Baseline **439,253**.
+Skipped session-decided: user/defaultsort/coord/digitgap/sig/seckind/
+baridx/temppos/pron/cappara/fccur/suffix/vowel/boldst / H40 / H41 /
+H42 shortdesc/seealso. Two 2 MiB. No leftover 8 MiB (no Δ < −20).
+No 35-cap. No mem 26. Did not overwrite `hp_v83.exe`–`hp_v89.exe`.
+
+| leftover | 2 MiB | Δ vs 439,253 | old 8 MB Δ | verdict |
+|---|---:|---:|---:|---|
+| linelen | 439,256 | **+3** | +277 | **kill** |
+| linktrail | 439,313 | **+60** | +280 | **kill** |
+| dumpredir | 439,314 | **+61** | +281 | **kill** |
+| ns | 439,309 | **+56** | +282 | **kill** |
+| include | 439,307 | **+54** | +283 | **kill** |
+| brace3 | 439,313 | **+60** | +285 | **kill** |
+| parserfn | 439,308 | **+55** | +286 | **kill** |
+| urlpart | 439,247 | **−6** | +286 | bytes-down; no 8 MiB (not < −20) |
+| redirtarget | 439,311 | **+58** | +290 | **kill** |
+| nowiki | 439,320 | **+67** | +292 | **kill** |
+| gallery | 439,314 | **+61** | +292 | **kill** |
+| wikimodel | 439,311 | **+58** | +292 | **kill** |
+| htmlfmt | 439,314 | **+61** | +297 | **kill** |
+| parast | 439,266 | **+13** | +299 | **kill** |
+| refname | 439,307 | **+54** | +300 | **kill** |
+| fword | 439,296 | **+43** | +304 | **kill** |
+| entity | 439,298 | **+45** | +305 | **kill** |
+| hatnote | 439,320 | **+67** | +309 | **kill** |
+| pageid | 439,265 | **+12** | +311 | **kill** |
+| digitpos | 439,313 | **+60** | +322 | **kill** |
+| diglen | 439,242 | **−11** | +324 | bytes-down; no 8 MiB (not < −20) |
+| prevline | 439,281 | **+28** | +326 | **kill** |
+| headclose | 439,312 | **+59** | +330 | **kill** |
+| lowergap | 439,283 | **+30** | +333 | **kill** |
+| blank | 439,317 | **+64** | +335 | **kill** |
+| decimal | 439,318 | **+65** | +340 | **kill** |
+| minor | 439,273 | **+20** | +353 | **kill** |
+| qocxt | 439,310 | **+57** | +363 | **kill** |
+| seclevel | 439,274 | **+21** | +379 | **kill** |
+| ip | 439,284 | **+31** | +390 | **kill** |
+| slashgap | 439,271 | **+18** | +390 | **kill** |
+| pubid | 439,283 | **+30** | +391 | **kill** |
+| lastlink | 439,422 | **+169** | +392 | **kill** |
+| sprun | 439,320 | **+67** | +414 | **kill** |
+| hashp5 | 439,342 | **+89** | +423 | **kill** |
+| runlen | 439,319 | **+66** | +432 | **kill** |
+| catsort | 439,319 | **+66** | +434 | **kill** |
+| prevsent | 439,310 | **+57** | +442 | **kill** |
+| ordinal | 439,271 | **+18** | +452 | **kill** |
+| linkcomma | 439,329 | **+76** | +456 | **kill** |
+| hexrun | 439,276 | **+23** | +457 | **kill** |
+| anchor | 439,330 | **+77** | +461 | **kill** |
+| protocol | 439,287 | **+34** | +462 | **kill** |
+| wpos | 439,242 | **−11** | +466 | bytes-down; no 8 MiB |
+| catblock | 439,321 | **+68** | +467 | **kill** |
+| listmix | 439,297 | **+44** | +467 | **kill** |
+| namedarg | 439,327 | **+74** | +470 | **kill** |
+| text | 439,291 | **+38** | +473 | **kill** |
+| unit | 439,272 | **+19** | +476 | **kill** |
+| lang | 439,326 | **+73** | +478 | **kill** |
+| pxsize | 439,256 | **+3** | +478 | **kill** |
+| tblrow | 439,323 | **+70** | +478 | **kill** |
+| tpllen | 439,255 | **+2** | +479 | **kill** |
+| magic | 439,311 | **+58** | +480 | **kill** |
+| tblcol | 439,321 | **+68** | +480 | **kill** |
+| colring | 439,311 | **+58** | +486 | **kill** |
+| listlevel | 439,291 | **+38** | +488 | **kill** |
+| charcls | 439,259 | **+6** | +501 | **kill** |
+| tbldepth | 439,324 | **+71** | +503 | **kill** |
+| fileopt | 439,313 | **+60** | +508 | **kill** |
+| paralen | 439,292 | **+39** | +511 | **kill** |
+| paren | 439,296 | **+43** | +517 | **kill** |
+| tableclass | 439,314 | **+61** | +517 | **kill** |
+| extlink | 439,307 | **+54** | +521 | **kill** |
+| lead | 439,282 | **+29** | +524 | **kill** |
+| linklen | 439,286 | **+33** | +525 | **kill** |
+| style | 439,309 | **+56** | +532 | **kill** |
+| cellkind | 439,320 | **+67** | +534 | **kill** |
+| infobox | 439,332 | **+79** | +535 | **kill** |
+| contr | 439,299 | **+46** | +542 | **kill** |
+| fontcol | 439,311 | **+58** | +554 | **kill** |
+| httphost | 439,263 | **+10** | +554 | **kill** |
+| hyphen | 439,316 | **+63** | +555 | **kill** |
+| dab | 439,303 | **+50** | +557 | **kill** |
+| init | 439,311 | **+58** | +579 | **kill** |
+| extdisp | 439,324 | **+71** | +581 | **kill** |
+| listpos | 439,294 | **+41** | +589 | **kill** |
+| listpara | 439,319 | **+66** | +593 | **kill** |
+| linkns | 439,325 | **+72** | +597 | **kill** |
+| infoval | 439,315 | **+62** | +601 | **kill** |
+| prespace | 439,319 | **+66** | +612 | **kill** |
+| indent | 439,339 | **+86** | +613 | **kill** |
+| piperole | 439,303 | **+50** | +615 | **kill** |
+| qperiod | 439,340 | **+87** | +616 | **kill** |
+| tagname | 439,275 | **+22** | +625 | **kill** |
+| tokencls | 439,301 | **+48** | +627 | **kill** |
+| headword | 439,326 | **+73** | +633 | **kill** |
+| tagdist | 439,289 | **+36** | +634 | **kill** |
+| celltxt | 439,306 | **+53** | +639 | **kill** |
+| abbrev | 439,308 | **+55** | +641 | **kill** |
+| titleword | 439,335 | **+82** | +645 | **kill** |
+| splen | 439,301 | **+48** | +651 | **kill** |
+| shape | 439,296 | **+43** | +655 | **kill** |
+| alnumlen | 439,294 | **+41** | +672 | **kill** |
+| citekind | 439,327 | **+74** | +676 | **kill** |
+| caseflip | 439,315 | **+62** | +682 | **kill** |
+| repeat | 439,324 | **+71** | +684 | **kill** |
+| colspan | 439,313 | **+60** | +688 | **kill** |
+| prefix | 439,506 | **+253** | +711 | **kill** |
+
+Historical leftover re-screen on v89 `SLOT_MAX=24` **closed through prefix**. Queue empty.
+Closest: tpllen +2 / linelen +3 / pxsize +3 / charcls +6. This tail closest: tagname +22. Best bytes-down: diglen −11 / wpos −11 / urlpart −6 (no gate).
+No leftover 2 MiB Δ < **−20**; no 8 MiB s24 gate; **no 35-cap**. No mem 26.
+pron s24 **1,679,566 (−196, no 35)**. suffix s24 **1,679,583 (−179, no 35)**. fccur s24 **1,679,691 (−71, no 35)**.
+Wall ~188–215 s. Did not overwrite `hp_v83.exe`–`hp_v89.exe` (265,457 / 266,575 / 266,993 / 267,599 / 267,599 / 268,111 / 268,111).
+**Champ stays v89 1,678,872** / fx2 1,675,542.
+
+Entity-start pass (entity → prefix) recompiled via `screen_rejects.ps1 -Name`.
+`catsort` re-encoded **439,319 (+66)** (matches table; not a runlen copy).
+No Δ < **−20** on this pass so no leftover 8 MiB; no 35-cap; no mem 26.
+Failed extra restarts left lab `s_{prevsent,catblock,listmix,lang,pxsize,tblrow,tpllen,magic,tblcol,colring,listlevel}.hp`
+missing or short; table bytes are from the completed encodes. `s_catsort.hp`
+restored.
+
+### H43 leftover CMs on v89 (closed)
+
+Eight new default-off wiki-domain / dense-layout ContextModels. Not in
+`v78_flags.ps1`. Did not overwrite `hp_v83.exe`–`hp_v89.exe`
+(265,457 / 266,575 / 266,993 / 267,599 / 267,599 / 268,111 / 268,111).
+No mem 26. No leftover `SLOT_MAX=35`. No leftover 8 MiB (no Δ < **−20**).
+Integer-exact scanners already in the headers. Not twins of CITE /
+COORD / BLOCK / TABLECLASS / ANCHOR / MAGIC / REFLIST / SFN / GEOTEMP /
+EPIGRAPH / TRACKLIST / SUCCESSION / COLSTART / TOC / REFBEGIN / NOTES /
+LANGTPL / FRAC / LISTEN / BIRTH / HLIST / MAINART / CHEM / SHORTDESC /
+SEEALSO / PORTAL / AUTHCTL / USEDATE / IPA / GOODART / CAPTION. Do not
+reopen H11–H42. SENTPOS / skip40 / STATETRANS / REFGROUP / CAPPARA stay
+ON.
+
+Compiled `hp_s_{navbox,efoot,rshort,asof,clarify,currency,displaytitle,nowrap}.exe`
+from v89 flags + `SLOT_MAX=24` + one `-D` via `screen_rejects.ps1 -Name`.
+2 MiB screen vs `s_base.hp` **439,253**. Waited out in-flight navbox
+(did not duplicate). Two 2 MiB max vs historical leftover queue.
+`hp_c_v89s24_fccur` / later suffix s24 not counted toward the cap. fccur
+s24 had finished **1,679,691 (−71)**; suffix s24 was still running, so
+even a gate would have stayed with that watcher. No gate fired.
+
+| leftover | flag | salt | scanner | 2 MiB | Δ vs 439,253 | verdict |
+|---|---|---:|---|---:|---:|---|
+| navbox | `HP_NAVBOX_MOD` | 242 | `{{navbox` / `{{sidebar` in-template (not INFOBOX) | 439,312 | **+59** | **kill** |
+| efoot | `HP_EFOOT_MOD` | 243 | `{{efn` / `{{notelist` / `{{notefoot` (not NOTES `{{notes}}`) | 439,314 | **+61** | **kill** |
+| rshort | `HP_RSHORT_MOD` | 244 | `{{r\|` / `{{r}}` exact (not SFN, not CITE) | 439,309 | **+56** | **kill** |
+| asof | `HP_ASOF_MOD` | 245 | `{{as of` / `{{As of` in-template | 439,315 | **+62** | **kill** |
+| clarify | `HP_CLARIFY_MOD` | 246 | `{{clarify` / `{{who` / `{{which` / `{{when` (not CN) | 439,313 | **+60** | **kill** |
+| currency | `HP_CURRENCY_MOD` | 247 | `{{USD` / `{{GBP` / `{{EUR` / `{{currency` | 439,309 | **+56** | **kill** |
+| displaytitle | `HP_DISPLAYTITLE_MOD` | 248 | `{{DISPLAYTITLE` / `{{italic title` / `{{lowercase` page class | 439,305 | **+52** | **kill** |
+| nowrap | `HP_NOWRAP_MOD` | 249 | `{{nowrap` / `{{nobold` / `{{noitalic` in-template | 439,315 | **+62** | **kill** |
+
+H43 closed. All eight bytes-up. Closest: displaytitle +52. **No 8 MiB
+gate.** Wall 192–203 s (navbox 198 s). Archives
+`%LOCALAPPDATA%\hp_lab\s_{navbox,efoot,rshort,asof,clarify,currency,displaytitle,nowrap}.hp`.
+
+### v89 fccur 8 MiB s24 (no 35-cap)
+
+`hp_c_v89s24_fccur` → `%LOCALAPPDATA%\hp_lab\e8_8mb_v89s24_fccur.hp`
+(copied `hp/build`): **1,679,691**. Δ vs v89 s24 champ **1,679,762**
+(`e8_8mb_v89s24.hp` / `e8_8mb_v88s24_cappara.hp`): **−71**. Not >200.
+**No `SLOT_MAX=35`.** Did not encode further. Did not kill `hp_s_*`.
+Did not overwrite `hp_v83.exe`–`hp_v89.exe`. No mem 26. Champ stays
+v89 1,678,872 / fx2 1,675,542. Same 1,679,691 as v88 fccur s24.
+
+### v89 pron 8 MiB s24 (no 35-cap)
+
+`hp_c_v89s24_pron` pid 6552 → `%LOCALAPPDATA%\hp_lab\e8_8mb_v89s24_pron.hp`
+(copied `hp/build`): **1,679,566**. Δ vs v89 s24 champ **1,679,762**:
+**−196**. Not >200. **No `SLOT_MAX=35`.** Did not compile
+`hp_g_v89pron.exe`. Did not start a second 8 MiB. Did not kill `hp_s_*`.
+Did not overwrite `hp_v83.exe`–`hp_v89.exe` (265,457 / 266,575 / 266,993 /
+267,599 / 267,599 / 268,111 / 268,111). No mem 26. Champ stays v89
+1,678,872 / fx2 1,675,542. 2 MiB was **439,194 (−59 vs 439,253)**. Wall
+790 s (06:48:53–07:02:03). Still **+694** vs identity champ. Stronger
+than fccur s24 (−71) but under the 200 B 35-cap gate.
+
+### v89 leftover re-screen (fccur / pron / suffix / vowel)
+
+v88 2 MiB bytes-down leftovers recompiled on **v89** flags
+(`HP_CAPPARA_MOD` already ON in `v78_flags.ps1`; SKIP=40, SENTPOS,
+STATETRANS, REFGROUP, `HP_LR1_SCALE=40`). Cheap protocol: `SLOT_MAX=24`,
+`--mem 22`, `data/enwik8.2mb` via `screen_rejects.ps1 -Name`. Did **not**
+add cappara (in champ). Did not overwrite `hp_v83.exe`–`hp_v89.exe`
+(265,457 / 266,575 / 266,993 / 267,599 / 267,599 / 268,111 / 268,111).
+No mem 26. Two 2 MiB max (shared with historical `hp_s_*`). Gate 8 MiB
+s24 if Δ < **−20**. 35-cap ALONE only if leftover s24 is **>200** under
+v89 s24 champ `e8_8mb_v88s24_cappara.hp` **1,679,762** and no RSS >20 GB.
+One 8 MiB at a time.
+
+**2 MiB baseline** `s_base.hp` / `s_base_v89.hp`: **439,253**.
+
+| leftover | 2 MiB | Δ vs 439,253 | v88 Δ | 8 MiB s24 | Δ vs 1,679,762 | vs v89-35 1,678,872 | call |
+|---|---:|---:|---:|---:|---:|---:|---|
+| fccur | 439,229 | **−24** | −27 | **1,679,691** | **−71** | +819 | s24 paid; no 35 (<200) |
+| pron | 439,194 | **−59** | −41 | **1,679,566** | **−196** | +694 | s24 paid; no 35 (<200) |
+| suffix | 439,224 | **−29** | −19 | **1,679,583** | **−179** | +711 | s24 paid; no 35 (<200) |
+| vowel | 439,237 | **−16** | −20 | — | | | bytes-down; no 8 MiB (not < −20) |
+
+### v89 suffix 8 MiB s24 (no 35-cap)
+
+`hp_c_v89s24_suffix` pid 31460 → `%LOCALAPPDATA%\hp_lab\e8_8mb_v89s24_suffix.hp`
+(copied `hp/build`): **1,679,583**. Δ vs v89 s24 champ **1,679,762**:
+**−179**. Not >200. **No `SLOT_MAX=35`.** Did not compile
+`hp_g_v89suffix.exe`. Did not start a second 8 MiB. Did not kill `hp_s_*`.
+Did not overwrite `hp_v83.exe`–`hp_v89.exe` (265,457 / 266,575 / 266,993 /
+267,599 / 267,599 / 268,111 / 268,111). No mem 26. Champ stays v89
+1,678,872 / fx2 1,675,542. 2 MiB was **439,224 (−29 vs 439,253)**. Wall
+790 s (07:04:34–07:17:44). Still **+711** vs identity champ. Between
+pron s24 (−196) and fccur s24 (−71); under the 200 B 35-cap gate.
+
+pron s24 is the strongest leftover (−196). suffix −179. fccur −71.
+None clear the 200 B 35-cap gate. vowel 2 MiB −16 does not gate 8 MiB.
+Champ stays v89.
+
+### v89 combo R0=2+R5=1 (2 MiB)
+
+Per-mixer `{2,1,1,2,1,1}` on v89 flags (`SLOT_MAX=24`). Integer-exact
+`HP_LR1_R0=2` / `HP_LR1_R5=1` already in headers (applied after
+`HP_LR1_SCALE=40`). Compiled `hp_s_r0v2r5v1.exe` (268,111) from
+`v78_flags.ps1` with `SLOT_MAX` forced to 24. Encoded `data/enwik8.2mb`
+`--mem 22` → `%LOCALAPPDATA%\hp_lab\s_r0v2r5v1.hp`. 2 MiB
+**439,146 (−107 vs 439,253)**. Wall 205 s. Old v85 combo was 439,341
+(−155 vs 439,496). 8 MiB s24 **1,679,749 (−13 vs 1,679,762)**; not >200;
+**no 35-cap**. Did not overwrite `hp_v83.exe`–`hp_v89.exe`. No mem 26.
+Overrides not added to `v78_flags.ps1`.
+
+### H44 leftover CMs on v89 (closed)
+
+Eight new default-off wiki-domain / dense-layout ContextModels on **v89**.
+Not in `v78_flags.ps1`. Did not overwrite `hp_v83.exe`–`hp_v89.exe`.
+No mem 26. No leftover `SLOT_MAX=35`. No leftover 8 MiB unless a 2 MiB
+Δ < **−20**. Integer-exact scanners reuse H43 `h43t_*` (dash first-byte
+for `{{-}}`). Not twins of MAINART / HATNOTE / SHORTDESC / INFOBOX /
+GEOTEMP / COORD / SISTER / BLOCK / BR / COLSTART / WIKIHR / CITE /
+EXTLINK / HTTPHOST / SFN / RSHORT / EFOOT / NOTES / REFBEGIN. Do not
+reopen H11–H43. SENTPOS / skip40 / STATETRANS / REFGROUP / CAPPARA stay
+ON.
+
+Salts **250–257**. Hash `h2(salt, val + ((hist_ & 0xffffffull) << 8))`.
+Compiled `hp_s_{stub,persondata,flag,quotebox,clear,imdb,rp,fn}.exe`
+from v89 flags + `SLOT_MAX=24` + one `-D` via `screen_rejects.ps1 -Name`.
+2 MiB screen vs `s_base.hp` **439,253**. Two 2 MiB max. Skip archive
+already ≥ 430000. Gate 8 MiB s24 only if Δ < **−20**. 35-cap ALONE only
+if leftover s24 is >200 under **1,679,762** (fccur −71 / pron −196 /
+suffix −179 already failed).
+
+| leftover | flag | salt | scanner | 2 MiB | Δ vs 439,253 | verdict |
+|---|---|---:|---|---:|---:|---|
+| stub | `HP_STUB_MOD` | 250 | exact `stub` or name ends `stub` (not MAINART/HATNOTE/SHORTDESC) | 439,317 | **+64** | **kill** |
+| persondata | `HP_PERSONDATA_MOD` | 251 | `{{persondata` (not INFOBOX) | 439,307 | **+54** | **kill** |
+| flag | `HP_FLAG_MOD` | 252 | `{{flag` / `{{flagicon` / `{{flagu` / `{{flagcountry` (not GEOTEMP/COORD/SISTER) | 439,309 | **+56** | **kill** |
+| quotebox | `HP_QUOTEBOX_MOD` | 253 | `{{quote` / `{{cquote` / `{{quotation` / `{{quotebox` (not BLOCK `<blockquote>`) | 439,318 | **+65** | **kill** |
+| clear | `HP_CLEAR_MOD` | 254 | `{{clear}}` / `{{clr}}` / `{{-}}` (not BR/COLSTART/WIKIHR) | 439,311 | **+58** | **kill** |
+| imdb | `HP_IMDB_MOD` | 255 | `{{imdb` / `{{IMDb` folded (not CITE/EXTLINK/HTTPHOST) | 439,314 | **+61** | **kill** |
+| rp | `HP_RP_MOD` | 256 | `{{rp\|` / `{{rp}}` (not SFN/RSHORT/CITE) | 439,313 | **+60** | **kill** |
+| fn | `HP_FN_MOD` | 257 | `{{fn}}` / `{{fnb}}` / `{{reflabel}}` / `{{notelabel}}` (not EFOOT/NOTES/REFBEGIN) | 439,312 | **+59** | **kill** |
+
+H44 closed. All eight bytes-up. Closest: persondata +54. **No 8 MiB
+gate.** Did not start 8 MiB (combo s24 was running; no Δ < **−20**).
+No 35-cap. Did not overwrite `hp_v83.exe`–`hp_v89.exe`. Archives
+`%LOCALAPPDATA%\hp_lab\s_{stub,persondata,flag,quotebox,clear,imdb,rp,fn}.hp`.
+Wall ~206–216 s.
+
+### PLAN item 5 null-expert dilution tax (v89 2 MiB)
+
+`HP_NULL_EXPERT` default 0. When 1, leftover-style ContextModel
+`nullexpert_` copies always-on o1 `set_context(h2(1, hist_ & 0xffull))`
+into a **separate** StateMap — second mixer input, zero new axis.
+Not added to `v78_flags.ps1`. Compiled v89 flags with `SLOT_MAX`
+forced to 24 + `-DHP_NULL_EXPERT=1` → `hp/build/hp_s_null.exe`
+(268,017). Waited out `hp_s_prevsent` + `hp_s_r0v2r5v1`. Encoded
+`data/enwik8.2mb` `--mem 22` → `%LOCALAPPDATA%\hp_lab\s_null.hp`.
+Did not start 8 MiB. Did not overwrite `hp_v83.exe`–`hp_v89.exe`
+(265,457 / 266,575 / 266,993 / 267,599 / 267,599 / 268,111 / 268,111).
+No mem 26. No `SLOT_MAX=35`. Champ stays v89 1,678,872 / fx2 1,675,542.
+
+| | |
+|---|---:|
+| bytes | **439,319** |
+| Δ vs 439,253 | **+66** |
+| wall | 236 s |
+
+Tax **+66 B** is the cost of one leftover-sized mixer slot with no
+new information. Reject-pile re-score as (measured delta − 66) is a
+**paper adjustment**, not a reopen of H11–H43. Flag stays default-off.
+This is a diagnostic, not a leftover CM accept.
+
+### v89 combo R0=2+R5=1 8 MiB s24 (no 35-cap)
+
+Re-score of v85 `{2,1,1,2,1,1}` on v89 cheap protocol. 2 MiB gated
+(439,146, **−107 vs 439,253**). `hp_c_v89s24_r0v2r5v1` pid 37796 →
+`%LOCALAPPDATA%\hp_lab\e8_8mb_v89s24_r0v2r5v1.hp` (copied `hp/build`):
+**1,679,749**. Δ vs v89 s24 champ **1,679,762**: **−13**. Not >200.
+**No `SLOT_MAX=35`.** Did not compile `hp_g_v89r0v2r5v1.exe`. Did not
+start a second 8 MiB (waited out in-flight pid 37796). Did not kill
+`hp_s_*`. Did not overwrite `hp_v83.exe`–`hp_v89.exe` (265,457 /
+266,575 / 266,993 / 267,599 / 267,599 / 268,111 / 268,111). No mem 26.
+Did not add `-DHP_LR1_R0=2` / `-DHP_LR1_R5=1` to `v78_flags.ps1`. Did
+not copy to `hp_v90.exe`. Champ stays v89 1,678,872 / fx2 1,675,542.
+Wall 815 s (09:29:04–09:42:39). Still **+877** vs identity champ.
+
+| rung | bytes | Δ vs v89 | old v85 | old v85 Δ |
+|---|---:|---:|---:|---:|
+| 2 MiB s24 | **439,146** | **−107** vs 439,253 | 439,341 | −155 vs 439,496 |
+| 8 MiB s24 | **1,679,749** | **−13** vs 1,679,762 | 1,680,890 | −204 vs 1,681,094 |
+
+Transfer collapsed: 2 MiB −107 did not become an 8 MiB −200. Weaker
+than pron s24 (−196) / suffix (−179) / fccur (−71). Under the 200 B
+35-cap gate. Overrides stay default-0.
+
+### H45 leftover CMs on v89 (closed)
+
+Eight new default-off leftover ContextModels on **v89**. Not twins of
+HTMLFMT / FONTCOL / SMALL / MATH / PRESPACE / NOWIKI / INFOBOX /
+PERSONDATA / LANGTPL / LANG / EXTLINK / CN / IMDB / SISTER / COLSPAN /
+TBLROW. Not in `v78_flags.ps1`. Did not overwrite `hp_v83.exe`–`hp_v89.exe`.
+No mem 26. No leftover `SLOT_MAX=35`. No leftover 8 MiB unless a 2 MiB
+Δ < **−20**. Integer-exact scanners: HTML regions (small / supsub /
+precode) are MATH/CHEM-style windows; taxobox / nihongo / deadlink /
+wayback reuse H43 `h43t_*` (spaces skipped so `dead link` → `deadlink`);
+rowspan is sticky `|rowspan=` / `!rowspan=` (not COLSPAN value). Do not
+reopen H11–H44. SENTPOS / skip40 / STATETRANS / REFGROUP / CAPPARA stay
+ON.
+
+Salts **258–265**. Hash `h2(salt, val + ((hist_ & 0xffffffull) << 8))`.
+Compiled `hp_s_{small,supsub,precode,taxobox,nihongo,deadlink,wayback,rowspan}.exe`
+from v89 flags + `SLOT_MAX=24` + one `-D` via `screen_rejects.ps1 -Name`.
+2 MiB screen vs `s_base.hp` **439,253**. Two 2 MiB max. Skip archive
+already ≥ 430000. Gate 8 MiB s24 only if Δ < **−20**. 35-cap ALONE only
+if leftover s24 is >200 under **1,679,762** (combo R0=2+R5=1 s24 already
+**1,679,749 (−13)** — no 35; fccur −71 / pron −196 / suffix −179 also
+failed).
+
+| leftover | flag | salt | scanner | 2 MiB | Δ vs 439,253 | verdict |
+|---|---|---:|---|---:|---:|---|
+| small | `HP_SMALL_MOD` | 258 | `<small>` region (not HTMLFMT bitmask, not FONTCOL) | 439,316 | **+63** | **kill** |
+| supsub | `HP_SUPSUB_MOD` | 259 | `<sup>` / `<sub>` kind (not SMALL, not MATH) | 439,311 | **+58** | **kill** |
+| precode | `HP_PRECODE_MOD` | 260 | `<pre>` / `<code>` / `<tt>` region (not PRESPACE, not NOWIKI) | 439,317 | **+64** | **kill** |
+| taxobox | `HP_TAXOBOX_MOD` | 261 | `{{taxobox` (not INFOBOX, not PERSONDATA) | 439,327 | **+74** | **kill** |
+| nihongo | `HP_NIHONGO_MOD` | 262 | `{{nihongo` / `{{korean` / `{{chinese` (not LANGTPL, not LANG) | 439,310 | **+57** | **kill** |
+| deadlink | `HP_DEADLINK_MOD` | 263 | `{{dead link}}` / `{{deadlink}}` / `{{broken link}}` (not EXTLINK, not CN) | 439,311 | **+58** | **kill** |
+| wayback | `HP_WAYBACK_MOD` | 264 | `{{wayback` / `{{webarchive` / `{{dmoz` (not EXTLINK, not IMDB, not SISTER) | 439,315 | **+62** | **kill** |
+| rowspan | `HP_ROWSPAN_MOD` | 265 | sticky `\|rowspan=` / `!rowspan=` (not COLSPAN, not TBLROW) | 439,315 | **+62** | **kill** |
+
+H45 closed. All eight bytes-up. Closest: nihongo +57. **No 8 MiB
+gate.** Did not start 8 MiB (no Δ < **−20**). No 35-cap. Did not
+overwrite `hp_v83.exe`–`hp_v89.exe` (265,457 / 266,575 / 266,993 /
+267,599 / 267,599 / 268,111 / 268,111). Archives
+`%LOCALAPPDATA%\hp_lab\s_{small,supsub,precode,taxobox,nihongo,deadlink,wayback,rowspan}.hp`.
+Wall ~196–277 s.
+
+### H45 leftover CMs on v89 (closed)
+
+Eight new default-off wiki-domain / dense-layout ContextModels. Not in
+`v78_flags.ps1`. Did not overwrite `hp_v83.exe`–`hp_v89.exe`. No mem 26.
+No leftover `SLOT_MAX=35`. No leftover 8 MiB (no Δ < **−20**). Integer-exact
+scanners. Not twins of HTMLFMT / FONTCOL / MATH / PRESPACE / NOWIKI /
+INFOBOX / PERSONDATA / LANGTPL / LANG / EXTLINK / CN / IMDB / SISTER /
+COLSPAN / TBLROW. Do not reopen H11–H44. SENTPOS / skip40 / STATETRANS /
+REFGROUP / CAPPARA stay ON.
+
+2 MiB vs `s_base.hp` **439,253**. Two 2 MiB max.
+
+| leftover | flag | salt | 2 MiB | Δ vs 439,253 | verdict |
+|---|---|---:|---:|---:|---|
+| small | `HP_SMALL_MOD` | 258 | 439,316 | **+63** | **kill** |
+| supsub | `HP_SUPSUB_MOD` | 259 | 439,311 | **+58** | **kill** |
+| precode | `HP_PRECODE_MOD` | 260 | 439,317 | **+64** | **kill** |
+| taxobox | `HP_TAXOBOX_MOD` | 261 | 439,327 | **+74** | **kill** |
+| nihongo | `HP_NIHONGO_MOD` | 262 | 439,310 | **+57** | **kill** |
+| deadlink | `HP_DEADLINK_MOD` | 263 | 439,311 | **+58** | **kill** |
+| wayback | `HP_WAYBACK_MOD` | 264 | 439,315 | **+62** | **kill** |
+| rowspan | `HP_ROWSPAN_MOD` | 265 | 439,315 | **+62** | **kill** |
+
+H45 closed. All eight bytes-up. Closest: nihongo +57 (null-expert tax is +66).
+**No 8 MiB gate.** Champ stays v89 1,678,872 / fx2 1,675,542.
+
+### H46 leftover CMs on v89 (closed)
+
+Eight new default-off leftover ContextModels on **v89**. Not twins of CN /
+DEADLINK / HATNOTE / UNREF / CLEANUP / REDIR / DUMPREDIR / CITEKIND / PUBID /
+DOI / SUCCESSION / GEOTEMP. Not in `v78_flags.ps1`. Did not overwrite
+`hp_v83.exe`–`hp_v89.exe`. No mem 26. No leftover `SLOT_MAX=35`. No leftover
+8 MiB unless a 2 MiB Δ < **−20**. Integer-exact scanners: unref / cleanup /
+npov / rfrom / medal reuse H43 `h43t_*` (spaces skipped so `R from` → `rfrom`,
+`soft redirect` → `softredirect`); doi / pmid add sticky `|doi=` / `|pmid=` /
+`|pmc=` plus template kinds; isbnmod is `ISBN` token / `|isbn=` (not PUBID
+digit hash). Do not reopen H11–H45. SENTPOS / skip40 / STATETRANS / REFGROUP /
+CAPPARA stay ON.
+
+Salts **266–273**. Hash `h2(salt, val + ((hist_ & 0xffffffull) << 8))`.
+Compiled `hp_s_{unref,cleanup,npov,rfrom,doi,pmid,isbnmod,medal}.exe`
+from v89 flags + `SLOT_MAX=24` + one `-D` via `screen_rejects.ps1 -Name`.
+2 MiB screen vs `s_base.hp` **439,253**. Two 2 MiB max. Skip archive
+already ≥ 430000. Gate 8 MiB s24 only if Δ < **−20**. 35-cap ALONE only
+if leftover s24 is >200 under **1,679,762** (combo R0=2+R5=1 s24 already
+**1,679,749 (−13)** — no 35; fccur −71 / pron −196 / suffix −179 also
+failed).
+
+| leftover | flag | salt | scanner | 2 MiB | Δ vs 439,253 | verdict |
+|---|---|---:|---|---:|---:|---|
+| unref | `HP_UNREF_MOD` | 266 | `{{unreferenced` / `{{unref}}` / `{{refimprove` (not CN, not DEADLINK) | 439,319 | **+66** | **kill** |
+| cleanup | `HP_CLEANUP_MOD` | 267 | `{{cleanup` / `{{wikify` / `{{orphan` (not UNREF, not HATNOTE) | 439,308 | **+55** | **kill** |
+| npov | `HP_NPOV_MOD` | 268 | `{{npov` / `{{pov` / `{{coi}}` / `{{advert` (not CLEANUP) | 439,312 | **+59** | **kill** |
+| rfrom | `HP_RFROM_MOD` | 269 | `{{R from` / `{{R to` / `{{soft redirect` (not REDIR, not DUMPREDIR) | 439,309 | **+56** | **kill** |
+| doi | `HP_DOI_MOD` | 270 | sticky `\|doi=` / `{{doi}}` / `{{cite doi` (not CITEKIND, not PUBID) | 439,309 | **+56** | **kill** |
+| pmid | `HP_PMID_MOD` | 271 | sticky `\|pmid=` / `\|pmc=` / `{{pmid}}` / `{{pmc}}` (not DOI, not PUBID) | 439,313 | **+60** | **kill** |
+| isbnmod | `HP_ISBN_MOD` | 272 | `ISBN` token / `\|isbn=` (not PUBID numeric id, not DOI) | 439,325 | **+72** | **kill** |
+| medal | `HP_MEDAL_MOD` | 273 | `{{medal` / `{{Medal` / `{{gold` / `{{silver` / `{{bronze` sports (not SUCCESSION, not GEOTEMP) | 439,311 | **+58** | **kill** |
+
+H46 closed. All eight bytes-up. Closest: cleanup +55 (null-expert tax is +66).
+**No 8 MiB gate.** Did not start 8 MiB (no Δ < **−20**). No 35-cap. Did not
+overwrite `hp_v83.exe`–`hp_v89.exe` (265,457 / 266,575 / 266,993 /
+267,599 / 267,599 / 268,111 / 268,111). Archives
+`%LOCALAPPDATA%\hp_lab\s_{unref,cleanup,npov,rfrom,doi,pmid,isbnmod,medal}.hp`.
+Wall ~194–216 s. Champ stays v89 1,678,872 / fx2 1,675,542.
+
+### H47 leftover CMs on v89 (closed)
+
+Eight new default-off leftover ContextModels on **v89**. Not twins of FILEOPT /
+EXTDISP / PXSIZE / GALLERY / SEEALSO / MAINART / HATNOTE / BIRTH / MONTH /
+SFN / CITE / CITEKIND / ISBN / PUBID / DOI / STYLE / COLSPAN / CELLKIND /
+ROWSPAN / PRECODE / NOWIKI / MATH. Not in `v78_flags.ps1`. Did not overwrite
+`hp_v83.exe`–`hp_v89.exe`. No mem 26. No leftover `SLOT_MAX=35`. No leftover
+8 MiB unless a 2 MiB Δ < **−20**. Integer-exact scanners: further / death /
+harv reuse H43 `h43t_*` (spaces skipped so `death date` → `deathdate`);
+thumb / issn / oclc / alignmod are rolling windows; syntax is an HTML-tag
+region. Do not reopen H11–H46. SENTPOS / skip40 / STATETRANS / REFGROUP /
+CAPPARA stay ON.
+
+Salts **274–281**. Hash `h2(salt, val + ((hist_ & 0xffffffull) << 8))`.
+Compiled `hp_s_{thumb,further,death,harv,issn,oclc,alignmod,syntax}.exe`
+from v89 flags + `SLOT_MAX=24` + one `-D` via `screen_rejects.ps1 -Name`.
+2 MiB screen vs `s_base.hp` **439,253**. Two 2 MiB max. Skip archive
+already ≥ 430000. Gate 8 MiB s24 only if Δ < **−20**. 35-cap ALONE only
+if leftover s24 is >200 under **1,679,762**.
+
+| leftover | flag | salt | scanner | 2 MiB | Δ vs 439,253 | verdict |
+|---|---|---:|---|---:|---:|---|
+| thumb | `HP_THUMB_MOD` | 274 | sticky `\|thumb` / `\|right` / `\|left` / `\|upright` / `\|frameless` (not FILEOPT, not EXTDISP, not PXSIZE, not GALLERY) | 439,315 | **+62** | **kill** |
+| further | `HP_FURTHER_MOD` | 275 | `{{further` / `{{details` / `{{more}}` (not SEEALSO, not MAINART, not HATNOTE) | 439,317 | **+64** | **kill** |
+| death | `HP_DEATH_MOD` | 276 | `{{death date` / `{{death year` / `{{dda}}` / `{{death-date` (not BIRTH, not MONTH) | 439,310 | **+57** | **kill** |
+| harv | `HP_HARV_MOD` | 277 | `{{harv` / `{{harvnb` / `{{harvtxt` / `{{harvp` (not SFN, not CITE, not CITEKIND) | 439,313 | **+60** | **kill** |
+| issn | `HP_ISSN_MOD` | 278 | `ISSN` token / `\|issn=` (not ISBN, not PUBID, not DOI) | 439,317 | **+64** | **kill** |
+| oclc | `HP_OCLC_MOD` | 279 | `OCLC` token / `\|oclc=` (not ISSN, not PUBID, not ISBN) | 439,312 | **+59** | **kill** |
+| alignmod | `HP_ALIGN_MOD` | 280 | sticky `\|align=` / `\|valign=` / `align="` in tables (not STYLE, not COLSPAN, not CELLKIND, not ROWSPAN) | 439,315 | **+62** | **kill** |
+| syntax | `HP_SYNTAX_MOD` | 281 | `<syntaxhighlight` / `<source` / `<syntax` region (not PRECODE, not NOWIKI, not MATH) | 439,313 | **+60** | **kill** |
+
+H47 closed. All eight bytes-up. Closest: death +57 (null-expert tax is +66).
+**No 8 MiB gate.** Did not start 8 MiB (no Δ < **−20**). No 35-cap. Did not
+overwrite `hp_v83.exe`–`hp_v89.exe` (265,457 / 266,575 / 266,993 /
+267,599 / 267,599 / 268,111 / 268,111). Archives
+`%LOCALAPPDATA%\hp_lab\s_{thumb,further,death,harv,issn,oclc,alignmod,syntax}.hp`.
+Wall ~214–383 s. Champ stays v89 1,678,872 / fx2 1,675,542.
+
+### H49 mixer/APM knobs on v89
+
+Leftover CMs H42–H47 all sit on the null-expert dilution floor (~+66 B).
+This wave tunes mixer skip, layer-1 scale, and APM blend — not new CMs.
+Ten 2 MiB `SLOT_MAX=24` encodes at once (~1.5 GB each). Baseline
+`s_base.hp` **439,253**. Gate 8 MiB s24 only if Δ < **−20**. 35-cap ALONE
+only if leftover s24 is >200 under **1,679,762**. Did not overwrite
+`hp_v83.exe`–`hp_v89.exe`. Integer-exact. `HP_MIXER_SKIP=56` ON (was 40).
+`HP_LR1_SCALE=40` stays on champ unless a leftover replace pays.
+
+| leftover | flag | 2 MiB | Δ vs 439,253 | verdict |
+|---|---|---:|---:|---|
+| skip24 | `HP_MIXER_SKIP=24` (replace 40) | 439,425 | **+172** | reject |
+| skip32 | `HP_MIXER_SKIP=32` (replace 40) | 439,322 | **+69** | reject |
+| skip48 | `HP_MIXER_SKIP=48` (replace 40) | 439,224 | **−29** | 8 MiB s24 **1,679,454 (−308 vs 1,679,762)** |
+| skip56 | `HP_MIXER_SKIP=56` (replace 40) | 439,210 | **−43** | **v90** 8 MiB s24 **1,679,323 (−439)**; 35-cap **1,678,417 (−455 vs v89 1,678,872)** identity RT PASS |
+| lr30 | `HP_LR1_SCALE=30` (replace 40) | 439,214 | **−39** | 2 MiB gate (SHA=lr35) |
+| lr35 | `HP_LR1_SCALE=35` (replace 40) | 439,214 | **−39** | 2 MiB gate (byte-identical to lr30) |
+| lr45 | `HP_LR1_SCALE=45` (replace 40) | 439,253 | 0 | reject (identity) |
+| lr50 | `HP_LR1_SCALE=50` (replace 40) | 439,627 | +374 | reject |
+| w0one | `HP_W0=1` (mixer leak into APM blend) | 489,523 | **+50,270** | **kill** |
+| wb4 | `HP_WB=4` (lex APM weight 5→4) | 578,616 | **+139,363** | **kill** |
+
+### v89 skip56 → v90 - **1,678,417 / 1.601 bpc, identity RT PASS −455 vs v89**
+
+`HP_MIXER_SKIP=56` (replace 40) on v89 flags, `SLOT_MAX=35`, mem 22.
+Identity archive `%LOCALAPPDATA%\hp_lab\e8_8mb_s35_skip56.hp` **1,678,417**
+(−455 vs v89 1,678,872). Copied `hp/build/e8_8mb_v90.hp`; lab copy kept.
+Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v90.exe` from `hp_c_v89s35_skip56.exe` (268,111). Did not
+overwrite `hp_v83.exe`–`hp_v89.exe` (265,457 / 266,575 / 266,993 /
+267,599 / 267,599 / 268,111 / 268,111). `HP_MIXER_SKIP=56` ON in
+`v78_flags.ps1`. `screen_rejects.ps1` Get-ScreenExe refuses v90;
+protected list includes `hp_v90.exe`. No mem 26. No second 35-cap
+identity encode.
+
+### v90 fx2 - **1,675,088 / 1.598 bpc, RT PASS −454 vs v89 fx2**
+
+`hp_v90.exe` on `data/enwik8.8mb.fx2man`, `SLOT_MAX=35`, mem 22:
+**1,675,088**. Decode SHA matches `data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+Copied `hp/build/e8_8mb_v90_fx2.hp`; lab copy kept. New 8 MB champ is
+v90. Did not run mem 26. Did not overwrite `hp_v83.exe`–`hp_v89.exe`.
+
+### H50 mixer knobs on v90
+
+Champ is **v90** skip56. 2 MiB baseline `s_base.hp` **439,210** (copy of
+`s_skip56.hp`). Ten 2 MiB at a time. Gate 8 MiB s24 only if Δ < **−20**.
+35-cap ALONE only if leftover s24 is >200 under **1,679,323**. Did not
+overwrite `hp_v83.exe`–`hp_v90.exe`. Integer-exact. New flags default-off
+except `HP_APM_RATE=7` (identity with old default).
+
+| leftover | flag | 2 MiB | Δ vs 439,210 | verdict |
+|---|---|---:|---:|---|
+| lr30 | `HP_LR1_SCALE=30` (replace 40) | 439,121 | **−89** | 8 MiB s24 **1,678,978 (−345 vs 1,679,323)**; 35-cap **1,678,061 (−356 vs v90 1,678,417)** identity RT PASS |
+| lr35 | `HP_LR1_SCALE=35` (replace 40) | 439,121 | **−89** | SHA=lr30; same 8 MiB s24 / 35-cap |
+| skip64 | `HP_MIXER_SKIP=64` (replace 56) | 439,213 | **+3** | reject |
+| skip72 | `HP_MIXER_SKIP=72` (replace 56) | 439,239 | **+29** | reject |
+| skip80 | `HP_MIXER_SKIP=80` (replace 56) | 439,261 | **+51** | reject |
+| apm6 | `HP_APM_RATE=6` | 439,992 | **+782** | reject |
+| apm8 | `HP_APM_RATE=8` | 439,216 | +6 | reject |
+| msc75 | `HP_MIXER_SCALE=49152` (0.75) | 438,897 | **−313** | 8 MiB s24 **1,677,559 (−1,764)**; 35-cap **1,676,677 (−1,740 vs v90 1,678,417)** identity RT PASS; fx2 **1,673,312 (−1,776 vs 1,675,088)** RT PASS. Binary `hp_c_v90s35_msc75.exe`. Did not overwrite `hp_v90.exe` / `v78_flags.ps1` |
+| msc112 | `HP_MIXER_SCALE=73728` (1.125) | 439,476 | +266 | reject |
+| skipl1 | `HP_MIXER_SKIP_L1=40` | 439,145 | **−65** | 8 MiB s24 **1,678,996 (−327 vs 1,679,323)**; no 35-cap (msc75 used ALONE) |
+
+### v90 msc75 → v91 - **1,676,677 / 1.599 bpc, identity RT PASS −1,740 vs v90**
+
+`HP_MIXER_SCALE=49152` (Q16 0.75 on layer-1 dots) on v90 flags,
+`SLOT_MAX=35`, mem 22: **1,676,677** (−1,740 vs v90 1,678,417). Identity
+RT PASS (agent). Copied `hp_v91.exe` from `hp_c_v90s35_msc75.exe`. Did not
+overwrite `hp_v83.exe`–`hp_v90.exe`. `HP_MIXER_SCALE=49152` in
+`v78_flags.ps1`. Get-ScreenExe refuses v91. fx2-manual **1,673,312**
+(−1,776 vs v90 fx2 1,675,088) RT PASS. Archives `hp/build/e8_8mb_v91.hp`
+and `e8_8mb_v91_fx2.hp`. 2 MiB baseline `s_base.hp` **438,897**. No mem 26.
+
+### H51 mixer knobs on v91
+
+Scale neighbors of 49152 plus lr30 / skipl1 restack on **v91**. Baseline
+**438,897**. Ten 2 MiB at a time. Gate 8 MiB s24 only if Δ < **−20**.
+35-cap ALONE only if leftover s24 is >200 under **1,677,559**. Did not
+overwrite `hp_v83.exe`–`hp_v91.exe`.
+
+| leftover | flag | 2 MiB | Δ vs 438,897 | verdict |
+|---|---|---:|---:|---|
+| msc50 | `HP_MIXER_SCALE=32768` (0.50) | 450,930 | **+12,033** | reject |
+| msc62 | `HP_MIXER_SCALE=40960` (0.625) | 439,094 | **+197** | reject |
+| msc69 | `HP_MIXER_SCALE=45056` (0.6875) | 438,926 | +29 | reject |
+| msc72 | `HP_MIXER_SCALE=47104` (0.719) | 438,905 | +8 | reject |
+| msc78 | `HP_MIXER_SCALE=51200` (0.781) | 438,906 | +9 | reject |
+| msc81 | `HP_MIXER_SCALE=53248` (0.813) | 438,921 | +24 | reject |
+| msc88 | `HP_MIXER_SCALE=57344` (0.875) | 438,986 | +89 | reject |
+| msc94 | `HP_MIXER_SCALE=61440` (0.9375) | 439,097 | +200 | reject |
+| lr30 | `HP_LR1_SCALE=30` (replace 40) | 438,893 | **−4** | reject |
+| skipl1 | `HP_MIXER_SKIP_L1=40` | 438,841 | **−56** | 8 MiB s24 **1,677,287 (−272 vs 1,677,559)**; 35-cap **1,676,394 (−283 vs v91 1,676,677)** identity RT PASS; fx2 **1,673,051 (−261 vs 1,673,312)** RT PASS. Binary `hp_c_v91s35_skipl1.exe`. Did not overwrite `hp_v91.exe` |
+
+### v91 skipl1 → v92 - **1,676,394 / 1.599 bpc, identity RT PASS −283 vs v91**
+
+`HP_MIXER_SKIP_L1=40` (skip layer-1 axpy if |local err| < 40; layer-2
+still trains) on v91 flags, `SLOT_MAX=35`, mem 22: **1,676,394** (−283
+vs v91 1,676,677). Identity RT PASS. Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v92.exe` from `hp_c_v91s35_skipl1.exe`. Did not overwrite
+`hp_v83.exe`–`hp_v91.exe`. `HP_MIXER_SKIP_L1=40` in `v78_flags.ps1`.
+Get-ScreenExe refuses v92. Archives `hp/build/e8_8mb_v92.hp` and
+`e8_8mb_v92_fx2.hp`. 2 MiB baseline `s_base.hp` **438,841**. fx2-manual
+**1,673,051** (−261 vs v91 fx2 1,673,312) RT PASS. No mem 26.
+
+### v92 fx2 - **1,673,051 / 1.595 bpc, RT PASS −261 vs v91 fx2**
+
+`hp_v92.exe` on `data/enwik8.8mb.fx2man`, `SLOT_MAX=35`, mem 22:
+**1,673,051**. Decode SHA matches `data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+Copied `hp/build/e8_8mb_v92_fx2.hp`; lab copy kept. New 8 MB champ is
+v92. Did not run mem 26. Did not overwrite `hp_v83.exe`–`hp_v91.exe`.
+
+### H52 mixer knobs on v92
+
+SKIP_L1 neighbors of 40 plus lr30 / skip48 restack on **v92**. Baseline
+**438,841**. Ten 2 MiB at a time. Gate 8 MiB s24 only if Δ < **−20**.
+35-cap ALONE only if leftover s24 is >200 under **1,677,287**. Did not
+overwrite `hp_v83.exe`–`hp_v92.exe`.
+
+| leftover | flag | 2 MiB | Δ vs 438,841 | verdict |
+|---|---|---:|---:|---|
+| sl16 | `HP_MIXER_SKIP_L1=16` (replace 40) | 438,882 | **+41** | reject |
+| sl24 | `HP_MIXER_SKIP_L1=24` (replace 40) | 438,866 | **+25** | reject |
+| sl32 | `HP_MIXER_SKIP_L1=32` (replace 40) | 438,856 | **+15** | reject |
+| sl48 | `HP_MIXER_SKIP_L1=48` (replace 40) | 438,830 | **−11** | reject |
+| lr30 | `HP_LR1_SCALE=30` (replace 40) | 438,826 | **−15** | reject |
+| skip48 | `HP_MIXER_SKIP=48` (replace 56) | 438,842 | **+1** | reject |
+| sl56 | `HP_MIXER_SKIP_L1=56` (replace 40) | 438,815 | **−26** | 8 MiB s24 **1,677,118 (−169 vs 1,677,287)**; no 35-cap (−169 not >200). No mem 26. Binary `hp_s_sl56.exe`. Did not overwrite `hp_v83.exe`–`hp_v92.exe` |
+| sl64 | `HP_MIXER_SKIP_L1=64` (replace 40) | 438,798 | **−43** | 8 MiB s24 **1,677,018 (−269 vs 1,677,287)**; no 35-cap (wave). No mem 26. Binary `hp_s_sl64.exe`. Did not overwrite `hp_v83.exe`–`hp_v92.exe` |
+| sl72 | `HP_MIXER_SKIP_L1=72` (replace 40) | 438,791 | **−50** | 8 MiB s24 **1,676,933 (−354 vs 1,677,287)**; no 35-cap (wave). No mem 26. Binary `hp_s_sl72.exe`. Did not overwrite `hp_v83.exe`–`hp_v92.exe` |
+| sl80 | `HP_MIXER_SKIP_L1=80` (replace 40) | 438,789 | **−52** | 8 MiB s24 **1,676,873 (−414 vs 1,677,287)**; 35-cap **1,675,993 (−401 vs v92 1,676,394)** identity RT PASS. Binary `hp_c_v92s35_sl80.exe`. Did not overwrite `hp_v83.exe`–`hp_v92.exe` |
+
+### v92 sl80 → v93 - **1,675,993 / 1.598 bpc, identity RT PASS −401 vs v92**
+
+`HP_MIXER_SKIP_L1=80` (skip layer-1 axpy if |local err| < 80; layer-2
+still trains) on v92 flags, `SLOT_MAX=35`, mem 22: **1,675,993** (−401
+vs v92 1,676,394). Identity RT PASS. Decode SHA matches `data/enwik8.8mb`
+`09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
+Copied `hp_v93.exe` from `hp_c_v92s35_sl80.exe`. Did not overwrite
+`hp_v83.exe`–`hp_v92.exe`. `HP_MIXER_SKIP_L1=80` in `v78_flags.ps1`.
+Get-ScreenExe refuses v93. Archives `hp/build/e8_8mb_v93.hp`. 2 MiB
+baseline `s_base.hp` **438,789** (old saved `s_base_v92.hp` **438,841**).
+fx2-manual pending (v92 was 1,673,051). No mem 26.
+
+### H53 mixer knobs on v93
+
+SKIP_L1 neighbors of 80 on **v93**. Baseline **438,789**. Ten 2 MiB at a
+time. Gate 8 MiB s24 only if Δ < **−20**. 35-cap ALONE only if leftover
+s24 is >200 under **1,676,873**. Did not overwrite `hp_v83.exe`–`hp_v93.exe`.
+
+| leftover | flag | 2 MiB | Δ vs 438,789 | verdict |
+|---|---|---:|---:|---|
+
+
+
+
