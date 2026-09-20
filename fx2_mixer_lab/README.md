@@ -32,11 +32,12 @@ Width 256/300 alone lost or was flat.
 | name | bytes | Δ vs baseline64 |
 |---|---:|---:|
 | baseline64 | 17032 | 0 |
-| **lr08_64** | **16994** | **−38** |
+| **lr08_h32_64** | **16964** | **−68** |
+| lr08_64 | 16994 | −38 |
 | lr08_skip01_64 | 16996 | −36 |
 | h32_64 | 17019 | −13 |
 
-`lr=0.08` holds on 64 KB. Horizon-32 alone is weaker. Skip-on-top of lr08 is noise.
+`lr=0.08` + horizon 32 stacks on 64 KB (−68). Skip-on-top of lr08 is noise.
 
 ## What died
 

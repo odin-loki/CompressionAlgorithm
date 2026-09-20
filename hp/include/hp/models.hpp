@@ -91,13 +91,14 @@ class ContextModel {
           limit_(limit),
           t_(table_bits),
 #if HP_HASH_CHK
-          chk_(static_cast<std::size_t>(1) << table_bits, 0),
+          chk_(table_bits),
 #endif
           sm_() {}
 
     void set_context(std::uint32_t h) { h_ = h; idle_ = false; }
     // fx2 sets(): keep a mixer slot but do not pollute the table.
     void set_idle() { idle_ = true; h_ = 0; }
+    std::uint32_t last_h() const { return h_; }
 
     // Writes kOutputs stretched values into out[]. backoff is the parent
     // order's probability, used by the PY estimate.
@@ -198,7 +199,7 @@ class ContextModel {
     int limit_;
     HashTable<std::uint16_t> t_;  // bit-history states (882 states -> 16 bit)
 #if HP_HASH_CHK
-    std::vector<std::uint8_t> chk_;
+    HashTable<std::uint8_t> chk_;
 #endif
     StateMap sm_;
     std::uint32_t h_ = 0;
@@ -222,7 +223,7 @@ class ByteRing {
  public:
     explicit ByteRing(int buf_bits)
         : mask_((1u << buf_bits) - 1),
-          buf_(static_cast<std::size_t>(1) << buf_bits, 0) {}
+          buf_(buf_bits) {}
 
     void push(std::uint8_t byte) {
         buf_[pos_ & mask_] = byte;
@@ -236,7 +237,7 @@ class ByteRing {
 
  private:
     std::uint32_t mask_;
-    std::vector<std::uint8_t> buf_;
+    HashTable<std::uint8_t> buf_;
     std::uint32_t pos_ = 0;
 };
 
@@ -273,7 +274,7 @@ class MatchModel {
 
     // Called once per byte after the shared ring has been updated.
     // `hist` holds the current kMinLen-byte suffix in its low bytes.
-    void push_byte(int byte, std::uint64_t hist) {
+    void push_byte(int byte, std::uint64_t hist, std::uint64_t word = 0) {
         const std::uint32_t pos = ring_->pos();
         // 1. Verify the standing prediction before anything else.
         if (len_ > 0) {
@@ -302,7 +303,13 @@ class MatchModel {
         const std::uint32_t h =
             hash2(0x4D415443ull + static_cast<std::uint64_t>(order_) +
                       static_cast<std::uint64_t>(skip_) * 17ull,
-                  key) & tab_mask_;
+#if HP_MATCH_WORD
+                  key ^ word
+#else
+                  key
+#endif
+                  ) & tab_mask_;
+        (void)word;
         if (len_ == 0) {
             const std::uint32_t cand = tab_.get(h);
             if (cand > 0 && cand < pos) {
@@ -385,8 +392,8 @@ class HebbianModel {
  public:
     HebbianModel(int table_bits, int limit)
         : mask_((1u << table_bits) - 1),
-          syn_target_(static_cast<std::size_t>(1) << table_bits, 0),
-          syn_strength_(static_cast<std::size_t>(1) << table_bits, 0),
+          syn_target_(table_bits),
+          syn_strength_(table_bits),
           sm_(),
           t_(table_bits),
           limit_(limit) {}
@@ -443,8 +450,8 @@ class HebbianModel {
 
  private:
     std::uint32_t mask_;
-    std::vector<std::uint64_t> syn_target_;
-    std::vector<std::uint8_t> syn_strength_;
+    HashTable<std::uint64_t> syn_target_;
+    HashTable<std::uint8_t> syn_strength_;
     StateMap sm_;
     HashTable<std::uint16_t> t_;
     int limit_;
@@ -527,7 +534,7 @@ class LzpModel {
  public:
     LzpModel(int table_bits)
         : mask_((1u << table_bits) - 1),
-          pred_(static_cast<std::size_t>(1) << table_bits, 0) {
+          pred_(table_bits) {
         counter_init(st_.data(), st_.size());
     }
 
@@ -557,7 +564,7 @@ class LzpModel {
 
  private:
     std::uint32_t mask_;
-    std::vector<std::uint8_t> pred_;
+    HashTable<std::uint8_t> pred_;
     std::array<Counter, 64> st_{};
     int expected_ = 0;
     int expected_bit_ = 0;

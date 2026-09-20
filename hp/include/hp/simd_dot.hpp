@@ -2,7 +2,7 @@
 //
 // Integer mixer dots. HP_XSIMD=0 uses scalar loops; HP_XSIMD=1 (default) uses SSE4.1.
 // int64 add is associative so the vectorized sum matches the scalar
-// sum exactly. axpy_shift_clamp stays scalar (update is less hot).
+// sum exactly. axpy stays scalar so g++ can schedule the update itself.
 
 #include <cstdint>
 
@@ -73,15 +73,33 @@ inline std::int64_t dot_i32_i16(const std::int32_t* w, const std::int16_t* st, i
 #if HP_XSIMD
     std::int64_t sum = 0;
     int i = 0;
+#ifdef __AVX2__
+    for (; i + 8 <= n; i += 8) {
+        const __m256i va = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(w + i));
+        const __m256i vb = _mm256_cvtepi16_epi32(
+            _mm_loadu_si128(reinterpret_cast<const __m128i*>(st + i)));
+        const __m256i prod = _mm256_mullo_epi32(va, vb);
+        const __m128i lo = _mm256_castsi256_si128(prod);
+        const __m128i hi = _mm256_extracti128_si256(prod, 1);
+        const __m256i s64 = _mm256_add_epi64(_mm256_cvtepi32_epi64(lo),
+                                             _mm256_cvtepi32_epi64(hi));
+        const __m128i s = _mm_add_epi64(_mm256_castsi256_si128(s64),
+                                        _mm256_extracti128_si256(s64, 1));
+        const __m128i h = _mm_add_epi64(s, _mm_unpackhi_epi64(s, s));
+        sum += _mm_cvtsi128_si64(h);
+    }
+#endif
     using batch32_4 = xsimd::batch<std::int32_t, xsimd::sse4_1>;
     for (; i + 4 <= n; i += 4) {
         const __m128i ws = batch32_4::load_unaligned(w + i);
         const __m128i ss =
             _mm_cvtepi16_epi32(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(st + i)));
         const __m128i prod = _mm_mullo_epi32(ws, ss);
-        alignas(16) std::int32_t parts[4];
-        _mm_storeu_si128(reinterpret_cast<__m128i*>(parts), prod);
-        sum += static_cast<std::int64_t>(parts[0]) + parts[1] + parts[2] + parts[3];
+        const __m128i a = _mm_cvtepi32_epi64(prod);
+        const __m128i b = _mm_cvtepi32_epi64(_mm_shuffle_epi32(prod, 0xEE));
+        const __m128i s = _mm_add_epi64(a, b);
+        const __m128i h = _mm_add_epi64(s, _mm_unpackhi_epi64(s, s));
+        sum += _mm_cvtsi128_si64(h);
     }
     for (; i < n; ++i) sum += static_cast<std::int64_t>(w[i]) * st[i];
     return sum;

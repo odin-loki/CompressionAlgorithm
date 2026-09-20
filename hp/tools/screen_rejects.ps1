@@ -1,5 +1,5 @@
 # Re-screen H11–H38 leftover rejects at HP_LR1_SCALE=40 on a 2 MiB slice.
-# Champ flags from v78_flags.ps1, SLOT_MAX forced to 24 (~1.5 GB, ~92 s).
+# Champ flags from v78_flags.ps1. HP_SLOT_MAX is hard-capped at 22 in features.hpp.
 # Default: compile hp_s_base.exe and run ONLY that 2 MiB encode if no hp_g_/hp_v job
 # is already encoding. Does not overwrite hp_v83.exe / hp_v84.exe.
 # Does not start the leftover marathon unless -RunQueue is passed.
@@ -27,7 +27,6 @@ if (-not (Test-Path (Join-Path $root "hp\src\main.cpp"))) {
 Set-Location $root
 . (Join-Path $PSScriptRoot "v78_flags.ps1")
 
-$SlotMaxScreen = 24
 $InSlice = Join-Path $root "data\enwik8.2mb"
 $BuildDir = Join-Path $root "hp\build"
 $Src = Join-Path $root "hp\src\main.cpp"
@@ -39,6 +38,9 @@ $LogCsv = Join-Path $LabDir "screen_rejects.csv"
 # skip40 replaces champ HP_MIXER_SKIP=32 rather than adding a CM.
 # H22 reorder / payload_lex / dict omitted (preprocess, not leftover CMs).
 $RejectRows = @(
+  # H54 new axis / table RAM on v93. Baseline this-tree 439,192.
+  @{ n = "matchword";   d = "-DHP_MATCH_WORD=1";      w = "H54"; old = $null },
+  @{ n = "o12";         d = "-DHP_SLOT_O12=1";        w = "H54"; old = $null },
   # H53 SKIP_L1 neighbors of 80 on v93 (sl80 champ). Baseline 438,789.
   @{ n = "sl72";        d = "-DHP_MIXER_SKIP_L1=72";   w = "H53"; old = $null; r = "-DHP_MIXER_SKIP_L1=80" },
   @{ n = "sl84";        d = "-DHP_MIXER_SKIP_L1=84";   w = "H53"; old = $null; r = "-DHP_MIXER_SKIP_L1=80" },
@@ -363,19 +365,16 @@ function Get-ScreenFlags {
   param($extraFlag, $replaceFlag)
   $flags = New-Object System.Collections.Generic.List[string]
   foreach ($f in $script:V78Flags) { [void]$flags.Add([string]$f) }
-  $sawSlot = $false
   $replaced = $false
+  $drop = New-Object System.Collections.Generic.List[int]
   for ($i = 0; $i -lt $flags.Count; $i++) {
-    if ($flags[$i] -match '^-DHP_SLOT_MAX=') {
-      $flags[$i] = "-DHP_SLOT_MAX=$SlotMaxScreen"
-      $sawSlot = $true
-    }
+    if ($flags[$i] -match '^-DHP_SLOT_MAX=') { [void]$drop.Add($i); continue }
     if ($replaceFlag -and $flags[$i] -eq $replaceFlag) {
       $flags[$i] = $extraFlag
       $replaced = $true
     }
   }
-  if (-not $sawSlot) { [void]$flags.Add("-DHP_SLOT_MAX=$SlotMaxScreen") }
+  for ($j = $drop.Count - 1; $j -ge 0; $j--) { $flags.RemoveAt($drop[$j]) }
   if ($extraFlag) {
     if ($replaceFlag) {
       if (-not $replaced) { [void]$flags.Add($extraFlag) }
@@ -416,14 +415,11 @@ function Compile-Screen {
   $flags = Get-ScreenFlags $extraFlag $replaceFlag
   $hasLr = $false
   $lrVal = "?"
-  $slot = "?"
   foreach ($f in $flags) {
     if ($f -match '^-DHP_LR1_SCALE=(.+)$') { $hasLr = $true; $lrVal = $Matches[1] }
-    if ($f -match '^-DHP_SLOT_MAX=(.+)$') { $slot = $Matches[1] }
   }
   if (-not $hasLr) { throw "HP_LR1_SCALE missing from flags" }
-  if ($slot -ne "24") { throw "SLOT_MAX expected 24, got $slot" }
-  Write-Host "COMPILE hp_s_$jobName.exe extra=$extraFlag SLOT_MAX=$slot LR1=$lrVal"
+  Write-Host "COMPILE hp_s_$jobName.exe extra=$extraFlag SLOT_MAX=22(hard) LR1=$lrVal"
   & g++ @flags $Src -o $exe
   if ($LASTEXITCODE -ne 0) { throw "compile failed $jobName" }
   return $exe
@@ -468,7 +464,7 @@ function Test-EncodeAllowed {
 }
 
 function Show-Queue {
-  Write-Host ("QUEUE {0} leftover flags  SLOT_MAX={1}  LR1_SCALE=40  slice={2}" -f $RejectRows.Count, $SlotMaxScreen, $InSlice)
+  Write-Host ("QUEUE {0} leftover flags  SLOT_MAX=22(hard)  LR1_SCALE=40  slice={1}" -f $RejectRows.Count, $InSlice)
   $i = 0
   foreach ($j in $RejectRows) {
     $i++
@@ -535,7 +531,7 @@ if ($Name) {
 }
 
 # Default harness: baseline only. Never a leftover marathon.
-Write-Host ("DEFAULT baseline  queue={0}  SLOT_MAX={1}" -f $RejectRows.Count, $SlotMaxScreen)
+Write-Host ("DEFAULT baseline  queue={0}  SLOT_MAX=22(hard)" -f $RejectRows.Count)
 Compile-Screen "base" $null $null | Out-Null
 if ($doEncode) {
   $br = Encode-Screen "base"

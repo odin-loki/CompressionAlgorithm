@@ -1,5 +1,5 @@
 // GPU expert + layer-1 mixer importance + G1 trials.
-//   nvcc -O3 -std=c++17 -arch=sm_86 hp/tools/gpu_importance.cu -lcublas
+//   nvcc -O3 -std=c++23 -arch=sm_86 hp/tools/gpu_importance.cu -lcublas
 //        -o hp/build/gpu_importance.exe
 //   hp/build/gpu_importance.exe dump.i16 n_exp n_gates [max_use]
 

@@ -4,7 +4,7 @@
 // then mix cluster opinions with uneven v. Does not replace the mix with
 // a mean. Hard MoE still mixes inside the chosen cluster.
 //
-//   nvcc -O3 -std=c++17 -arch=sm_86 hp/tools/gpu_moe_cluster.cu -lcublas
+//   nvcc -O3 -std=c++23 -arch=sm_86 hp/tools/gpu_moe_cluster.cu -lcublas
 //        -o hp/build/gpu_moe_cluster.exe
 //   hp/build/gpu_moe_cluster.exe [dump.i16] [n_experts]
 

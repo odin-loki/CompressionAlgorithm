@@ -1,5 +1,5 @@
 // GPU mixer search v2 — cuBLAS SGEMM, diagnostic only.
-//   nvcc -O3 -std=c++17 -arch=sm_86 hp/tools/gpu_mixer_search.cu -lcublas -o hp/build/gpu_mixer_search.exe
+//   nvcc -O3 -std=c++23 -arch=sm_86 hp/tools/gpu_mixer_search.cu -lcublas -o hp/build/gpu_mixer_search.exe
 
 #include <cublas_v2.h>
 #include <cuda_runtime.h>

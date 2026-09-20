@@ -148,17 +148,15 @@ inline int py_estimate(int n0, int n1, int backoff_p12) {
     if (total == 0) return backoff_p12;
     const int d = 128;                                   // 0.5 in Q8
     const int types = (n0 > 0 ? 1 : 0) + (n1 > 0 ? 1 : 0);
-    // numerator in Q8, then to Q12
     int num = (n1 << 8) - (n1 > 0 ? d : 0);
     if (num < 0) num = 0;
-    const int mass = (d * types);                        // Q8
-    const int denom = total << 8;                        // Q8
-    // p = num/denom + (mass/denom) * backoff
-    const std::int64_t direct = (static_cast<std::int64_t>(num) << 12) / denom;
+    const int mass = d * types;                          // Q8
+    // (num<<12)/(total<<8) == (num<<4)/total  (integer-exact)
+    const std::int64_t direct = (static_cast<std::int64_t>(num) << 4) / total;
     const std::int64_t back =
-        (static_cast<std::int64_t>(mass) * backoff_p12) / denom;
-    int p = static_cast<int>(direct + back);
-    return clamp_int(p, 1, 4094);
+        (static_cast<std::int64_t>(mass) * backoff_p12) /
+        (static_cast<std::int64_t>(total) << 8);
+    return clamp_int(static_cast<int>(direct + back), 1, 4094);
 }
 
 }  // namespace hp

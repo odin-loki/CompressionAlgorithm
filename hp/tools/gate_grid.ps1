@@ -2,7 +2,7 @@
 $ErrorActionPreference = "Stop"
 $root = Split-Path (Split-Path $PSScriptRoot)
 Set-Location $root
-$base = @("-std=c++17", "-O2", "-I", "hp/include", "-DHP_MIXER_SKIP=24", "-DHP_SPARSE_UTF8=1")
+$base = @("-std=c++23", "-O2", "-I", "hp/include", "-DHP_MIXER_SKIP=24", "-DHP_SPARSE_UTF8=1")
 $jobs = @(
   @{ id = "shape";   d = @("-DHP_GATE_SHAPE=1") },
   @{ id = "branch";  d = @("-DHP_GATE_BRANCH=1") },

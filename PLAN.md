@@ -11,7 +11,7 @@ Three tracks, different machines:
 
 | track | where | job |
 |---|---|---|
-| **H** | this repo, `hp/` | one compile flag; 8 MB mem 22; bytes-down, SHA, fx2 stack; 100 MB mem 26 champ only with `SLOT_MAX=31` |
+| **H** | this repo, `hp/` | one compile flag; 8 MB mem 22; bytes-down, SHA, fx2 stack; 100 MB mem 26 champ only. `HP_SLOT_MAX` hard-capped at **22** |
 | **W** | `harvest/fx2-cmix`, `harvest/cmix-lex` | fork SOTA |
 | **C** | github.com/odin-loki/Cypha | `review-and-thinktank.md` only |
 
@@ -42,8 +42,16 @@ layer-1 per-mixer rates to `{1,1,1,2,1,2}`. Landed at `SLOT_MAX=35` as
 
 **8 MB champ** (`data/enwik8.8mb`, mem 22): **v93** identity
 **1,675,993** (−401 vs v92 1,676,394), **1.598 bpc**, RT PASS.
-fx2-manual pending. `HP_MIXER_SKIP_L1=80` ON.
+fx2-manual **1,672,628** (−423 vs v92 **1,673,051**). `HP_MIXER_SKIP_L1=80` ON.
 Stack v92 + sl80. Did not overwrite `hp_v83.exe`–`hp_v92.exe`.
+
+**kVersion 6 / C++23.** Defaults are v93 champ flags, C++23 build,
+SIMD mixer dots on. Demand-zero tables, LTO, AVX2. No PGO, no
+attribute spam. `HP_SLOT_MAX` is **hard-capped at 22** (256 KB 1..30
+sweep 2026-09-20: BPC flat 0.5717 from 20–30; 22 best size).
+`-DHP_SLOT_MAX` is ignored. Published v93 8 MiB **1,675,993** was a
+35-cap identity; do not pass 35. kVersion bumped 5→6 so old 35-cap
+archives fail fast.
 
 **100 MB champ** (`data/enwik8.fx2man`, mem 26, `SLOT_MAX=31`): **v77**
 **18,370,971** (−38,737 vs v75 18,409,708), **1.469 bpc**, RT PASS.
@@ -158,7 +166,8 @@ One compile flag per binary. Same binary encodes and decodes. No
 **Build line (the one in README was broken — it omits both -I paths):**
 
 ```
-g++ -O3 -std=c++17 -msse4.1 -I hp/include -I hp/third_party/xsimd/include \
+g++ -O3 -std=c++23 -flto -march=x86-64-v3 -fno-exceptions -fno-rtti \
+    -msse4.1 -mavx2 -I hp/include -I hp/third_party/xsimd/include \
     $(grep -oE '\-DHP_[A-Z0-9_]+=[0-9]+' hp/tools/v78_flags.ps1 | tr '\n' ' ') \
     hp/src/main.cpp -o hp/build/hp_vNN.exe
 ```
@@ -167,24 +176,22 @@ A default-flag build is 1,804,979 (v7-era). The champ is the 79-flag set.
 
 **Gate (in order):** — H34 calibrated this against 12 known deltas.
 
-0. **Screen** on `data/enwik8.2mb` at `--mem 22 -DHP_SLOT_MAX=24`
-   (92 s, 1.5 GB). Spearman **+0.84** vs the 8 MiB gate, **13/13**
-   correct accept/reject signs. Kill losers here.
+0. **Screen** on `data/enwik8.2mb` at `--mem 22` (`HP_SLOT_MAX=22` hard).
+   Kill losers here.
 1. Build a new-named exe (never overwrite a binary a long job is using).
-2. Compress first 8 MB of `data/enwik8` at `--mem 22`. Use
-   `-DHP_SLOT_MAX=24` (1.6 GB, 8.5 min): Pearson **+0.96** vs
-   `SLOT_MAX=35` and only +895 B on the base, for 8x less RAM.
+2. Compress first 8 MB of `data/enwik8` at `--mem 22`. Same cap 22
+   (~2 GB, not 13–28 GB). Do not pass `-DHP_SLOT_MAX`.
 3. **Accept if archive bytes drop** vs the current 8 MB champ.
 4. Round-trip SHA of the decompressed file vs the input slice.
 5. If accepted: stack-check on `data/enwik8.8mb.fx2man` (same mem 22).
-6. Champ only: full enwik8 fx2-manual at `--mem 26`, `SLOT_MAX=31`.
+6. Champ only: full enwik8 fx2-manual at `--mem 26` (still cap 22).
 
 | job | typical RSS | rule |
 |---|---|---|
-| 8 MB leftover, mem 22, `SLOT_MAX` ≤ 35 | ~15 GB | **two at a time** (user 2026-09-13) |
-| 100 MB mem 26, `SLOT_MAX=31` | ~38–40 GB | champ confirmation only |
-| 100 MB mem 26, `SLOT_MAX=35` | OOM | **do not run** |
-| 8 MB leftover **plus** 100 MB | ~15 GB + ~38 GB | **never together** |
+| 8 MB leftover, mem 22, cap 22 | ~2 GB | several at a time |
+| 100 MB mem 26, cap 22 | champ confirmation only | |
+| 100 MB mem 26, old `SLOT_MAX=35` | OOM | **do not run** |
+| 8 MB leftover **plus** 100 MB | never together if 100 MB is huge | |
 
 **Protect:** `hp_v37.exe`, `hp_v45_m26.exe`, `hp_v55_m26.exe`,
 `hp_v57.exe`, `hp_v57_m26.exe`, `hp_v58.exe`, `hp_v59.exe`,
@@ -195,12 +202,13 @@ A default-flag build is 1,804,979 (v7-era). The champ is the 79-flag set.
 `hp_v74.exe`, `hp_v75.exe`, `hp_v75_m26.exe`, `hp_v76.exe`,
 `hp_v77.exe`, `hp_v78.exe`, `hp_v79.exe`, `hp_v80.exe`, `hp_v81.exe`, `hp_v82.exe`, `hp_v83.exe`, `hp_v84.exe`.
 
-Name new builds `hp_vNN.exe` or `hp_<flag>.exe`. 100 MB at mem 26 with
-a cap other than the 8 MB default: `hp_vNN_m26.exe` and compile
-`-DHP_SLOT_MAX=31` (not 35).
+Name new builds `hp_vNN.exe` or `hp_<flag>.exe`. 100 MB at mem 26 uses
+the same hard cap 22 (`hp_vNN_m26.exe`). Do not pass `-DHP_SLOT_MAX`.
 
 ```
-g++ -O3 -std=c++17 -I hp/include hp/src/main.cpp -o hp/build/hp_vNN.exe
+g++ -O3 -std=c++23 -flto -march=x86-64-v3 -fno-exceptions -fno-rtti \
+    -msse4.1 -mavx2 -I hp/include -I hp/third_party/xsimd/include \
+    hp/src/main.cpp -o hp/build/hp_vNN.exe
 hp/build/hp_vNN.exe c --mem 22 data/enwik8.8mb hp/build/e8_8mb_vNN.hp
 hp/build/hp_vNN.exe d hp/build/e8_8mb_vNN.hp hp/build/e8_8mb_vNN.out
 ```
@@ -300,7 +308,7 @@ remaining leftovers on the new champ.
 | **H50** | Mixer knobs on v90 | msc75 **v91** 1,676,677; lr30 35-cap **−356**; skipl1 s24 **−327**; skip64/72/80 / apm6/8 / msc112 reject | **v91** |
 | **H51** | Mixer-scale neighbors + lr30/skipl1 on v91 | msc* all reject; lr30 −4 reject; skipl1 **v92** 1,676,394 | **v92** |
 | **H52** | SKIP_L1 neighbors + lr30/skip48 on v92 | sl80 **v93** 1,675,993; sl16/24/32/48 reject; sl56/64/72 s24 only | **v93** |
-| **H53** | SKIP_L1 neighbors of 80 on v93 | sl88/96/104/112/120/128/144/160; maybe sl72 confirm | 2 MiB |
+| **H53** | SKIP_L1 neighbors of 80 on v93 | sl112/sl120 8 MiB s24 **1,677,930 / 1,677,899** (not under v93 s24 **1,676,873**); rest 2 MiB reject | **closed** |
 
 v62 wiki-axis singles closed (only STATE paid). H6 rank-8 **REJECT +702k**. H8 nopy **REJECT +18k**. Mixer width and low-rank W are closed.
 H9: mixer dots are already more precise than they need; wall time is the 77 StateMaps, not Q16.
@@ -320,7 +328,7 @@ H49 mixer/APM knobs: skip56 **v90** 1,678,417 (−455); `HP_MIXER_SKIP=56` ON. s
 H50 mixer knobs: msc75 **v91** 1,676,677 (−1,740); `HP_MIXER_SCALE=49152` ON. lr30 35-cap **1,678,061 (−356)** (superseded). skipl1 s24 **−327** (no 35; re-screen on v91). skip64 **+3**; skip72 **+29**; skip80 **+51**; apm6 **+782**; apm8 **+6**; msc112 **+266**. Did not overwrite `hp_v83.exe`–`hp_v90.exe`.
 H51 mixer knobs: skipl1 **v92** 1,676,394 (−283); `HP_MIXER_SKIP_L1=40` ON. msc50 **+12,033**; msc62 **+197**; msc69 **+29**; msc72 **+8**; msc78 **+9**; msc81 **+24**; msc88 **+89**; msc94 **+200**; lr30 **−4**. Did not overwrite `hp_v83.exe`–`hp_v91.exe`.
 H52 mixer knobs: sl80 **v93** 1,675,993 (−401); `HP_MIXER_SKIP_L1=80` ON. sl16 **+41**; sl24 **+25**; sl32 **+15**; sl48 **−11**; lr30 **−15**; skip48 **+1**; sl56 s24 **−169**; sl64 s24 **−269**; sl72 s24 **−354**. Did not overwrite `hp_v83.exe`–`hp_v92.exe`.
-H53 mixer knobs **open** on v93 2 MiB vs **438,789**: SKIP_L1 neighbors of 80 (sl88/96/104/112/120/128/144/160) plus maybe sl72 confirm. Ten 2 MiB at a time. No mem 26. Do not reopen skip>56 / APM rate 6/8 / msc* / W0 / WB4.
+H53 mixer knobs **closed** on v93. This-tree 2 MiB base **439,192**. sl112/sl120 8 MiB s24 **1,677,930 / 1,677,899** (−249/−280 vs this-tree **1,678,179**; still above v93 s24 **1,676,873**). No 35-cap. Champ stays **1,675,993**. Do not reopen skip>56 / APM rate 6/8 / msc* / W0 / WB4. No mem 26.
 v75 100 MB **18,409,708 RT PASS** (−25,032 vs v73). v77-100 **18,370,971 RT PASS** (−38,737 vs v75). Skip-k saturates at 4. LSTM / WRT / `payload_lex` / POS / bitlstm32 / obias are Track W. v78-100 mem 26 `SLOT_MAX=31` in flight (8 MB idle).
 
 ---

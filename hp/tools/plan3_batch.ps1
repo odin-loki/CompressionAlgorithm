@@ -18,7 +18,7 @@ Run "H1.4 dict 8mb" $v3b @("c","--mem","22","--dict","data\enwik8.8mb","hp\build
 Run "H1.4 dict 1mb" $v3b @("c","--mem","22","--dict","data\enwik8.1mb","hp\build\e8_1mb_dict.hp")
 
 Write-Host "==== compile v3b+num ===="
-& g++ -std=c++17 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=1 -o hp/build/hp_num.exe hp/src/main.cpp
+& g++ -std=c++23 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=1 -o hp/build/hp_num.exe hp/src/main.cpp
 if ($LASTEXITCODE -eq 0) {
   Run "H2.8 num 8mb" "hp\build\hp_num.exe" @("c","--mem","22","data\enwik8.8mb","hp\build\e8_8mb_num.hp")
   Run "H2.8 num 1mb" "hp\build\hp_num.exe" @("c","--mem","22","data\enwik8.1mb","hp\build\e8_1mb_num.hp")
@@ -30,7 +30,7 @@ foreach ($pair in @(
   @{ n = "nobrk";  d = "-DHP_BRACKET=0" }
 )) {
   Write-Host "==== compile $($pair.n) ===="
-  & g++ -std=c++17 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=0 "$($pair.d)" -o "hp\build\hp_$($pair.n).exe" hp/src/main.cpp
+  & g++ -std=c++23 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=0 "$($pair.d)" -o "hp\build\hp_$($pair.n).exe" hp/src/main.cpp
   if ($LASTEXITCODE -ne 0) { Write-Host "COMPILE FAIL $($pair.n)"; continue }
   Run "H0.3 $($pair.n) 8mb" "hp\build\hp_$($pair.n).exe" @("c","--mem","22","data\enwik8.8mb","hp\build\e8_8mb_$($pair.n).hp")
 }

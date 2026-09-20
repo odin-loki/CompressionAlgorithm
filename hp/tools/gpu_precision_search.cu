@@ -3,7 +3,7 @@
 // Question: how many experts, and how many bits of x and W, before the mix
 // loses a sizeable amount vs a full-precision linear mixer?
 //
-//   nvcc -O3 -std=c++17 -arch=sm_86 hp/tools/gpu_precision_search.cu -lcublas
+//   nvcc -O3 -std=c++23 -arch=sm_86 hp/tools/gpu_precision_search.cu -lcublas
 //        -o hp/build/gpu_precision_search.exe
 //   hp/build/gpu_precision_search.exe [dump.i16] [n_experts]
 //

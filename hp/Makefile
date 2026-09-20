@@ -16,15 +16,18 @@ ifeq ($(XSIMD),1)
 else
   XSIMD_FLAGS := -DHP_XSIMD=0
 endif
-OPT ?= -O2
+OPT ?= -O3
 SAN_FLAGS :=
 LDFLAGS ?=
 ifeq ($(ASAN),1)
   OPT := -O1
   SAN_FLAGS := -fsanitize=address -fno-omit-frame-pointer -g
   LDFLAGS := $(SAN_FLAGS)
+else
+  OPT := -O3 -flto -march=x86-64-v3 -mavx2 -fno-exceptions -fno-rtti
+  LDFLAGS += -flto
 endif
-CXXFLAGS ?= -std=c++17 -Wall $(OPT) -Iinclude $(XSIMD_FLAGS) $(SAN_FLAGS)
+CXXFLAGS ?= -std=c++23 -Wall $(OPT) -Iinclude $(XSIMD_FLAGS) $(SAN_FLAGS)
 
 all: $(BIN)/hp $(BIN)/dump_experts $(BIN)/bench
 
@@ -56,6 +59,7 @@ gdb-test:
 	bash test/gdb.sh $(FILE)
 
 clean:
-	rm -rf $(BIN)
+	rm -f $(BIN)/hp $(BIN)/hp.exe $(BIN)/dump_experts $(BIN)/dump_experts.exe \
+	      $(BIN)/bench $(BIN)/bench.exe $(BIN)/hp_opt.exe $(BIN)/hp_c23.exe
 
 .PHONY: all test determinism asan-test gdb-test clean

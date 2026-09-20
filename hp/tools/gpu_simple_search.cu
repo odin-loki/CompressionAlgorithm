@@ -1,6 +1,6 @@
 // Exhaustive subset + tiny-formula search on the GPU.
 // Question: is there a simpler mixer than 77-expert logistic?
-//   nvcc -O3 -std=c++17 -arch=sm_86 hp/tools/gpu_simple_search.cu -lcublas -o hp/build/gpu_simple_search.exe
+//   nvcc -O3 -std=c++23 -arch=sm_86 hp/tools/gpu_simple_search.cu -lcublas -o hp/build/gpu_simple_search.exe
 
 #include <cublas_v2.h>
 #include <cuda_runtime.h>

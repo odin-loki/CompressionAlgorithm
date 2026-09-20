@@ -35,7 +35,7 @@ inline std::uint32_t split(std::uint32_t x1, std::uint32_t x2, int p) {
 
 class Encoder {
  public:
-    static constexpr std::size_t kBufSize = 65536;
+    static constexpr std::size_t kBufSize = 1 << 20;
 
     explicit Encoder(std::FILE* out) : out_(out) {}
 
@@ -85,7 +85,7 @@ class Encoder {
 
 class Decoder {
  public:
-    static constexpr std::size_t kBufSize = 65536;
+    static constexpr std::size_t kBufSize = 1 << 20;
 
     explicit Decoder(std::FILE* in) : in_(in) {
         refill();

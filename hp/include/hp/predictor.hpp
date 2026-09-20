@@ -16,6 +16,7 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <vector>
 
 #include "hp/bracket.hpp"
@@ -25,6 +26,9 @@
 #include "hp/gria.hpp"
 #include "hp/hedge.hpp"
 #include "hp/int_math.hpp"
+#if HP_LSTM
+#include "hp/lstm.hpp"
+#endif
 #include "hp/mixer.hpp"
 #include "hp/models.hpp"
 #include "hp/numeric.hpp"
@@ -67,6 +71,15 @@ struct Config {
     int match_bits = 22;
     int mixer_lr = 2;
     bool gria = true;
+    int cross_a = HP_CROSS_A;
+    int cross_b = HP_CROSS_B;
+    int cross_c = HP_CROSS_C;
+    int cross2_a = HP_CROSS2_A;
+    int cross2_b = HP_CROSS2_B;
+    int cross2_c = HP_CROSS2_C;
+    int cross3_a = HP_CROSS3_A;
+    int cross3_b = HP_CROSS3_B;
+    int cross3_c = HP_CROSS3_C;
 
     // Encoder and decoder must agree. match/buf sizes are a function of
     // table_bits (the only size the archive header carries).
@@ -90,6 +103,9 @@ class Predictor {
         (HP_PAT_MODEL ? 1 : 0) +
         (HP_PPMD ? 1 : 0) +
         (HP_STEMMER ? HP_STEMMER_N : 0) +
+        (HP_STEM_SEN ? 1 : 0) +
+        (HP_STEM_PARA ? 1 : 0) +
+        (HP_STEM_TYPED ? 1 : 0) +
         (HP_SENWORD ? 1 : 0) +
         (HP_SENT_STREAM ? 1 : 0) +
         (HP_SENT_MEM ? 1 : 0) +
@@ -339,7 +355,9 @@ class Predictor {
         (HP_OCLC_MOD ? 1 : 0) +
         (HP_ALIGN_MOD ? 1 : 0) +
         (HP_SYNTAX_MOD ? 1 : 0) +
-        (HP_NULL_EXPERT ? 1 : 0);
+        (HP_NULL_EXPERT ? 1 : 0) +
+        HP_CROSS_CM +
+        ((HP_LSTM && HP_LSTM_CTX) ? 1 : 0);
     static constexpr int kCtxModels = 11 + kExtraCtx;
     static constexpr int kMatchModels = 5 + (HP_MATCH_18 ? 1 : 0)
         + (HP_MATCH_13 ? 1 : 0) + (HP_MATCH_01 ? 1 : 0)
@@ -358,7 +376,8 @@ class Predictor {
         + (HP_DMC_MOD ? 1 : 0) + (HP_LZP_MOD ? 1 : 0)
         + (HP_SR_MOD ? 1 : 0) + (HP_SKIPK_MOD ? 1 : 0)
         + (HP_SKIP3_MOD ? 1 : 0) + (HP_SKIP4_MOD ? 1 : 0)
-        + (HP_SKIP5_MOD ? 1 : 0);
+        + (HP_SKIP5_MOD ? 1 : 0)
+        + ((HP_LSTM && HP_LSTM_EXPERT) ? 1 : 0);
 #if HP_HEDGE_L1
     static constexpr int kHedgeInputs = 0;
 #else
@@ -420,6 +439,9 @@ class Predictor {
 #if HP_GATE_WMLEN
         kGateWmLen,
 #endif
+#if HP_LSTM_GATE
+        kGateLstm,
+#endif
         kNumGates
     };
 
@@ -464,7 +486,7 @@ class Predictor {
         (void)delta;
 #endif
         if (b < 16) b = 16;
-        if (b > HP_SLOT_MAX) b = HP_SLOT_MAX;
+        if (b > HP_SLOT_MAX) b = HP_SLOT_MAX;  // 22, hard
         return b;
     }
 
@@ -478,7 +500,7 @@ class Predictor {
     static int add_bits(int b, int extra) {
         b += extra;
         if (b < 16) b = 16;
-        if (b > HP_SLOT_MAX) b = HP_SLOT_MAX;
+        if (b > HP_SLOT_MAX) b = HP_SLOT_MAX;  // 22, hard
         return b;
     }
 
@@ -540,6 +562,15 @@ class Predictor {
 #if HP_STEMMER_N >= 2
           stem1_(cfg.table_bits, 255),
 #endif
+#endif
+#if HP_STEM_SEN
+          stem_sen_(cfg.table_bits, 255),
+#endif
+#if HP_STEM_PARA
+          stem_para_(cfg.table_bits, 255),
+#endif
+#if HP_STEM_TYPED
+          stem_typed_(cfg.table_bits, 255),
 #endif
 #if HP_SENWORD
           sen_(slot_bits(cfg.table_bits, 2), 255),
@@ -1288,6 +1319,15 @@ class Predictor {
 #if HP_NULL_EXPERT
           nullexpert_(cfg.table_bits, 255),
 #endif
+#if HP_CROSS_CM
+          cross0_(cfg.table_bits, 255),
+#endif
+#if HP_CROSS_CM > 1
+          cross1_(cfg.table_bits, 255),
+#endif
+#if HP_CROSS_CM > 2
+          cross2cm_(cfg.table_bits, 255),
+#endif
           match_{ {&byte_ring_, match_bits(cfg.match_bits), 3},
                   {&byte_ring_, match_bits(cfg.match_bits), 4},
                   {&byte_ring_, match_bits(cfg.match_bits), 6},
@@ -1367,6 +1407,12 @@ class Predictor {
           },
 #endif
           hebb_(cfg.table_bits, 255),
+#if HP_LSTM
+          lstm_(std::make_unique<IntLstm>()),
+#endif
+#if HP_LSTM && HP_LSTM_CTX
+          lstmctx_(cfg.table_bits, 255),
+#endif
           pool_(cfg.table_bits, 0xC0FFEEull),
           mixer_(kNumExperts, gate_sizes(), 256, cfg.mixer_lr, gate_rates(cfg.mixer_lr)),
           apm_c0_(256),
@@ -1386,6 +1432,21 @@ class Predictor {
         }
 #endif
         gria_.set_enabled(cfg.gria);
+#if HP_CROSS_CM
+        cross_a_ = cfg.cross_a;
+        cross_b_ = cfg.cross_b;
+        cross_c_ = cfg.cross_c;
+#endif
+#if HP_CROSS_CM > 1
+        cross2_a_ = cfg.cross2_a;
+        cross2_b_ = cfg.cross2_b;
+        cross2_c_ = cfg.cross2_c;
+#endif
+#if HP_CROSS_CM > 2
+        cross3_a_ = cfg.cross3_a;
+        cross3_b_ = cfg.cross3_b;
+        cross3_c_ = cfg.cross3_c;
+#endif
         init_ctx_chain_();
         set_byte_contexts();
     }
@@ -1396,6 +1457,21 @@ class Predictor {
         mixer_.add(stretch(bias_p));
 #if HP_TRACK_EXP_P
         n_exp_ = 0;
+#endif
+#if HP_LSTM
+#if HP_LSTM_BIT
+        lstm_->predict_bit_p12(lstm_last_bit_);
+#else
+        lstm_->predict_p12();
+#endif
+#if HP_LSTM_CTX
+        lstmctx_.set_context(h2(0x4C53544Dull,
+            (static_cast<std::uint64_t>(lstm_->expected()) << 32) ^
+            lstm_->hidden_sig() ^ ((hist_ & 0xffffffull) << 8)));
+#endif
+#if HP_LSTM_GATE
+        mixer_.set_ctx(kGateLstm, lstm_->expected() & 15);
+#endif
 #endif
 
         int out[ContextModel::kOutputs];
@@ -1520,6 +1596,14 @@ class Predictor {
             exp_p_[n_exp_++] = squash(hs);
 #endif
         }
+#if HP_LSTM && HP_LSTM_EXPERT
+        {
+            mixer_.add(stretch(lstm_->last_p12()));
+#if HP_TRACK_EXP_P
+            exp_p_[n_exp_++] = lstm_->last_p12();
+#endif
+        }
+#endif
 #if HP_CTW
         {
             // Recursive KT weighting over the contiguous order chain.
@@ -1677,6 +1761,15 @@ class Predictor {
 #if HP_STEMMER_N >= 2
         stem1_.update(y, ens);
 #endif
+#endif
+#if HP_STEM_SEN
+        stem_sen_.update(y, ens);
+#endif
+#if HP_STEM_PARA
+        stem_para_.update(y, ens);
+#endif
+#if HP_STEM_TYPED
+        stem_typed_.update(y, ens);
 #endif
 #if HP_SENWORD
         sen_.update(y, ens);
@@ -2428,6 +2521,15 @@ class Predictor {
 #if HP_NULL_EXPERT
         nullexpert_.update(y, ens);
 #endif
+#if HP_CROSS_CM
+        cross0_.update(y, ens);
+#endif
+#if HP_CROSS_CM > 1
+        cross1_.update(y, ens);
+#endif
+#if HP_CROSS_CM > 2
+        cross2cm_.update(y, ens);
+#endif
         for (int i = 0; i < kMatchModels; ++i) match_[i].update(y);
 #if HP_SPARSE_UTF8
         smatch_.update(y);
@@ -2458,6 +2560,15 @@ class Predictor {
 #endif
         hebb_.update(y);
         pool_.update(y, y ? (4096 - pr_final_) >> 4 : pr_final_ >> 4);
+#if HP_LSTM && HP_LSTM_CTX
+        lstmctx_.update(y, ens);
+#endif
+#if HP_LSTM && HP_LSTM_BIT
+        lstm_->update_bit(y);
+        lstm_last_bit_ = y;
+#elif HP_LSTM
+        lstm_->perceive_bit(y);
+#endif
 
         c0_ = (c0_ << 1) | y;
         ++bitpos_;
@@ -2556,6 +2667,9 @@ class Predictor {
 #if HP_GATE_WMLEN
         out.push_back(16);
 #endif
+#if HP_LSTM_GATE
+        out.push_back(16);
+#endif
         return out;
         }();
         return s;
@@ -2616,6 +2730,9 @@ class Predictor {
         out.push_back(3);
 #endif
 #if HP_GATE_WMLEN
+        out.push_back(3);
+#endif
+#if HP_LSTM_GATE
         out.push_back(3);
 #endif
         #if HP_LR1_SCALE != 100
@@ -2735,7 +2852,7 @@ class Predictor {
         if (byte == '.' || byte == '!' || byte == '?' || byte == '\n')
             sentmem_.end_sentence();
 #endif
-#if HP_STEMMER || HP_STEM_FOLD || HP_POS_GATE || HP_WT3_CTX
+#if HP_STEMMER || HP_STEM_FOLD || HP_POS_GATE || HP_WT3_CTX || HP_STEM_SEN || HP_STEM_PARA || HP_STEM_TYPED
         {
             const int nest = wiki_.nest_markup() ||
                              brackets_.square_depth() > 0 ||
@@ -2770,7 +2887,8 @@ class Predictor {
         pool_.set_contexts(hist_, hist2_);
 
         byte_ring_.push(static_cast<std::uint8_t>(byte));
-        for (int i = 0; i < kMatchModels; ++i) match_[i].push_byte(byte, hist_);
+        for (int i = 0; i < kMatchModels; ++i)
+            match_[i].push_byte(byte, hist_, prev_word_);
 #if HP_GATE_BREAK
         {
             int ml = 0;
@@ -2840,6 +2958,12 @@ class Predictor {
                             streams_.first_class());
 
         gria_.account_byte(byte);
+#if HP_LSTM && !HP_LSTM_BIT
+#if HP_LSTM_MIXIN
+        lstm_->set_mixin(mixed_p_);
+#endif
+        lstm_->perceive_byte(byte);
+#endif
         set_byte_contexts();
     }
 
@@ -3048,6 +3172,17 @@ class Predictor {
             stem1_.set_context(h2(33, stems_.ctx1()));
 #endif
         }
+#endif
+#if HP_STEM_SEN
+        stem_sen_.set_context(h2(282, stems_.ctx0() + (hist_ & 0xffull)));
+#endif
+#if HP_STEM_PARA
+        stem_para_.set_context(h2(283, stems_.paragraph() * 1471ull + (hist_ & 0xffull)));
+#endif
+#if HP_STEM_TYPED
+        stem_typed_.set_context(h2(284, stems_.typed() * 3301ull +
+                                     static_cast<std::uint64_t>(stems_.type() & 0xffu) +
+                                     (hist_ & 0xffull)));
 #endif
 #if HP_SENT_STREAM
 #if HP_SENT_GRP_CTX
@@ -4106,6 +4241,40 @@ class Predictor {
         syntaxmod_.set_context(h2(281, static_cast<std::uint64_t>(wiki_.syntax_kind()) +
                                       ((hist_ & 0xffffffull) << 8)));
 #endif
+#if HP_CROSS_CM
+        bind_cross_context_();
+#endif
+    }
+
+    void bind_one_cross_(ContextModel& cm, int a, int b, int c, std::uint32_t salt,
+                         int nbase) {
+        const auto ok = [nbase](int i) { return i >= 0 && i < nbase; };
+        if (!ok(a) || !ok(b) || a == b) {
+            cm.set_idle();
+            return;
+        }
+        const std::uint32_t ha = ctx_chain_[a]->last_h();
+        const std::uint32_t hb = ctx_chain_[b]->last_h();
+        std::uint64_t mix = (static_cast<std::uint64_t>(ha) * 0x9E3779B97F4A7C15ull)
+                          ^ (static_cast<std::uint64_t>(hb) * 0xBF58476D1CE4E5B9ull);
+        if (ok(c) && c != a && c != b) {
+            const std::uint32_t hc = ctx_chain_[c]->last_h();
+            mix ^= static_cast<std::uint64_t>(hc) * 0x94D049BB133111EBull;
+        }
+        cm.set_context(h2(salt, mix));
+    }
+
+    void bind_cross_context_() {
+#if HP_CROSS_CM
+        const int nbase = n_ctx_chain_ - HP_CROSS_CM;
+        bind_one_cross_(cross0_, cross_a_, cross_b_, cross_c_, 0x5858u, nbase);
+#if HP_CROSS_CM > 1
+        bind_one_cross_(cross1_, cross2_a_, cross2_b_, cross2_c_, 0x5859u, nbase);
+#endif
+#if HP_CROSS_CM > 2
+        bind_one_cross_(cross2cm_, cross3_a_, cross3_b_, cross3_c_, 0x585Au, nbase);
+#endif
+#endif
     }
 
     void init_ctx_chain_() {
@@ -4144,6 +4313,15 @@ class Predictor {
 #if HP_STEMMER_N >= 2
         ctx_chain_[n_ctx_chain_++] = &stem1_;
 #endif
+#endif
+#if HP_STEM_SEN
+        ctx_chain_[n_ctx_chain_++] = &stem_sen_;
+#endif
+#if HP_STEM_PARA
+        ctx_chain_[n_ctx_chain_++] = &stem_para_;
+#endif
+#if HP_STEM_TYPED
+        ctx_chain_[n_ctx_chain_++] = &stem_typed_;
 #endif
 #if HP_SENWORD
         ctx_chain_[n_ctx_chain_++] = &sen_;
@@ -4894,6 +5072,18 @@ class Predictor {
 #endif
 #if HP_NULL_EXPERT
         ctx_chain_[n_ctx_chain_++] = &nullexpert_;
+#endif
+#if HP_LSTM && HP_LSTM_CTX
+        ctx_chain_[n_ctx_chain_++] = &lstmctx_;
+#endif
+#if HP_CROSS_CM
+        ctx_chain_[n_ctx_chain_++] = &cross0_;
+#endif
+#if HP_CROSS_CM > 1
+        ctx_chain_[n_ctx_chain_++] = &cross1_;
+#endif
+#if HP_CROSS_CM > 2
+        ctx_chain_[n_ctx_chain_++] = &cross2cm_;
 #endif
     }
 
@@ -5692,6 +5882,24 @@ class Predictor {
 #if HP_NULL_EXPERT
     ContextModel nullexpert_;
 #endif
+#if HP_CROSS_CM
+    ContextModel cross0_;
+    int cross_a_ = -1;
+    int cross_b_ = -1;
+    int cross_c_ = -1;
+#endif
+#if HP_CROSS_CM > 1
+    ContextModel cross1_;
+    int cross2_a_ = -1;
+    int cross2_b_ = -1;
+    int cross2_c_ = -1;
+#endif
+#if HP_CROSS_CM > 2
+    ContextModel cross2cm_;
+    int cross3_a_ = -1;
+    int cross3_b_ = -1;
+    int cross3_c_ = -1;
+#endif
     MatchModel match_[kMatchModels];
 #if HP_SPARSE_UTF8
     MatchModel smatch_;
@@ -5721,6 +5929,13 @@ class Predictor {
     WordMatchModel wmatch_[3 + (HP_WMATCH_4 ? 1 : 0) + (HP_WMATCH_5 ? 1 : 0)];
 #endif
     HebbianModel hebb_;
+#if HP_LSTM
+    std::unique_ptr<IntLstm> lstm_;
+    int lstm_last_bit_ = 0;
+#endif
+#if HP_LSTM && HP_LSTM_CTX
+    ContextModel lstmctx_;
+#endif
     DiscoveryPool pool_;
     MixerNet mixer_;
     APM apm_c0_, apm_lex_, apm_gria_;
@@ -5729,7 +5944,7 @@ class Predictor {
     GriaGate gria_;
     WikiMachine wiki_;
     WordStreams streams_;
-#if HP_STEMMER || HP_STEM_FOLD || HP_POS_GATE || HP_WT3_CTX
+#if HP_STEMMER || HP_STEM_FOLD || HP_POS_GATE || HP_WT3_CTX || HP_STEM_SEN || HP_STEM_PARA || HP_STEM_TYPED
     StemStreams stems_;
 #endif
     BracketMachine brackets_;

@@ -14,14 +14,14 @@ function Run([string]$label, [string]$exe, [string[]]$hpArgs) {
 }
 
 Write-Host "==== compile skip24 ===="
-& g++ -std=c++17 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=0 "-DHP_MIXER_SKIP=24" -o hp/build/hp_skip24.exe hp/src/main.cpp
+& g++ -std=c++23 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=0 "-DHP_MIXER_SKIP=24" -o hp/build/hp_skip24.exe hp/src/main.cpp
 if ($LASTEXITCODE -eq 0) {
   Run "H3.1 skip24 1mb" "hp\build\hp_skip24.exe" @("c","--mem","22","data\enwik8.1mb","hp\build\e8_1mb_skip24.hp")
   Run "H3.1 skip24 8mb" "hp\build\hp_skip24.exe" @("c","--mem","22","data\enwik8.8mb","hp\build\e8_8mb_skip24.hp")
 }
 
 Write-Host "==== compile utf8 match ===="
-& g++ -std=c++17 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=0 -DHP_SPARSE_UTF8=1 -o hp/build/hp_utf8.exe hp/src/main.cpp
+& g++ -std=c++23 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=0 -DHP_SPARSE_UTF8=1 -o hp/build/hp_utf8.exe hp/src/main.cpp
 if ($LASTEXITCODE -eq 0) {
   Run "H2.3 utf8 1mb" "hp\build\hp_utf8.exe" @("c","--mem","22","data\enwik8.1mb","hp\build\e8_1mb_utf8.hp")
   Run "H2.3 utf8 8mb" "hp\build\hp_utf8.exe" @("c","--mem","22","data\enwik8.8mb","hp\build\e8_8mb_utf8.hp")

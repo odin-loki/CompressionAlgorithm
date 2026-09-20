@@ -13,7 +13,7 @@ foreach ($j in $jobs) {
   $name = [string]$j.n
   $exe = "hp\build\hp_$name.exe"
   Write-Host "==== compile $name slots=$slots eval=$eval ===="
-  & g++ -std=c++17 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=0 "-DHP_DISC_SLOTS=$slots" "-DHP_DISC_EVAL=$eval" -o $exe hp/src/main.cpp
+  & g++ -std=c++23 -O2 -I hp/include -DHP_LINKWORD=0 -DHP_NUMERIC=0 "-DHP_DISC_SLOTS=$slots" "-DHP_DISC_EVAL=$eval" -o $exe hp/src/main.cpp
   if ($LASTEXITCODE -ne 0) { Write-Host "COMPILE FAIL $name"; continue }
   Write-Host "==== run $name 1MB mem22 ===="
   & $exe c --mem 22 data\enwik8.1mb "hp\build\e8_$name.hp"

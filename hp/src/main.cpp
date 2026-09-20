@@ -25,6 +25,15 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #endif
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
 
 #include "hp/coder.hpp"
 #include "hp/dict.hpp"
@@ -36,7 +45,7 @@
 namespace {
 
 constexpr char kMagic[4] = {'C', 'Y', 'H', 'P'};
-constexpr int kVersion = 4;
+constexpr int kVersion = 6;
 
 void put32(std::FILE* f, std::uint32_t v) {
     for (int i = 3; i >= 0; --i) std::fputc((v >> (i * 8)) & 0xff, f);
@@ -72,23 +81,35 @@ bool read_all(const char* path, std::vector<std::uint8_t>& out) {
     return true;
 }
 
-#ifdef __linux__
+#if defined(__linux__) || defined(_WIN32)
 struct MappedInput {
     std::uint8_t* data = nullptr;
     std::size_t size = 0;
+#ifdef _WIN32
+    HANDLE file_ = INVALID_HANDLE_VALUE;
+    HANDLE map_ = nullptr;
+#endif
 
     ~MappedInput() { unmap(); }
 
     void unmap() {
-        if (data) {
-            munmap(data, size);
-            data = nullptr;
-            size = 0;
-        }
+#ifdef __linux__
+        if (data) munmap(data, size);
+#endif
+#ifdef _WIN32
+        if (data) UnmapViewOfFile(data);
+        if (map_) CloseHandle(map_);
+        if (file_ != INVALID_HANDLE_VALUE) CloseHandle(file_);
+        map_ = nullptr;
+        file_ = INVALID_HANDLE_VALUE;
+#endif
+        data = nullptr;
+        size = 0;
     }
 };
 
 bool map_input(const char* path, MappedInput& mapped) {
+#ifdef __linux__
     const int fd = open(path, O_RDONLY);
     if (fd < 0) return false;
     struct stat st;
@@ -110,13 +131,44 @@ bool map_input(const char* path, MappedInput& mapped) {
     }
     mapped.data = static_cast<std::uint8_t*>(p);
     return true;
+#else
+    mapped.file_ = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, nullptr,
+                               OPEN_EXISTING,
+                               FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN,
+                               nullptr);
+    if (mapped.file_ == INVALID_HANDLE_VALUE) return false;
+    LARGE_INTEGER sz;
+    if (!GetFileSizeEx(mapped.file_, &sz) || sz.QuadPart < 0) {
+        mapped.unmap();
+        return false;
+    }
+    mapped.size = static_cast<std::size_t>(sz.QuadPart);
+    if (mapped.size == 0) {
+        CloseHandle(mapped.file_);
+        mapped.file_ = INVALID_HANDLE_VALUE;
+        mapped.data = nullptr;
+        return true;
+    }
+    mapped.map_ = CreateFileMappingA(mapped.file_, nullptr, PAGE_READONLY, 0, 0, nullptr);
+    if (!mapped.map_) {
+        mapped.unmap();
+        return false;
+    }
+    mapped.data = static_cast<std::uint8_t*>(
+        MapViewOfFile(mapped.map_, FILE_MAP_READ, 0, 0, 0));
+    if (!mapped.data) {
+        mapped.unmap();
+        return false;
+    }
+    return true;
+#endif
 }
 #endif
 
 int usage() {
     std::fprintf(stderr,
         "usage: hp c|d [--no-gria] [--dict] [--mem N] [--lr N] [--profile] "
-        "<in> <out>\n");
+        "[--cross i,j[,k]] [--cross2 i,j[,k]] <in> <out>\n");
     return 2;
 }
 
@@ -146,7 +198,7 @@ void encode_buffer(const std::uint8_t* buf, std::size_t len, hp::Config cfg,
 int compress(const char* inp, const char* outp, hp::Config cfg, bool use_dict,
              bool profile) {
     std::vector<std::uint8_t> raw;
-#ifdef __linux__
+#if defined(__linux__) || defined(_WIN32)
     MappedInput mapped;
 #endif
     const std::uint8_t* raw_ptr = nullptr;
@@ -157,7 +209,7 @@ int compress(const char* inp, const char* outp, hp::Config cfg, bool use_dict,
         raw_ptr = raw.data();
         raw_len = raw.size();
     } else {
-#ifdef __linux__
+#if defined(__linux__) || defined(_WIN32)
         if (map_input(inp, mapped)) {
             raw_ptr = mapped.data;
             raw_len = mapped.size;
@@ -207,7 +259,7 @@ int compress(const char* inp, const char* outp, hp::Config cfg, bool use_dict,
     std::FILE* out = std::fopen(outp, "wb");
     if (!out) { std::perror(outp); return 1; }
     {
-        static char outbuf[65536];
+        static char outbuf[1 << 20];
         setvbuf(out, outbuf, _IOFBF, sizeof(outbuf));
     }
 
@@ -216,6 +268,21 @@ int compress(const char* inp, const char* outp, hp::Config cfg, bool use_dict,
     std::fputc(cfg.gria ? 1 : 0, out);
     std::fputc(cfg.table_bits, out);
     std::fputc(cfg.mixer_lr, out);
+#if HP_CROSS_CM
+    std::fputc(cfg.cross_a + 1, out);
+    std::fputc(cfg.cross_b + 1, out);
+    std::fputc(cfg.cross_c + 1, out);
+#if HP_CROSS_CM > 1
+    std::fputc(cfg.cross2_a + 1, out);
+    std::fputc(cfg.cross2_b + 1, out);
+    std::fputc(cfg.cross2_c + 1, out);
+#endif
+#if HP_CROSS_CM > 2
+    std::fputc(cfg.cross3_a + 1, out);
+    std::fputc(cfg.cross3_b + 1, out);
+    std::fputc(cfg.cross3_c + 1, out);
+#endif
+#endif
     std::fputc(use_dict ? 1 : 0, out);
     put64(out, raw_len);
     put64(out, encode_len);
@@ -253,6 +320,10 @@ int compress(const char* inp, const char* outp, hp::Config cfg, bool use_dict,
 int decompress(const char* inp, const char* outp) {
     std::FILE* in = std::fopen(inp, "rb");
     if (!in) { std::perror(inp); return 1; }
+    {
+        static char inbuf[1 << 20];
+        setvbuf(in, inbuf, _IOFBF, sizeof(inbuf));
+    }
 
     char magic[4];
     if (std::fread(magic, 1, 4, in) != 4 || std::memcmp(magic, kMagic, 4) != 0) {
@@ -267,6 +338,21 @@ int decompress(const char* inp, const char* outp) {
     cfg.gria = std::fgetc(in) != 0;
     cfg.table_bits = std::fgetc(in);
     cfg.mixer_lr = std::fgetc(in);
+#if HP_CROSS_CM
+    cfg.cross_a = std::fgetc(in) - 1;
+    cfg.cross_b = std::fgetc(in) - 1;
+    cfg.cross_c = std::fgetc(in) - 1;
+#if HP_CROSS_CM > 1
+    cfg.cross2_a = std::fgetc(in) - 1;
+    cfg.cross2_b = std::fgetc(in) - 1;
+    cfg.cross2_c = std::fgetc(in) - 1;
+#endif
+#if HP_CROSS_CM > 2
+    cfg.cross3_a = std::fgetc(in) - 1;
+    cfg.cross3_b = std::fgetc(in) - 1;
+    cfg.cross3_c = std::fgetc(in) - 1;
+#endif
+#endif
     cfg.normalize();
     const bool use_dict = std::fgetc(in) != 0;
     const std::uint64_t nraw = get64(in);
@@ -298,10 +384,13 @@ int decompress(const char* inp, const char* outp) {
     if (buf_body) body.reserve(static_cast<std::size_t>(nbody));
 
     std::FILE* out = nullptr;
+    std::uint8_t obuf[1 << 16];
+    std::size_t olen = 0;
+    std::uint64_t written = 0;
     if (!buf_body) {
         out = std::fopen(outp, "wb");
         if (!out) { std::perror(outp); std::fclose(in); return 1; }
-        static char outbuf[65536];
+        static char outbuf[1 << 20];
         setvbuf(out, outbuf, _IOFBF, sizeof(outbuf));
     }
 
@@ -315,13 +404,20 @@ int decompress(const char* inp, const char* outp) {
         }
         if (buf_body)
             body.push_back(static_cast<std::uint8_t>(byte));
-        else
-            std::fputc(byte, out);
+        else {
+            obuf[olen++] = static_cast<std::uint8_t>(byte);
+            ++written;
+            if (olen == sizeof(obuf)) {
+                std::fwrite(obuf, 1, olen, out);
+                olen = 0;
+            }
+        }
         if ((i & 0xfffff) == 0 && i) {
             std::fprintf(stderr, "\r%llu MB", (unsigned long long)(i >> 20));
             std::fflush(stderr);
         }
     }
+    if (out && olen) std::fwrite(obuf, 1, olen, out);
     std::fclose(in);
 
     if (buf_body) {
@@ -330,9 +426,9 @@ int decompress(const char* inp, const char* outp) {
                          body.size(), (unsigned long long)nbody);
             return 1;
         }
-    } else if (static_cast<std::uint64_t>(std::ftell(out)) != nraw) {
-        std::fprintf(stderr, "\nsize mismatch: got %ld want %llu\n",
-                     std::ftell(out), (unsigned long long)nraw);
+    } else if (written != nraw) {
+        std::fprintf(stderr, "\nsize mismatch: got %llu want %llu\n",
+                     (unsigned long long)written, (unsigned long long)nraw);
         std::fclose(out);
         return 1;
     }
@@ -387,6 +483,30 @@ int main(int argc, char** argv) {
             cfg.normalize();
         }
         else if (!std::strcmp(argv[i], "--lr") && i + 1 < argc) cfg.mixer_lr = std::atoi(argv[++i]);
+        else if (!std::strcmp(argv[i], "--cross") && i + 1 < argc) {
+            int a = -1, b = -1, c = -1;
+            const int n = std::sscanf(argv[++i], "%d,%d,%d", &a, &b, &c);
+            if (n < 2) return usage();
+            cfg.cross_a = a;
+            cfg.cross_b = b;
+            if (n >= 3) cfg.cross_c = c;
+        }
+        else if (!std::strcmp(argv[i], "--cross2") && i + 1 < argc) {
+            int a = -1, b = -1, c = -1;
+            const int n = std::sscanf(argv[++i], "%d,%d,%d", &a, &b, &c);
+            if (n < 2) return usage();
+            cfg.cross2_a = a;
+            cfg.cross2_b = b;
+            if (n >= 3) cfg.cross2_c = c;
+        }
+        else if (!std::strcmp(argv[i], "--cross3") && i + 1 < argc) {
+            int a = -1, b = -1, c = -1;
+            const int n = std::sscanf(argv[++i], "%d,%d,%d", &a, &b, &c);
+            if (n < 2) return usage();
+            cfg.cross3_a = a;
+            cfg.cross3_b = b;
+            if (n >= 3) cfg.cross3_c = c;
+        }
         else break;
     }
     if (argc - i != 2) return usage();

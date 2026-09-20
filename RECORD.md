@@ -3887,9 +3887,9 @@ SLOT_MAX=22 encode 1,684,990 / 1.607.
 Boolean XOR/AND/OR/Walsh/parity/deltas (xor_k6 +517; worse with k);
 natural gradient / sign-LMS (catastrophic); drop twins to fund LSTM
 (none beat baseline; tiny_lstm +16). CSVs under
-`fx2_mixer_lab/results/`. 64 KB pin of lr08: baseline64 **17032**,
-lr08_64 **16994 (−38)**; lr08+skip 16996; h32 alone 17019 (−13).
-Did not land into prize binary. Did not overwrite
+`fx2_mixer_lab/results/`. 64 KB pin: baseline64 **17032**; lr08_64
+**16994 (−38)**; lr08+skip 16996; h32 17019 (−13); **lr08+h32 16964
+(−68)** best pin. Did not land into prize binary. Did not overwrite
 `hp_v83.exe`–`hp_v93.exe`.
 
 

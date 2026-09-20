@@ -1,12 +1,12 @@
 # v93 leftover compile flags (8 MB champ). One extra -D per leftover.
 $script:V78Flags = @(
-  "-O3","-std=c++17","-msse4.1","-I","hp/include","-I","hp/third_party/xsimd/include",
+  "-O3","-std=c++23","-flto","-march=x86-64-v3","-fno-exceptions","-fno-rtti","-msse4.1","-mavx2","-I","hp/include","-I","hp/third_party/xsimd/include",
   "-DHP_MIXER_SKIP=56","-DHP_MIXER_SCALE=49152","-DHP_MIXER_SKIP_L1=80","-DHP_SPARSE_UTF8=1","-DHP_SENWORD=1","-DHP_GATE_ARGMAX=1",
   "-DHP_SLOT_GROW=1","-DHP_GATE_WORDPOS=1","-DHP_STATE_TABLE2=1","-DHP_SLOT_GROW_EXTRA=1",
   "-DHP_SENT_STREAM=1","-DHP_MATCH_18=1","-DHP_QUOTE_STACK=1",
   "-DHP_SLOT_WORD2=1","-DHP_SLOT_WORD3=1","-DHP_SLOT_WORD4=1","-DHP_SLOT_WORD5=1",
   "-DHP_SLOT_WORD6=1","-DHP_SLOT_WORD7=1","-DHP_SLOT_WORD8=1","-DHP_SLOT_WORD9=1",
-  "-DHP_SLOT_MAX=35","-DHP_MATCH_01=1","-DHP_MATCH_02=1","-DHP_MATCH_05=1",
+  "-DHP_MATCH_01=1","-DHP_MATCH_02=1","-DHP_MATCH_05=1",
   "-DHP_WMATCH_4=1","-DHP_SLOT_WSTR2=1","-DHP_SLOT_S3=1","-DHP_SLOT_S4=1",
   "-DHP_SENT_MEM=1","-DHP_SENT_GRP_CTX=1","-DHP_WSTR_GRP=1","-DHP_WBI_GRP=1","-DHP_SMEM_GRP=1",
   "-DHP_SLOT_O34=1","-DHP_SLOT_O34B=1","-DHP_SLOT_O34C=1","-DHP_SLOT_O34D=1","-DHP_SLOT_O34E=1","-DHP_SLOT_O34F=1",
