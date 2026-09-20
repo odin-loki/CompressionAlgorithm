@@ -3684,9 +3684,18 @@ vs v92 1,676,394). Identity RT PASS. Decode SHA matches `data/enwik8.8mb`
 `09F6DD7241A8AE21EDFD6762F3C6712A1FD02F7F322C5E77CAB8BB88F292EE8E`.
 Copied `hp_v93.exe` from `hp_c_v92s35_sl80.exe`. Did not overwrite
 `hp_v83.exe`–`hp_v92.exe`. `HP_MIXER_SKIP_L1=80` in `v78_flags.ps1`.
-Get-ScreenExe refuses v93. Archives `hp/build/e8_8mb_v93.hp`. 2 MiB
-baseline `s_base.hp` **438,789** (old saved `s_base_v92.hp` **438,841**).
-fx2-manual pending (v92 was 1,673,051). No mem 26.
+Get-ScreenExe refuses v93. Archives `hp/build/e8_8mb_v93.hp` and
+`e8_8mb_v93_fx2.hp`. 2 MiB baseline `s_base.hp` **438,789** (old saved
+`s_base_v92.hp` **438,841**). fx2-manual **1,672,628** (−423 vs v92 fx2
+1,673,051) RT PASS. No mem 26.
+
+### v93 fx2 - **1,672,628 / 1.595 bpc, RT PASS −423 vs v92 fx2**
+
+`hp_v93.exe` on `data/enwik8.8mb.fx2man`, `SLOT_MAX=35`, mem 22:
+**1,672,628**. Decode SHA matches `data/enwik8.8mb.fx2man`
+`563B4429789311B3E6E6DD71E5C6C58424B6BDD5E0382962161E78F0FCAA446E`.
+Copied `hp/build/e8_8mb_v93_fx2.hp`; lab copy kept. New 8 MB champ is
+v93. Did not run mem 26. Did not overwrite `hp_v83.exe`–`hp_v92.exe`.
 
 ### H53 mixer knobs on v93
 
@@ -3694,9 +3703,193 @@ SKIP_L1 neighbors of 80 on **v93**. Baseline **438,789**. Ten 2 MiB at a
 time. Gate 8 MiB s24 only if Δ < **−20**. 35-cap ALONE only if leftover
 s24 is >200 under **1,676,873**. Did not overwrite `hp_v83.exe`–`hp_v93.exe`.
 
-| leftover | flag | 2 MiB | Δ vs 438,789 | verdict |
+This-tree 2 MiB `SLOT_MAX=24` baseline `hp_s_base.exe` **439,192**
+(231.5 s). Recorded v93 `s_base.hp` **438,789** was overwritten; deltas
+below are vs **439,192** (same compile line as the leftovers). Did not
+overwrite `hp_v83.exe`–`hp_v93.exe`. No mem 26.
+
+| leftover | flag | 2 MiB | Δ vs 439,192 | verdict |
 |---|---|---:|---:|---|
+| sl72 | `HP_MIXER_SKIP_L1=72` (replace 80) | 439,193 | **+1** | reject |
+| sl84 | `HP_MIXER_SKIP_L1=84` (replace 80) | 439,184 | **−8** | reject |
+| sl88 | `HP_MIXER_SKIP_L1=88` (replace 80) | 439,184 | **−8** | reject |
+| sl96 | `HP_MIXER_SKIP_L1=96` (replace 80) | 439,183 | **−9** | reject |
+| sl104 | `HP_MIXER_SKIP_L1=104` (replace 80) | 439,184 | **−8** | reject |
+| sl112 | `HP_MIXER_SKIP_L1=112` (replace 80) | 439,168 | **−24** | 8 MiB s24 **1,677,930 (−249 vs this-tree 1,678,179; +1,057 vs v93 s24 1,676,873)**; no 35-cap (not >200 under 1,676,873). No mem 26. Binary `hp_s_sl112.exe`. Did not overwrite `hp_v83.exe`–`hp_v93.exe` |
+| sl120 | `HP_MIXER_SKIP_L1=120` (replace 80) | 439,169 | **−23** | 8 MiB s24 **1,677,899 (−280 vs this-tree 1,678,179; +1,026 vs v93 s24 1,676,873)**; no 35-cap. No mem 26. Binary `hp_s_sl120.exe`. Did not overwrite `hp_v83.exe`–`hp_v93.exe` |
+| sl128 | `HP_MIXER_SKIP_L1=128` (replace 80) | 439,174 | **−18** | reject (not &lt; −20) |
+| sl144 | `HP_MIXER_SKIP_L1=144` (replace 80) | 439,178 | **−14** | reject |
+| sl160 | `HP_MIXER_SKIP_L1=160` (replace 80) | 439,190 | **−2** | reject |
 
+This-tree 8 MiB s24 base **1,678,179**. sl112/sl120 beat that screen
+(−249/−280) but miss the published v93 s24 bar **1,676,873**, so no
+35-cap. Champ stays **v93 1,675,993**. H53 **closed**. Did not overwrite
+`hp_v83.exe`–`hp_v93.exe`. Archives `%LOCALAPPDATA%\hp_lab\e8_s24_h53base.hp`,
+`e8_s24_sl112.hp`, `e8_s24_sl120.hp`; 2 MiB copy `s_base_h53.hp` **439,192**.
 
+### Throughput / RAM (kVersion 5, identity-safe)
+
+v93 champ flags are now the default model set. `HP_SLOT_MAX` is
+**hard-capped at 22**. `-DHP_SLOT_MAX` is ignored. Do not overwrite
+`hp_v83.exe`–`hp_v93.exe`.
+
+Structural squeeze (one g++ recipe, no attributes / PGO / prefetch):
+demand-zero `HashTable` (VirtualAlloc/mmap) for CM tables, HASH_CHK
+tags, byte ring, match/LZP/Hebbian; AVX2 mixer `dot_i32_i16`;
+`-flto -march=x86-64-v3 -mavx2 -fno-exceptions -fno-rtti`; PY
+`(num<<4)/total` identical to `(num<<12)/(total<<8)`. `HP_MATCH_WORD`
+stays 0.
+
+2 MiB mem 22 `SLOT_MAX=24` vs `hp_s_base.exe`: both **439,192**
+(1.675 bpc). `hp_opt_s24.exe` **196.2 s / 1502 MB WS** vs s_base
+**198.2 s / 1595 MB WS** (−93 MB, −2 s). proxy256k mem 18 both
+**18,702**. Roundtrip proxy64k/256k PASS. Binary `hp/build/hp_opt.exe`
+(default cap 28) and `hp_opt_s24.exe`. Did not overwrite
+`hp_v83.exe`–`hp_v93.exe`. No mem 26.
+
+I/O follow-up (still identity **439,192**): Windows `MapViewOfFile` for
+the input (same as Linux mmap — no extra copy of the file); 1 MiB
+coder / stdio buffers; decode writes 64 KiB chunks instead of
+`fputc` per byte. Hand-vectorized mixer axpy was slower than g++'s
+own schedule and was reverted. Peak WS still **~1503 MB** on 2 MiB.
+Did not overwrite `hp_v83.exe`–`hp_v93.exe`. No mem 26.
+
+### Cross-context CM screen (256 KB all-pairs/triples, then 2/8 MiB)
+
+One extra CM (`-DHP_CROSS_CM=1`, `--cross i,j[,k]` hashes live
+context keys). 64-way mem 16 `SLOT_MAX=24` on `proxy256k.xml`:
+C(40,2)=780 pairs + C(40,3)=9880 triples + idle/125 baselines.
+10,664 ok, 1 zero (`t_25_29_31`). Idle extra CM **18,737** vs
+125-expert **18,733** (+4 dilution). 2,400 combos beat 125 on this
+proxy (noise-heavy). Best 256 KB: `word*brk*sentmem` **18,598**
+(−135). Condenses vs 125: nohash2 **18,735**, nomatchx **18,735**,
+notwin **18,732** (−1, noise).
+
+2 MiB mem 22 s24 (base **439,192** matches identity):
+
+| combo | bytes | Δ vs 125 |
+| o2×sentmem (`1,17`) | 438,897 | **−295** |
+| o1×word×sentmem (`0,5,17`) | 438,920 | **−272** |
+| word×brk×sentmem (`5,12,17`) | 438,973 | **−219** |
+| word×sentmem (`5,17`) | 439,015 | **−177** |
+| word×sen×sentmem (`5,15,17`) | 439,047 | **−145** |
+| sentmem×sengrp (`17,18`) | 439,087 | **−105** |
+| sen×sentpos (`15,36`) | 439,177 | −15 reject |
+| idle extra | 439,216 | +24 |
+
+8 MiB mem 22 s24 (this-tree base **1,678,179**):
+
+| combo | bytes | Δ vs base |
+| o2×sentmem | **1,676,998** | **−1,181** |
+| o1×word×sentmem | 1,677,215 | **−964** |
+
+Published v93 s24 bar **1,676,873**. Single o2×sentmem s24 is **+125**
+over that bar.
+
+Stacked two extra CMs (`-DHP_CROSS_CM=2`). 256 KB pin o2×sentmem then
+all pairs/triples as `--cross2` (10,678 jobs). 2 MiB cartesian of
+2 MiB winners + `o2×sentmem + word×brk`:
+
+| combo | 2 MiB s24 | Δ vs 439,192 |
+| o2×sentmem + word×brk (`1,17`+`5,12`) | **438,528** | **−664** |
+| o2×sentmem + o1×word×sentmem | 438,744 | −448 |
+| o2×sentmem idle-2nd | 438,920 | −272 |
+| base125 | 439,192 | 0 |
+
+8 MiB mem 22 s24 vs **1,678,179**:
+
+| combo | bytes | Δ |
+| o2×sentmem + word×brk | **1,675,990** | **−2,189** |
+| o2×sentmem + o1×word×sentmem | 1,676,419 | −1,760 |
+| o2×sentmem alone | 1,676,998 | −1,181 |
+
+s24 **1,675,990** is **−883** vs published s24 bar **1,676,873** (>200),
+so 35-cap. `hp_cross2_s35.exe` 8 MiB mem 22 SLOT_MAX=35
+`--cross 1,17 --cross2 5,12`: **1,675,128** (−865 vs v93 champ
+**1,675,993**; 1.597 bpc). Did **not** overwrite `hp_v93.exe`.
+`HP_CROSS_CM` default still 0 until baked. ~24 GB WS at s35.
+
+### Integer LSTM insertion screen (256 KB + 2 MiB s24)
+
+Q15 ByteMixer-style cell in `hp/include/hp/lstm.hpp` (no float).
+Winner shape from harvest cmix-lex: byte softmax → bit p from
+`[bot,top]` split; `lstmpr` = mixer expert; `lstmex` = extra CM.
+Default `HP_LSTM=0`. One leftover binary per path. `SLOT_MAX=24`.
+
+256 KB mem 16 vs base **18,733**:
+
+| path | bytes | Δ |
+| exp16 / exp8 / exp32 / exp_ctx | 18,733 | 0 (different SHA) |
+| ctx only (lstmex CM) | 18,735 | +2 |
+| bit16 | 18,744 | +11 |
+| exp+gate / all / gate | 18,749–18,751 | +16..+18 |
+
+2 MiB mem 22 s24 vs identity base **439,192**:
+
+| path | bytes | Δ |
+| ctx only | 439,198 | +6 |
+| bit16 | 439,570 | +378 |
+| exp32 | 439,856 | +664 |
+| exp_ctx | 439,918 | +726 |
+| exp16 | 439,923 | +731 |
+
+All reject (need Δ &lt; −20). Tiny integer LSTM is not cmix’s 170–200
+cell float ByteMixer; at this size it is mixer dilution.
+
+Wave 2 (H=64/128, mixin, LR=3/8, 2-layer) 256 KB vs **18,733**:
+lr3 **18,730 (−3)**; others −1..+2. Noise; not promoted. Default
+`HP_LSTM=0`. Did not overwrite `hp_v83.exe`–`hp_v93.exe`. No mem 26.
+
+### SLOT_MAX 1..30 sweep → hard cap 22 (2026-09-20)
+
+v93 flags, `proxy256k.xml` (262,144 B), `--mem 16`. Thirty binaries
+`hp_slot1.exe`…`hp_slot30.exe`. Archives `%LOCALAPPDATA%\hp_lab\slot256\`.
+CSV `slot256_sweep.csv`. Did not overwrite `hp_v83.exe`–`hp_v93.exe`.
+No mem 26. No 8 MiB (24–28 8 MiB jobs killed). fx2-cmix 8 MiB still
+SIGSEGV at 0.38% (not OOM).
+
+| cap | bytes | bpc | peak WS |
+|---:|---:|---:|---:|
+| 1 | 19,977 | 0.6096 | 29 MB |
+| 16 | 18,742 | 0.5720 | 33 MB |
+| 20 | 18,734 | 0.5717 | 59 MB |
+| **22** | **18,732** | **0.5717** | **113 MB** |
+| 24 | 18,733 | 0.5717 | 241 MB |
+| 25 | 18,735 | 0.5717 | 395 MB |
+| 26–30 | 18,735 | 0.5717 | 395 MB |
+
+BPC is **0.5717 from 20 through 30**. Caps 25–30 are byte-identical.
+22 is the lowest cap on the plateau that also wins size (18,732).
+Raising 22→30 is 3.5× RAM for three bytes of noise, and those three
+are worse. At mem 16, unclipped o6/word request 25 so ≥25 is a no-op.
+
+**Landed:** `HP_SLOT_MAX` hard-capped at **22** in `features.hpp`
+(`#undef` then `#define 22`; `-DHP_SLOT_MAX` ignored). Dropped from
+`v78_flags.ps1`. Screen tools no longer force 24/35. Archive
+`kVersion` **5→6** so 35-cap v93 archives fail fast. Published v93
+8 MiB **1,675,993** remains the 35-cap identity; `hp_v93.exe` not
+overwritten. Do not pass `-DHP_SLOT_MAX=35`.
+
+### fx2-cmix WSL remap fix + 8 MiB encode (2026-09-20)
+
+Unpatched fx2 SIGSEGV at ~20 KB on WSL: PPMD munmap/remap every
+20,000 bytes moved the 14 GB heap VA while MaxContext held absolute
+pointers. Lab patch: skip that remap (`if (false && …)`); MAP_SHARED
+already writes through. Patched `cmix -c dictionary` on
+`data/enwik8.8mb`: **1,395,442** bytes / **1.331 bpc**, wall ~100 min,
+peak RSS ~5.6 GB. vs hp v93 1,675,993 / 1.598 (−280,551). vs hard
+SLOT_MAX=22 encode 1,684,990 / 1.607.
+
+### fx2_mixer_lab screens (32 KB, lab PPM 512)
+
+~100 variants. Baseline **9165**. Paid: LSTM LR 0.08 (−18), horizon
+32 (−10), L1 scale 1.5–2.0 (−13..−14), LR0.08+skip0.01 (−19). Died:
+Boolean XOR/AND/OR/Walsh/parity/deltas (xor_k6 +517; worse with k);
+natural gradient / sign-LMS (catastrophic); drop twins to fund LSTM
+(none beat baseline; tiny_lstm +16). CSVs under
+`fx2_mixer_lab/results/`. 64 KB pin of lr08: baseline64 **17032**,
+lr08_64 **16994 (−38)**; lr08+skip 16996; h32 alone 17019 (−13).
+Did not land into prize binary. Did not overwrite
+`hp_v83.exe`–`hp_v93.exe`.
 
 
