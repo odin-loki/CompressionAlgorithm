@@ -386,6 +386,16 @@ tables, C7 integer-only RT, C8 external baselines, C9 ablation.
 **Do not:** merge Cypha LM / Qt / REST / CUDA into `hp/`; quote 2.664
 bpc next to hp SHA numbers; treat the prize as a revenue line.
 
+**CyphaLM lossy tiers (2026-09-23, in Cypha).** Cypha's vendored hp is now
+gate24-only: flags resolved out of the source, bit-identical. It gains
+runtime lossy knobs (CM drop, table caps, pool slots). On enwik8 8 MiB,
+`lean` (8 wiki CMs dropped, pool 8 slots, capped match/pool tables) is
+1.609866 vs gate24 1.611729 with 30% less RAM. Two findings bear on this
+lab: pool 8 slots beats 12 at gate24 (H0.2 said reject), and the 8
+SLOT-35-era wiki CMs lose when stacked at SLOT 24. See RECORD
+"CyphaLM gate24 lossy screen". Re-screen both at `SLOT_MAX=22` before
+acting here.
+
 ---
 
 ## Do not retest

@@ -3893,3 +3893,49 @@ natural gradient / sign-LMS (catastrophic); drop twins to fund LSTM
 `hp_v83.exe`–`hp_v93.exe`.
 
 
+
+### CyphaLM gate24 lossy screen (Cypha, 2026-09-23)
+
+Run in odin-loki/Cypha (branch `claude/llm-profiling-optimization-y5cdrr`)
+on the vendored gate24 tree: v78 set, `HP_SLOT_MAX=24`, mem 22. This is
+not this lab's `SLOT_MAX=22` build, so the numbers are not v93 archive
+bytes. Metric: observe bpc (= archive bpc at the same flags). Full write-up:
+Cypha `docs/reports/CYPHALM_LOSSY_MIXER_REPORT.md`.
+
+**8 MiB (`enwik8.8mb`), gate24 = 1.611729, peak RSS 1,538 MB:**
+
+| variant | bpc | Δ | peak RSS |
+|---|---:|---:|---:|
+| drop 8 wiki CMs (para, nest, infokey, linkpipe, tpl, o6b, heading, capmask) | 1.610643 | −0.0011 | 1,406 MB |
+| discovery pool 8 slots (of 12) | 1.610558 | −0.0012 | 1,490 MB |
+| both + pool tables ≤2^20 + match tables ≤2^22 (`lean`) | 1.609866 | −0.0019 | 1,078 MB |
+| lean + CM tables ≤2^23 | 1.612457 | +0.0007 | 814 MB |
+| lean + CM tables ≤2^22 | 1.617400 | +0.0057 | 670 MB |
+| lean + CM/match ≤2^21 | 1.629798 | +0.0181 | 404 MB |
+| lean + CM/match ≤2^20, pool ≤2^18 | 1.652317 | +0.0406 | 253 MB |
+
+**1 MiB drop-one ablation** of all 35 context models: eight are negative
+(listed above), four are neutral (line, cat, state, title, each within
++0.0001), and the rest pay (word +0.025, o4 +0.009, o2 +0.006, brk +0.006,
+o3 +0.005 …). Stacking the eight negatives gave −0.0023; adding the four
+neutrals gave +0.0006.
+
+**Mixer:** every one of the 10 layer-1 weight sets pays on 1 MiB
+(+0.0035 to +0.0177 to drop). Raising the update skip threshold 32→64/128/256
+costs +0.0023/+0.0068/+0.0149. Consistent with H33 (the mixer is tuned);
+the lossy room is in its inputs, not its weights.
+
+**New evidence against "do not retest" rows:** `discovery slot/eval sweep`
+(H0.2, all reject) predates the v78 stack. At gate24, 8 slots beat 12 on
+both 1 MiB (−0.0017) and 8 MiB (−0.0012). The eight dropped wiki CMs were
+each accepted one at a time on the 8 MiB identity in the `SLOT_MAX=35`
+leftover wave (e.g. nest −560 B v58, para −98 B v59). Stacked on gate24 at
+SLOT 24 and without dict preprocessing, they cost more than they return. Worth a re-screen at this lab's `SLOT_MAX=22` before
+trusting either direction.
+
+**Speed / RAM notes that apply here too:** `perf` puts 62% of observe time
+in `ContextModel::predict` (2 cache misses per model per bit). Prefetching
+each model's next slot as soon as the bit is known is bit-identical;
+the speed A/B against this lab's huge-page tables is pending (Cypha report). The lab's `alloc_zero` + `MADV_HUGEPAGE` tables had been
+lost in the Cypha vendoring (eager `std::vector`, ~8 s construct at mem 22).
+Cypha has them back.
