@@ -3935,7 +3935,9 @@ trusting either direction.
 
 **Speed / RAM notes that apply here too:** `perf` puts 62% of observe time
 in `ContextModel::predict` (2 cache misses per model per bit). Prefetching
-each model's next slot as soon as the bit is known is bit-identical;
-the speed A/B against this lab's huge-page tables is pending (Cypha report). The lab's `alloc_zero` + `MADV_HUGEPAGE` tables had been
+each model's next slot as soon as the bit is known is bit-identical but
+gains nothing once tables use `MADV_HUGEPAGE` (solo 2 MiB: 239.6 s with vs
+237.0 s without). Without huge pages the same tree ran 312.9 s. This lab's
+"no prefetch" note stands, and huge pages are the win. The lab's `alloc_zero` + `MADV_HUGEPAGE` tables had been
 lost in the Cypha vendoring (eager `std::vector`, ~8 s construct at mem 22).
 Cypha has them back.
