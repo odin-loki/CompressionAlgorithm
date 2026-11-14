@@ -22,6 +22,8 @@ everyday context-mixing compressor built from what that study found.
 
 ## Quick start
 
+Paths below are relative to this `HPv40/` directory.
+
 Source package: [`dist/hpd-1.2.0-src.zip`](dist/hpd-1.2.0-src.zip) (rebuild with `python3 compress/hpd/tools/make_src_zip.py`).
 
 ```bash
@@ -36,9 +38,9 @@ GPU build: `make gpu` builds `build/hpd-gpu` (`hpd c -G`), which runs the
 model on an NVIDIA GPU and writes the same archive bytes as the CPU build. With one
 warp per shard it runs at 0.84–0.95× the speed of a 64-thread CPU (Part II §10).
 
-HP40 itself comes from the `hp` lab,
-[odin-loki/CompressionAlgorithm](https://github.com/odin-loki/CompressionAlgorithm).
-This repository was split out of `odin-loki/Cypha` with its history.
+HP40 itself comes from the `hp` lab in the parent repository
+([`../hp/`](../hp/), formerly `odin-loki/CompressionAlgorithm`).
+This project was split out of `odin-loki/Cypha` with its history.
 
 ## Licence
 

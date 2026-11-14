@@ -1,4 +1,17 @@
-# hp — Hutter Prize lab
+# CompressionAlgorithm
+
+This repository holds two context-mixing compression projects, merged into
+one history:
+
+| project | path | what |
+|---|---|---|
+| **hp** — Hutter Prize lab | [`hp/`](hp/) | integer-exact CM compressor tuned for enwik; experiment board and measurement log at the root |
+| **HPv40 / hpd** | [`HPv40/`](HPv40/) | HP40 and HP40-Lite studied as general-purpose compressors, and **hpd**, the everyday compressor built from that study (paper, data, source package) |
+
+Commits from the HPv40 repository (formerly `odin-loki/HPv40-Compression-Algorithm`)
+are kept under `HPv40/` with their original messages and history.
+
+## hp — Hutter Prize lab
 
 Integer-exact context-mixing compressor in `hp/`. Encoder and decoder are
 the same binary. This is **not** Cypha
