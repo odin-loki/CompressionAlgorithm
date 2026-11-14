@@ -15,12 +15,12 @@ hp/build/
 *.exp
 
 # Nested winner clones (own git; do not rewrite)
-harvest/fx2-cmix/
-harvest/cmix/
-harvest/cmix-lex/
-harvest/paq8pxd/
-harvest/starlit/
-harvest/nncp/
+labs/harvest/fx2-cmix/
+labs/harvest/cmix/
+labs/harvest/cmix-lex/
+labs/harvest/paq8pxd/
+labs/harvest/starlit/
+labs/harvest/nncp/
 
 # Task / editor
 .taskmaster/
@@ -40,3 +40,10 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Merged from the former HPv40 repository
+__pycache__/
+*.pyc
+build/
+*.hpd
+fuzz_out.*/

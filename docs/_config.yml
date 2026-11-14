@@ -1,0 +1,5 @@
+# Site configuration for GitHub Pages (Jekyll). Publish with:
+#   Settings -> Pages -> Source: "Deploy from a branch", branch main, folder /docs
+title: CompressionAlgorithm
+description: Context-mixing compressors (hp and hpd) and their research notes.
+markdown: kramdown

@@ -1,96 +1,69 @@
 # CompressionAlgorithm
 
-This repository holds two context-mixing compression projects, merged into
-one history:
+Context-mixing compressors and the research behind them, in one repository.
 
-| project | path | what |
-|---|---|---|
-| **hp** — Hutter Prize lab | [`hp/`](hp/) | integer-exact CM compressor tuned for enwik; experiment board and measurement log at the root |
-| **HPv40 / hpd** | [`HPv40/`](HPv40/) | HP40 and HP40-Lite studied as general-purpose compressors, and **hpd**, the everyday compressor built from that study (paper, data, source package) |
+- **hp** ([`hp/`](hp/)) is the Hutter Prize lab: an integer-exact
+  context-mixing compressor, tuned against enwik. No floating point in the codec.
+- **hpd** ([`hpd/`](hpd/)) is the everyday compressor built from the HP40
+  study: the same model family, rebuilt for general files (speed, memory,
+  start-up, binary data).
 
-Commits from the HPv40 repository (formerly `odin-loki/HPv40-Compression-Algorithm`)
-are kept under `HPv40/` with their original messages and history.
+The documentation is a small Markdown site in [`docs/`](docs/index.md)
+(start there). The paper, the Zenodo release artifacts and the experiments
+sit beside the code.
 
-## hp — Hutter Prize lab
-
-Integer-exact context-mixing compressor in `hp/`. Encoder and decoder are
-the same binary. This is **not** Cypha
-([github.com/odin-loki/Cypha](https://github.com/odin-loki/Cypha)); do not
-mix Cypha BPC with hp archive sizes. No CUDA, Qt, or `float`/`double` in
-`hp/include` or `hp/src`.
-
-**Read first:** [PLAN.md](PLAN.md) is the experiment board (protocol, champs,
-next tests). [RECORD.md](RECORD.md) is the measurement log.
-
-## Prize bar and lab champs (2026-09-13)
-
-Hutter 1% claim on enwik9 vs official L (fx2-cmix): **S < 109,685,197**.
-`hp` has **not** been run on enwik9. Closing that gap is Track W (fork
-SOTA), not another 8 MB n-gram here. As of 2026-09-13 the prize page
-still lists fx2-cmix; cmix-lex is pending; cmix-obias is a **claim**
-(108,492,825). If this page and PLAN/RECORD disagree, **PLAN and RECORD
-lead**.
-
-| corpus | champ | bytes | notes |
-|---|---|---:|---|
-| 8 MB leftover (`data/enwik8.8mb`, `--mem 22`) | v78 | **1,692,024** | fx2-manual **1,688,500**; both RT PASS (−1,535 / −1,373 vs v77) |
-| 100 MB (`data/enwik8.fx2man`, `--mem 26`) | v77 | **18,370,971** | RT PASS, `SLOT_MAX=31` (−38,737 vs v75) |
-
-v78 8 MB identity + fx2 both RT PASS. v77 100 MB RT PASS. PLAN.md / RECORD.md lead.
-
-## Build
+## Layout
 
 ```
-g++ -O3 -std=c++23 -msse4.1 -I hp/include -I hp/third_party/xsimd/include \
-    $(grep -oE '\-DHP_[A-Z0-9_]+=[0-9]+' hp/tools/v78_flags.ps1 | tr '\n' ' ') \
-    hp/src/main.cpp -o hp/build/hp.exe
+hp/          hp: the lab compressor (C++23), tests, tools, third_party/xsimd
+hpd/         hpd: the everyday compressor (C++20), tests, GPU build, LICENSE (AGPL-3.0)
+paper/       HP40 / HP40-Lite / hpd paper: sources, data, figures, scripts
+release/     release artifacts: dist/ (hpd source zip), zenodo/ (upload package)
+labs/        experiments: fx2_mixer_lab/, stats/, harvest/
+docs/        the Markdown site: index.md, lab notes (docs/lab/), reports (docs/reports/)
 ```
 
-Both `-I` paths are required (`HP_XSIMD=1` needs SSE4.1 and xsimd), and
-the `-D` set is required: only 10 of 568 flags are default-ON, so a
-bare build is **1,804,979 / 1.721 bpc** on the 8 MiB slice, not the champ.
-The champ flag set lives in `hp/tools/v78_flags.ps1`. `HP_SLOT_MAX` is
-hard-capped at **22** (`-DHP_SLOT_MAX` is ignored).
+## Quick start
 
-## Compress / decompress
+Verified on Ubuntu 24.04 (WSL2) with g++ 13.3. Both programs are POSIX
+builds (they use `mmap`), so on Windows build them under WSL.
 
-8 MB leftover (`--mem 22`):
+```bash
+# hpd
+cd hpd
+make && make test
+build/hpd c file            # -> file.hpd
+build/hpd d file.hpd        # -> file
+build/hpd t file.hpd        # verify CRCs without writing
 
-```
-hp/build/hp.exe c --mem 22 data/enwik8.8mb hp/build/out.hp
-hp/build/hp.exe d hp/build/out.hp hp/build/out.bin
-```
-
-100 MB champ confirmation (`--mem 26`). Write archives off OneDrive —
-OneDrive can zero the CYHP header. Use `%LOCALAPPDATA%\hp_lab`, then copy:
-
-```
-mkdir %LOCALAPPDATA%\hp_lab
-hp/build/hp.exe c --mem 26 data/enwik8.fx2man %LOCALAPPDATA%\hp_lab\e8.hp
-hp/build/hp.exe d %LOCALAPPDATA%\hp_lab\e8.hp %LOCALAPPDATA%\hp_lab\e8.out
+# hp
+cd hp
+make                        # build/hp, build/dump_experts, build/bench
+bash test/no_float.sh       # the codec must contain no floating point
+bash test/roundtrip.sh build/hp FILE...
 ```
 
-Same exe for `c` and `d`. Do not overwrite a binary a long job is using.
-RAM and naming: PLAN.md (protocol / RAM). Corpora and `hp/build` binaries
-are local artifacts, not source.
+The hp champion flag set is in [`hp/tools/v78_flags.ps1`](hp/tools/v78_flags.ps1).
+A bare build is not the champion: see [`docs/index.md`](docs/index.md#hp-the-lab-compressor).
 
-## Profile (no Python)
+## Documentation
 
-`--profile` is C++ (`hp/include/hp/profile.hpp`). Spectral rank is
-`hp/tools/rank.cpp` (floats allowed in tools only). `dump_experts` dumps
-expert opinions. Codec profile does not need Python, CUDA, or Qt.
+- [`docs/index.md`](docs/index.md): the site home, with status and a map of every document.
+- [`docs/lab/`](docs/lab/): the living lab notes: `PLAN.md` (experiment board),
+  `RECORD.md` (measurement log), and the research and idea notes.
+- [`docs/reports/`](docs/reports/): analysis reports.
+- Per-project READMEs: [`hp/README.md`](hp/README.md), [`hpd/README.md`](hpd/README.md),
+  [`paper/README.md`](paper/README.md), [`release/README.md`](release/README.md),
+  [`labs/README.md`](labs/README.md).
 
-## Doc map
+## Licence
 
-| file | role |
-|---|---|
-| [PLAN.md](PLAN.md) | living experiment board |
-| [RECORD.md](RECORD.md) | measurement log |
-| [HUTTER_RESEARCH.md](HUTTER_RESEARCH.md) | prize rules and winner literature |
-| [review-and-thinktank.md](review-and-thinktank.md) | Cypha only → Track C |
-| harvest notes | Track W: `harvest/cmix-lex_notes.md`, `harvest/fxcm_v26_vs_hp.md`, `harvest/wiki_states_notes.md` |
+`hpd/` is licensed under the GNU Affero General Public License v3.0 ([`hpd/LICENSE`](hpd/LICENSE)).
+The licence for `hp/` and `labs/` has not been declared yet.
 
-Everything else (`MODELS.md`, `AXES.md`, `PATTERNS.md`, `UPGRADES.md`,
-`hp/UPGRADES.md`, `hp/README.md`, `Stats for Compression/`) is archived.
-Architecture narrative in `hp/README.md` is historical (proxy-era bpc
-tables). There is one plan file: `PLAN.md`.
+## History
+
+This repository merges two earlier repositories: `odin-loki/CompressionAlgorithm`
+(the hp lab, history unchanged) and `odin-loki/HPv40-Compression-Algorithm`
+(HP40 study, hpd, paper, release artifacts). The HPv40 history is kept under
+`hpd/`, `paper/` and `release/` with its original commit messages.

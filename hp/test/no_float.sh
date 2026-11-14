@@ -8,9 +8,13 @@
 set -u
 cd "$(dirname "$0")/.."
 fail=0
-hits=$(grep -nE '\b(float|double|long double)\b|<cmath>|<math\.h>|\b(exp|log|log2|pow|sqrt|expf|logf)\s*\(' \
-        include/hp/*.hpp src/*.cpp \
-        | grep -v 'log2_q16' | grep -v 'nlog2n_q16' | grep -v '^\s*//' | grep -vE '^[^:]+:[0-9]+:\s*//')
+# Comments are stripped before matching, so prose such as "(Q15, no float)"
+# after a trailing // does not trip the gate. Only code is checked.
+PAT='\b(float|double|long double)\b|<cmath>|<math\.h>|\b(exp|log|log2|pow|sqrt|expf|logf)\s*\('
+hits=$(for f in include/hp/*.hpp src/*.cpp; do
+         sed 's://.*$::' "$f" | grep -nE "$PAT" | sed "s|^|$f:|"
+       done \
+        | grep -v 'log2_q16' | grep -v 'nlog2n_q16')
 if [ -n "$hits" ]; then
   echo "FAIL: floating point found in codec sources:"
   echo "$hits"

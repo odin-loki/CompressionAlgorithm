@@ -336,7 +336,7 @@ head -c 8388608 data/enwik8 > data/enwik8.8mb
 
 ## 5. Cypha integration footguns
 
-Sources: `PLAN.md`, `README.md`, `UPGRADES.md`, `review-and-thinktank.md`, `hp/include/hp/coder.hpp` header comment.
+Sources: `../lab/PLAN.md`, `README.md`, `../lab/UPGRADES.md`, `../lab/review-and-thinktank.md`, `hp/include/hp/coder.hpp` header comment.
 
 ### 5.1 Do not mix metrics or codebases
 
@@ -371,7 +371,7 @@ Comparing to “coded body only” metrics (e.g. `bench.cpp` output) will disagr
 | **GRIA integration** | Cypha: optional 2-way `gria_gated_blend_logit` (default off). hp: GRIA as mixer gate + APM context + hedge switch rate. |
 | **Arithmetic coder** | Cypha: float softmax + full-alphabet CDF per symbol. hp: integer binary decomposition (`coder.hpp` L5–14). |
 | **Mixer loss mismatch** | Cypha hedge updates linear in *p*; codec pays −log *p* (review L37, L113). |
-| **Config complexity** | Cypha `CyphaLMConfig`: 148 fields / 25 subsystems vs hp compile-flag ablation (`review-and-thinktank.md` L252–254). |
+| **Config complexity** | Cypha `CyphaLMConfig`: 148 fields / 25 subsystems vs hp compile-flag ablation (`../lab/review-and-thinktank.md` L252–254). |
 
 ### 5.5 Operational footguns (hp lab)
 
@@ -414,10 +414,10 @@ bash hp/test/no_float.sh
 
 | Source | Relevant sections |
 |--------|-------------------|
-| `RECORD.md` | L1069–L1081 (v57 profile), L1852–L1860 (v82 champ), L2298–L2303 (s24 vs s35) |
-| `PLAN.md` | L170–187 (gate protocol, RAM table) |
-| `UPGRADES.md` | L255–262 (Cypha dump), L318–319 (task mismatch) |
-| `review-and-thinktank.md` | L31–35, L71–79 (eval methodology), L252–254 (config surface) |
+| `../lab/RECORD.md` | L1069–L1081 (v57 profile), L1852–L1860 (v82 champ), L2298–L2303 (s24 vs s35) |
+| `../lab/PLAN.md` | L170–187 (gate protocol, RAM table) |
+| `../lab/UPGRADES.md` | L255–262 (Cypha dump), L318–319 (task mismatch) |
+| `../lab/review-and-thinktank.md` | L31–35, L71–79 (eval methodology), L252–254 (config surface) |
 | `hp/tools/hp_harness.sh` | H34 calibration comments |
 | `hp/include/hp/profile.hpp` | Redundancy definitions |
 

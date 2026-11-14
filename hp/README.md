@@ -1,6 +1,6 @@
 <!--
 ARCHIVED architecture narrative (proxy-era bpc tables). Live champs and
-protocol live in root README.md and PLAN.md. Tools: --profile,
+protocol live in README.md and docs/lab/PLAN.md. Tools: --profile,
 dump_experts, rank.cpp.
 -->
 

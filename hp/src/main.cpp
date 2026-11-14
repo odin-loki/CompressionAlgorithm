@@ -470,7 +470,7 @@ int main(int argc, char** argv) {
     // Dictionary defaults OFF: measured -1.28% on the 3 MB proxy because
     // raw dictionary storage (10,121 B) swamped the transform's 1,498 B
     // gain. Expected to flip positive at enwik8/enwik9 scale where it
-    // amortises -- re-test there before trusting it. See UPGRADES.md 4.1.
+    // amortises -- re-test there before trusting it. See docs/lab/UPGRADES.md 4.1.
     bool use_dict = false, profile = false;
     int i = 2;
     for (; i < argc; ++i) {

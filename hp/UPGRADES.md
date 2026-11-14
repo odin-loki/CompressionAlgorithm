@@ -1,6 +1,6 @@
 <!--
-ARCHIVED. Superseded by repo-root PLAN.md (board) and README.md (how-to).
-Do not add new experiments here. Findings may still be true; live queue is PLAN.md.
+ARCHIVED. Superseded by docs/lab/PLAN.md (board) and README.md (how-to).
+Do not add new experiments here. Findings may still be true; live queue is docs/lab/PLAN.md.
 -->
 
 # hp — Upgrade Paths
@@ -320,7 +320,7 @@ the protocol.
 
 ## Findings this session (2026-08-22)
 
-See repo-root `UPGRADES.md` and `RECORD.md` for the full log. Headline:
+See `docs/lab/UPGRADES.md` and `RECORD.md` for the full log. Headline:
 enwik8 first 1 MB = 236,657 B / 1.806 bpc, round-trip PASS; entropy rank
 3.34 → 3.885; CTW rejected (duplicate of PY); B.3 NO-GO; `--mem` desync fixed.
 
